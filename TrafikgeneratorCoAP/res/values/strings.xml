@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Trafikgenerator CoAP</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_send_data">SendDataActivity</string>
+    <string name="title_activity_send_input">SendInputActivity</string>
+    <string name="title_activity_send">SendActivity</string>
+    <string name="title_activity_recieve_input">RecieveInputActivity</string>
+    <string name="title_activity_recieve">RecieveActivity</string>
+    <string name="title_activity_analyse_input">AnalyseInputActivity</string>
+    <string name="title_activity_analyse">AnalyseActivity</string>
+    <string name="Analyse">Analyse</string>
+    <string name="Send">Send to Database</string>
+    <string name="Receive">Receive from Database</string>
+    <string name="Exit">Exit</string>
+    <string name="Continue">Continue</string>
+    <string name="Back">Back</string>
+    <string name="IPField">IP-Address</string>
+    <string name="PortField">Port</string>
+    <string name="TimeField">Time in Seconds</string>
+    <string name="DummyField">Send Dummy Data?</string>
+    <string name="Filename">Filename</string>
+    <string name="LoadFile">LoadFile</string>
+    <string name="SaveFile">SaveFile</string>
+    <string name="title_activity_file_system">FileSystem</string>
+    <string name="title_activity_some">SomeActivity</string>
+    <string name="title_activity_co_apvariables">CoAPVariables</string>
+    <string name="title_activity_loading">LoadingActivity</string>
+    <string name="title_activity_send_data_sensor">SendDataSensor</string>
+    <string name="title_activity_send_data_sensor_input">SendDataSensorInput</string>
+    <string name="title_activity_recieve_data_sensor">RecieveDataSensor</string>
+    <string name="title_activity_receive_data_sensor_input">ReceiveDataSensorInput</string>
+    <string name="SendSensor">Send to Sensor</string>
+    <string name="ReceiveSensor">Receive from Sensor</string>
+    <string name="title_activity_abstract">AbstractActivity</string>
+    <string name="Blank">Leave blank for default values!</string>
+    <string name="Random">Random: 1.5</string>
+    <string name="Retransmit">Retransmit : 4</string>
+    <string name="NStart">NStart: 1</string>
+    <string name="Probingrate">Probingrate: 1.0</string>
+    <string name="Payloadsize">Payloadsize: 512 byte</string>
+    <string name="Timeout">Timeout: 2</string>
+    <string name="NoData">No Data</string>
+    <string name="CoAP">CoAP</string>
+
+</resources>

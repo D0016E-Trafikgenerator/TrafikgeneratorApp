@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="se.ltu.trafikgeneratorcoap"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" >
+    </uses-permission>
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="18" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.Main"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.SendData"
+            android:label="@string/title_activity_send_data" >
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.SendDataInput"
+            android:label="@string/title_activity_send_input">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.ReceiveDataInput"
+            android:label="@string/title_activity_recieve_input">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.ReceiveData"
+            android:label="@string/title_activity_recieve">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.FileSystem"
+            android:label="@string/title_activity_file_system">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.AndroidExplorer"
+            android:label="@string/title_activity_file_system">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.CoAPVariables"
+            android:label="@string/title_activity_co_apvariables">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.SendDataSensor"
+            android:label="@string/title_activity_send_data_sensor">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.SendDataSensorInput"
+            android:label="@string/title_activity_send_data_sensor_input">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.ReceiveDataSensor"
+            android:label="@string/title_activity_recieve_data_sensor">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.ReceiveDataSensorInput"
+            android:label="@string/title_activity_receive_data_sensor_input">
+        </activity>
+        <activity
+            android:name="se.ltu.trafikgeneratorcoap.AbstractActivity"
+            android:label="@string/title_activity_abstract" >
+        </activity>
+    </application>
+
+</manifest>
