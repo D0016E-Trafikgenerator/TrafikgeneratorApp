@@ -110,7 +110,7 @@ public class SendDataInput extends AbstractActivity {
 		else 
 		{
 			TextView v = (TextView) findViewById(R.id.Error);
-			v.setText("IP-Address not valid");
+			v.setText("IP-Address not valid");	
 		}
 	}
 	
@@ -127,7 +127,7 @@ public class SendDataInput extends AbstractActivity {
     		{
     			fileName = data.getStringExtra("result");
     			TextView v = (TextView) findViewById(R.id.Error);
-    			v.setText(fileName);
+    			v.setText("Config file loaded.");
     		}
     	}
     	if(requestCode == ResultType.SENDING_DATA.index())

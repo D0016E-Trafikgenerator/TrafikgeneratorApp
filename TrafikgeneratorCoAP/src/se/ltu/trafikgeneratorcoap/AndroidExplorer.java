@@ -86,7 +86,7 @@ public class AndroidExplorer extends ListActivity {
    } 
   }else {
 	  Intent returnIntent = new Intent();
-	  returnIntent.putExtra("result", file.getName());
+	  returnIntent.putExtra("result", file.getAbsolutePath());
 	  setResult(RESULT_OK, returnIntent);   
 	  finish();
     }

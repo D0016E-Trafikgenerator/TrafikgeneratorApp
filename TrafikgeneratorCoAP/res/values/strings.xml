@@ -19,7 +19,7 @@
     <string name="Back">Back</string>
     <string name="IPField">IP-Address</string>
     <string name="PortField">Port</string>
-    <string name="TimeField">Time in Seconds</string>
+    <string name="TimeField">Duration</string>
     <string name="DummyField">Send Dummy Data?</string>
     <string name="Filename">Filename</string>
     <string name="LoadFile">LoadFile</string>
@@ -36,12 +36,12 @@
     <string name="ReceiveSensor">Receive from Sensor</string>
     <string name="title_activity_abstract">AbstractActivity</string>
     <string name="Blank">Leave blank for default values!</string>
-    <string name="Random">Random: 1.5</string>
-    <string name="Retransmit">Retransmit : 4</string>
-    <string name="NStart">NStart: 1</string>
-    <string name="Probingrate">Probingrate: 1.0</string>
-    <string name="Payloadsize">Payloadsize: 512 byte</string>
-    <string name="Timeout">Timeout: 2</string>
+    <string name="Random">Random</string>
+    <string name="Retransmit">Retransmit</string>
+    <string name="NStart">NStart</string>
+    <string name="Probingrate">Probingrate</string>
+    <string name="Payloadsize">Payloadsize</string>
+    <string name="Timeout">Timeout</string>
     <string name="NoData">No Data</string>
     <string name="CoAP">CoAP</string>
 

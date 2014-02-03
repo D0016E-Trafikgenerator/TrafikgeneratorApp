@@ -61,7 +61,7 @@ public class ReceiveData extends AbstractActivity {
 			float floatReturn = Float.parseFloat(intent.getStringExtra(s));
 			return floatReturn;
 		} catch (NumberFormatException e) {
-			return 0.0f;
+			return -1.0f;
 		}
     }
     
@@ -71,7 +71,7 @@ public class ReceiveData extends AbstractActivity {
 			int intReturn = Integer.parseInt(intent.getStringExtra(s));
 			return intReturn;
 		} catch (NumberFormatException e) {
-			return 0;
+			return -1;
 		}
     }
   
