@@ -3,9 +3,14 @@ package se.ltu.trafikgeneratorcoap;
 import se.ltu.trafikgeneratorcoap.R;
 
 import android.os.Bundle;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.view.Menu;
+import android.widget.Button;
+import android.widget.TextView;
+import android.view.View.OnClickListener;
 
 public class Main extends AbstractActivity {
 
@@ -46,13 +51,37 @@ public class Main extends AbstractActivity {
         System.exit(0);
 	}
 	
+	final Context context = this;
+	
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
     	if(requestCode == ResultType.SEND_DATA.index())
     	{
     		if(resultCode == RESULT_OK)
     		{
-    			System.out.println("Sending done");
+                // create a Dialog component
+                final Dialog dialog = new Dialog(context);
+ 
+                //tell the Dialog to use the dialog.xml as it's layout description
+                dialog.setContentView(R.layout.dialog);
+                dialog.setTitle("Sending to Server");
+ 
+                TextView txt = (TextView) dialog.findViewById(R.id.txt);
+ 
+                //xxx change this to something useful
+                txt.setText("Packets : 10/10 \n" +
+                			"Time : 10 sec");
+                	
+                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
+ 
+                dialogButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+ 
+                dialog.show();
     		}
     	}
     	
@@ -60,7 +89,89 @@ public class Main extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
-    			System.out.println("Receiving done");
+                // create a Dialog component
+                final Dialog dialog = new Dialog(context);
+ 
+                //tell the Dialog to use the dialog.xml as it's layout description
+                dialog.setContentView(R.layout.dialog);
+                dialog.setTitle("Receiving from Server");
+ 
+                TextView txt = (TextView) dialog.findViewById(R.id.txt);
+                
+                //xxx change this to something useful
+                txt.setText("Packets : 10/10 \n" +
+            			"Time : 10 sec");
+ 
+                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
+ 
+                dialogButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+ 
+                dialog.show();
+    		}
+    	}
+    	
+    	if(requestCode == ResultType.SEND_DATA_SENSOR.index())
+    	{
+    		if(resultCode == RESULT_OK)
+    		{
+                // create a Dialog component
+                final Dialog dialog = new Dialog(context);
+ 
+                //tell the Dialog to use the dialog.xml as it's layout description
+                dialog.setContentView(R.layout.dialog);
+                dialog.setTitle("Sending to Sensor");
+ 
+                TextView txt = (TextView) dialog.findViewById(R.id.txt);
+                
+                //xxx change this to something useful
+                txt.setText("Packets : 10/10 \n" +
+            			"Time : 10 sec");
+ 
+                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
+ 
+                dialogButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+ 
+                dialog.show();
+    		}
+    	}
+    	
+    	if(requestCode == ResultType.RECEIVE_DATA_SENSOR.index())
+    	{
+    		if(resultCode == RESULT_OK)
+    		{
+                // create a Dialog component
+                final Dialog dialog = new Dialog(context);
+ 
+                //tell the Dialog to use the dialog.xml as it's layout description
+                dialog.setContentView(R.layout.dialog);
+                dialog.setTitle("Receiving from Sensor");
+ 
+                TextView txt = (TextView) dialog.findViewById(R.id.txt);
+                
+                //xxx change this to something useful
+                txt.setText("Packets : 10/10 \n" +
+            			"Time : 10 sec");
+ 
+                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
+ 
+                dialogButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+ 
+                dialog.show();
     		}
     	}
     }

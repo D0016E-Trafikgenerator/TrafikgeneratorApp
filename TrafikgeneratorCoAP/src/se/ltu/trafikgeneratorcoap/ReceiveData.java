@@ -106,6 +106,7 @@ public class ReceiveData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
+        	//xxx Put code here
         	return null;  
         }  
   

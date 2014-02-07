@@ -107,8 +107,7 @@ public class SendData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-        	System.out.println("asdf " + ip);
-        	Sending.sendData("");
+        	Sending.sendData(fileName);
         	return null;  
         }  
   
