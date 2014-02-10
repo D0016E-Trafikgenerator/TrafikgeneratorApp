@@ -27,6 +27,7 @@ public class SendDataInput extends AbstractActivity {
 	}
 	
 	private String fileName = "";
+	private String filePath = "";
 	private String timeout = "";			//default : 2
 	private String random = "";				//default : 1.5 
 	private String retransmitt = "";		//default : 4
@@ -109,7 +110,7 @@ public class SendDataInput extends AbstractActivity {
 		    intent.putExtra("nstart", nStart);
 		    intent.putExtra("probingrate", probingRate);
 		    intent.putExtra("payloadsize", payloadSize);
-		    intent.putExtra("filename", fileName);
+		    intent.putExtra("filename", filePath);
 		    intent.putExtra("port", port);
 			intent.putExtra("time", time);
 		    intent.putExtra("ip", ip);
@@ -129,9 +130,10 @@ public class SendDataInput extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
-    			fileName = data.getStringExtra("result");
+    			filePath = data.getStringExtra("path");
+    			fileName = data.getStringExtra("name");
     			TextView v = (TextView) findViewById(R.id.Error);
-    			v.setText("Config file loaded.");
+    			v.setText("Config file:  " + fileName);
     		}
     	}
     	if(requestCode == ResultType.SENDING_DATA.index())

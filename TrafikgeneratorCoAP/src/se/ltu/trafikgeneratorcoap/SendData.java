@@ -15,7 +15,7 @@ public class SendData extends AbstractActivity {
 	private String ip;
 	private int port;
 	private int seconds;
-	private String fileName = "";
+	private String filePath = "";
 	private int timeout;
 	private float random;
 	private int retransmitt;
@@ -47,7 +47,7 @@ public class SendData extends AbstractActivity {
 	    seconds = parseInt("time");
 	    connections = parseInt("connections");
 	    
-	    fileName = intent.getStringExtra("filename");
+	    filePath = intent.getStringExtra("filename");
 	    ip = intent.getStringExtra("ip");
 	    
         //Initialize a LoadViewTask object and call the execute() method 
@@ -106,7 +106,7 @@ public class SendData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-        	Sending.sendData(fileName);
+        	Sending.sendData(filePath);
         	publishProgress(progressbarUpdate++);
         	return null;  
         }  
