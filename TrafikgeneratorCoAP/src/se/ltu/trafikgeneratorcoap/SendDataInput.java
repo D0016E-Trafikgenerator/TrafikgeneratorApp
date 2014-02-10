@@ -36,6 +36,7 @@ public class SendDataInput extends AbstractActivity {
 	private String port = "";				//default : 5683
 	private String ip = "";
 	private String time = "";				//default : 10
+	private String connections = "1";		//default : 1
 	
 	public void next(View view){
 		//Port Field
@@ -75,6 +76,11 @@ public class SendDataInput extends AbstractActivity {
 		if(!probingrateString.equals(""))
 			probingRate = probingrateString;
 		
+		EditText connectionField = (EditText) findViewById(R.id.connections);
+		String connectionString = connectionField.getText().toString();
+		if(!connectionString.equals(""))
+			connections = connectionString;
+		
 		EditText payloadsizeField = (EditText) findViewById(R.id.payloadSize);
 		String payloadsizeString = payloadsizeField.getText().toString();
 		if(!payloadsizeString.equals(""))
@@ -87,12 +93,14 @@ public class SendDataInput extends AbstractActivity {
 		boolean validIP = false;
 		try {
 			Inet4Address.getByName(ipString);
-			validIP = true;
 			ip = ipString;
+			validIP = true;
 		} catch (Exception e) {
+			TextView v = (TextView) findViewById(R.id.Error);
+			v.setText("IP-Address not valid");	
 		}
 	
-		if (validIP) 
+		if (validIP && !connections.equals("") && !connections.equals("0")) 
 		{
 		    Intent intent = new Intent(this, SendData.class);
 		    intent.putExtra("timeout", timeout);
@@ -105,13 +113,9 @@ public class SendDataInput extends AbstractActivity {
 		    intent.putExtra("port", port);
 			intent.putExtra("time", time);
 		    intent.putExtra("ip", ip);
+		    intent.putExtra("connections", connections);
 		    startActivityForResult(intent, ResultType.SENDING_DATA.index());
 		} 
-		else 
-		{
-			TextView v = (TextView) findViewById(R.id.Error);
-			v.setText("IP-Address not valid");	
-		}
 	}
 	
 	public void load(View view){

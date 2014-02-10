@@ -1,15 +1,10 @@
 package se.ltu.trafikgeneratorcoap;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-
 import se.ltu.trafikgeneratorcoap.send.Sending;
-
-
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 
@@ -27,11 +22,13 @@ public class SendData extends AbstractActivity {
 	private int nStart;
 	private float probingRate;
 	private int payloadSize;
+	private int connections;
 	
 	private Intent intent;
 	
-	FileOutputStream outputStream;
-	FileInputStream inputStream;
+    public boolean bool = false;
+    public int indexer = 0;
+    private int progressbarUpdate = 1;
     
     /** Called when the activity is first created. */  
     @Override  
@@ -48,12 +45,17 @@ public class SendData extends AbstractActivity {
 	    payloadSize = parseInt("payloadsize");
 	    port = parseInt("port");
 	    seconds = parseInt("time");
+	    connections = parseInt("connections");
 	    
 	    fileName = intent.getStringExtra("filename");
 	    ip = intent.getStringExtra("ip");
 	    
-        //Initialize a LoadViewTask object and call the execute() method  
-        new LoadViewTask().execute();         
+        //Initialize a LoadViewTask object and call the execute() method 
+	    for(int i = 0; i < connections; i++)
+	    {
+	    	System.out.println("Creating processes nr : " + i);
+	    	new LoadViewTask().execute();
+	    }
     } 
     
     private float parseFloat(String s)
@@ -75,32 +77,29 @@ public class SendData extends AbstractActivity {
 			return 0;
 		}
     }
-  
+    
     //To use the AsyncTask, it must be subclassed  
     private class LoadViewTask extends AsyncTask<Void, Integer, Void>  
     {  
+    	private int index;
         //Before running code in separate thread  
         @Override  
         protected void onPreExecute()  
         {  
-            //Create a new progress dialog  
-            progressDialog = new ProgressDialog(SendData.this);  
-            //Set the progress dialog to display a horizontal progress bar  
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);  
-            //Set the dialog title to 'Loading...'  
-            progressDialog.setTitle("Loading...");  
-            //Set the dialog message 
-            progressDialog.setMessage("Sending data... Please wait.");  
-            //This dialog can't be canceled by pressing the back key  
-            progressDialog.setCancelable(true);  
-            //This dialog isn't indeterminate  
-            progressDialog.setIndeterminate(false);  
-            //The maximum number of items is 100  
-            progressDialog.setMax(10000);  
-            //Set the current progress to zero  
-            progressDialog.setProgress(0);  
-            //Display the progress dialog  
-            progressDialog.show();  
+        	this.index = indexer;
+        	indexer++;
+        	if(this.index == 0)
+        	{
+	            progressDialog = new ProgressDialog(SendData.this);  
+	            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);  
+	            progressDialog.setTitle("Loading...");  
+	            progressDialog.setMessage("Sending data... Please wait.");  
+	            progressDialog.setCancelable(true);  
+	            progressDialog.setIndeterminate(false);  
+	            progressDialog.setMax(connections);   
+	            progressDialog.setProgress(0);  
+	            progressDialog.show();
+        	}
         }  
   
         //The code to be executed in a background thread.  
@@ -108,6 +107,7 @@ public class SendData extends AbstractActivity {
         protected Void doInBackground(Void... params)  
         {   
         	Sending.sendData(fileName);
+        	publishProgress(progressbarUpdate++);
         	return null;  
         }  
   
@@ -119,15 +119,18 @@ public class SendData extends AbstractActivity {
             progressDialog.setProgress(values[0]);  
         }  
   
+
         //after executing the code in the thread  
         @Override  
         protected void onPostExecute(Void result)  
         {  
-            //close the progress dialog  
-            progressDialog.dismiss();  
-            //initialize the View
-			setResult(RESULT_OK);
-			finish();
+        	System.out.println("End of process nr : " + this.index);
+			if(progressbarUpdate == (connections + 1))
+			{
+	            progressDialog.dismiss();
+				setResult(RESULT_OK);
+				finish();
+			}
         }  
     }  
 }  

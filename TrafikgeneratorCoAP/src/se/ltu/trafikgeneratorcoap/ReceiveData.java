@@ -1,14 +1,10 @@
 package se.ltu.trafikgeneratorcoap;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-
 import se.ltu.trafikgeneratorcoap.send.Sending;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 
@@ -28,10 +24,7 @@ public class ReceiveData extends AbstractActivity {
 	private int payloadSize;
 	
 	private Intent intent;
-	
-	FileOutputStream outputStream;
-	FileInputStream inputStream;
-    
+	    
     /** Called when the activity is first created. */  
     @Override  
     public void onCreate(Bundle savedInstanceState)  

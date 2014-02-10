@@ -44,5 +44,7 @@
     <string name="Timeout">Timeout</string>
     <string name="NoData">No Data</string>
     <string name="CoAP">CoAP</string>
+    <string name="OK">OK</string>
+    <string name="Parallell">Connections</string>
 
 </resources>

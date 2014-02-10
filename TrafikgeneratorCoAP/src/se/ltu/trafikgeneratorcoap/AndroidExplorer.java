@@ -91,5 +91,4 @@ public class AndroidExplorer extends ListActivity {
 	  finish();
     }
  }
-
 }

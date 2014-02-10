@@ -59,6 +59,7 @@ public class Main extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
+    			System.out.println("Sending done!");
                 // create a Dialog component
                 final Dialog dialog = new Dialog(context);
  
@@ -80,7 +81,6 @@ public class Main extends AbstractActivity {
                         dialog.dismiss();
                     }
                 });
- 
                 dialog.show();
     		}
     	}
