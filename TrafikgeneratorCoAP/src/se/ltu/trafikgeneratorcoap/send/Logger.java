@@ -30,7 +30,7 @@ public class Logger {
 		writeMe.println("TARGET_IP:" + config.getStringSetting(Settings.TEST_SERVER) + "\t");
 	}
 	public void log(Long time, String event, Integer messageID, String messageType, Integer payloadSize, Integer code, String token) {
-		String poo = String.format("%d   %s   %d   %s   %d   %d   %s", time, event, messageID, messageType, payloadSize, code, token);
+		String poo = String.format("%d   %s   %d   %s   %d   %d   %s", time, "CLIENT_SENT", messageID, messageType, payloadSize, code, token);
 		writeMe.println(poo);
 		Log.i("dummycoap", poo);
 		return;

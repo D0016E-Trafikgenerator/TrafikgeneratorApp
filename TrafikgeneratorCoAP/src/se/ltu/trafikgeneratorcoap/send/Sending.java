@@ -21,8 +21,7 @@ public class Sending {
 	static TrafficConfig config;
 	
 	public static void sendData(String filename) {
-		filename = "/storage/sdcard0/Download/SampleConfig.cfg";
-		Log.i("dummycoap", "START: \"" + filename + "\"");
+		//filename = "/storage/sdcard0/Download/SampleConfig.cfg";
 
 		FileReader fil;
 		StringBuilder  stringBuilder;
@@ -44,7 +43,6 @@ public class Sending {
 		}
 		
 		config = new TrafficConfig(stringBuilder.toString());
-		Log.i("dummycoap", "Trying to start test \"" + config.getStringSetting(Settings.META_TITLE) + "\"...");
 		Runnable testrun = new Runnable() { 
             @Override 
             public void run() {
@@ -58,10 +56,8 @@ public class Sending {
         		int payloadSize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE); /* */
         		int seconds = Math.round(config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME));
         		
-        		Log.i("dummycoap", "Starting test \"" + config.getStringSetting(Settings.META_TITLE) + "\"!");
-        		
         		Request controlMessage = Request.newPost();
-        		controlMessage.setURI(uri + "/control");
+        		controlMessage.setURI("coap://" + uri + "/control");
         		OptionSet testServerOptions = controlMessage.getOptions();
         		
         		// Set Trafikgenerator options to send to & request of the control server.
@@ -108,97 +104,44 @@ public class Sending {
 					Response controlResponse = controlMessage.waitForResponse();
 	        		String testToken = controlResponse.getTokenString();
 					if (controlResponse != null && controlResponse.getCode() == ResponseCode.CREATED) {
-		            	Logger testLog = new Logger(config, "/storage/sdcard0/Download/JustALog.log");
-		        		Log.i("dummycoap", "TEST HAS BEGUN");
+						String command = "su && tcpdump-coap -s 65535 -w /storage/sdcard0/Download/" + testToken + ".pcap 'port " + testport + "' &";
+						Runtime.getRuntime().exec(command);
+						Thread.sleep(100);
         				if (internetTimeClient.requestTime("0.se.pool.ntp.org", 1000)) {
-        					long now = internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime() - internetTimeClient.getNtpTimeReference();
+        					;//long now = internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime() - internetTimeClient.getNtpTimeReference();
         				}
 		        		for (int i = 1; i <= numberOfTests; i++) {
-		            		//Log.i("dummycoap", "TEST "+ i + "/" + numberOfTests + " (token: " + testToken + ")");
-			        		NetworkConfig customSettings = NetworkConfig.createStandardWithoutFile();
-			        		//customSettings.setInt("ACK_TIMEOUT", config.getIntegerSetting(Settings.COAP_ACK_TIMEOUT));
-			        		//customSettings.setFloat("ACK_RANDOM_FACTOR", config.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR));
-			        		//customSettings.setInt("MAX_RETRANSMIT", config.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT));
-			        		//customSettings.setInt("NSTART", config.getIntegerSetting(Settings.COAP_NSTART));
-			        		//customSettings.setFloat("PROBING_RATE", config.getIntegerSetting(Settings.COAP_PROBING_RATE));
-			        		
-			        					        		
+			        		//NetworkConfig customSettings = NetworkConfig.createStandardWithoutFile();
 			        		if (config.getStringSetting(Settings.TRAFFIC_TYPE).equals("CONSTANT_SOURCE")) {
-			        			//Log.i("dummycoap", "TEST asdfasd");
 			        			if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("TIME")) {
-			        				Log.i("dummycoap", "TEST hurpadurpa");
-			        				long endtime = (internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime() - internetTimeClient.getNtpTimeReference()) +  ((long) Math.round(1000 * config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME)));
-			        				int j = 1;
+			        				long endtime = (internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime() - internetTimeClient.getNtpTimeReference()) +  ((long) Math.round(1000 * seconds));
 			        				Request testRequest;
 			        				while ((internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime() - internetTimeClient.getNtpTimeReference()) < endtime) {
-						        		//Log.i("dummycoap", "New request to " + uri + ":" + testport + "/dummydata");
 					        			testRequest = Request.newPost();
 						        		testRequest.setURI(uri + ":" + testport + "/dummydata");
-						        		//testRequest.setType(CoAP.Type.valueOf(config.getStringSetting(Settings.COAP_MESSAGETYPE)));
 						        		testRequest.setType(CoAP.Type.NON);
-			        					//Client initierar test (börjar skicka meddelanden) och loggar sina sändningar. I början av loggfilen står det “TOKEN: 0x7F”
-			        					//To avoid retransmission limits:
-					            		//Log.i("dummycoap", "TEST " + testToken + " PACKET " + (j++));
-			        					//int MID = testRequest.getMID();
-			        					/*if (MID < 65535)
-			        						MID += 1;
-			        					else
-			        						MID = 0;*/
 			        					testRequest.setPayload(DummyGenerator.makeDummydata((new Random()).nextLong(), payloadSize));
-			        					//testRequest.setMID(MID);
-			        					//testRequest.setToken(randomToken);
-			        					//Log.i("dummycoap", "MID is" + testRequest.getMID());
 			        					testRequest.send();
-						        		long now = (internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime() - internetTimeClient.getNtpTimeReference());
-						        		Thread.sleep(9);
-			        					testLog.log(now, testRequest.getType().toString(), testRequest.getMID(),
-			        							testRequest.getType().toString(), testRequest.getPayloadSize(), 123, testRequest.getTokenString());
-			        					//Log.i("dummycoap", "Time to sleep for " + timeBetweenPackets + " ms...");
+						        		//long now = (internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime() - internetTimeClient.getNtpTimeReference());
+						        		//Thread.sleep(9);
 			        					if (timeBetweenPackets >= 0)
 			        						Thread.sleep(timeBetweenPackets+1);
-									/*
-			        					TRAFFIC       TYPE=CONSTANT_SOURCE       #=default
-			        					TRAFFIC       MODE=TIME                  #=default
-			        					TRAFFIC       MAXSENDTIME=10.0           #=default; in seconds
-			        					TRAFFIC       RATE=25000                 #=default; in bytes/second
-			        					TRAFFIC       MESSAGESIZE=100            #=default; in bytes
-			        					TRAFFIC       INTERMISSION=0.0           #=default; in ms; between messages
-			        					TRAFFIC       RANDOMFACTOR=1.0           #=default; varies INTERMISSION
-									*/
 			        				}
 			        			}
 			        		}
-			        		testLog.flush();
-			        		Thread.sleep(10);
+			        		//Thread.sleep(10);
 			        		if (i < numberOfTests) {
-			        			Log.i("dummycoap", "Time to sleep for " + timeBetweenTests + " ms...");
 			        			Thread.sleep(timeBetweenTests);
 			        		}
 		            	}
-		        		Log.i("dummycoap", "All messages sent!");
-		            	
-
-		        		controlMessage = Request.newPost();
-		        		controlMessage.setURI(uri + "/control");
-		        		testServerOptions = controlMessage.getOptions();
-		        		
-		        		Option controlStopOption = new Option();
-		        		controlStopOption.setNumber(65009);
-		        		testServerOptions.addOption(controlStopOption);
-		        		
-		        		controlMessage.setOptions(testServerOptions);
-		        		controlMessage.send();
-		        		
-		            	//TEST OVER
-    					/*
-    					client får ResponseCode.DELETED
-
-    					Client skickar logfil till server på coap://server:5683/fileserver?type=log 
-    					*/
+		        		Thread.sleep(100);
+		        		Runtime.getRuntime().exec("sleep 1 && su && killall tcpdump-coap");
+		        		FileSender.sendFile(uri, "/storage/sdcard0/Download/" + testToken + ".pcap", testToken);
 					}
-				} catch (InterruptedException e1) {
-					;
 				}
+        		catch (InterruptedException e1) {}
+				catch (IllegalStateException e) {}
+        		catch (IOException e) {}
             }
 		};
 		new Thread( testrun ).start();
