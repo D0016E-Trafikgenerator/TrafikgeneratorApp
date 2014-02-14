@@ -28,6 +28,7 @@ public class ReceiveDataInput extends AbstractActivity {
 	}
 	
 	private String fileName = "";
+	private String filePath = "";
 	private String timeout = "";			//default : 2
 	private String random = "";				//default : 1.5 
 	private String retransmitt = "";		//default : 4
@@ -37,6 +38,7 @@ public class ReceiveDataInput extends AbstractActivity {
 	private String port = "";				//default : 5683
 	private String ip = "";
 	private String time = "";				//default : 10
+	private String connections = "1";		//default : 1
 	
 	public void next(View view){
 		//Port Field
@@ -76,6 +78,11 @@ public class ReceiveDataInput extends AbstractActivity {
 		if(!probingrateString.equals(""))
 			probingRate = probingrateString;
 		
+		EditText connectionField = (EditText) findViewById(R.id.connections);
+		String connectionString = connectionField.getText().toString();
+		if(!connectionString.equals(""))
+			connections = connectionString;
+		
 		EditText payloadsizeField = (EditText) findViewById(R.id.payloadSize);
 		String payloadsizeString = payloadsizeField.getText().toString();
 		if(!payloadsizeString.equals(""))
@@ -88,31 +95,29 @@ public class ReceiveDataInput extends AbstractActivity {
 		boolean validIP = false;
 		try {
 			Inet4Address.getByName(ipString);
-			validIP = true;
 			ip = ipString;
+			validIP = true;
 		} catch (Exception e) {
+			TextView v = (TextView) findViewById(R.id.Error);
+			v.setText("IP-Address not valid");	
 		}
 	
-		if (validIP) 
+		if (validIP && !connections.equals("") && !connections.equals("0")) 
 		{
-		    Intent intent = new Intent(this, ReceiveData.class);
+		    Intent intent = new Intent(this, SendData.class);
 		    intent.putExtra("timeout", timeout);
 		    intent.putExtra("random", random);
 		    intent.putExtra("retransmitt", retransmitt);
 		    intent.putExtra("nstart", nStart);
 		    intent.putExtra("probingrate", probingRate);
 		    intent.putExtra("payloadsize", payloadSize);
-		    intent.putExtra("filename", fileName);
+		    intent.putExtra("filename", filePath);
 		    intent.putExtra("port", port);
 			intent.putExtra("time", time);
 		    intent.putExtra("ip", ip);
+		    intent.putExtra("connections", connections);
 		    startActivityForResult(intent, ResultType.RECEIVE_DATA.index());
 		} 
-		else 
-		{
-			TextView v = (TextView) findViewById(R.id.Error);
-			v.setText("IP-Address not valid");
-		}
 	}
 	
 	public void load(View view){
@@ -126,9 +131,10 @@ public class ReceiveDataInput extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
-    			fileName = data.getStringExtra("result");
+    			filePath = data.getStringExtra("path");
+    			fileName = data.getStringExtra("name");
     			TextView v = (TextView) findViewById(R.id.Error);
-    			v.setText(fileName);
+    			v.setText("Config file:  " + fileName);
     		}
     	}
     	if(requestCode == ResultType.RECEIVE_DATA.index())

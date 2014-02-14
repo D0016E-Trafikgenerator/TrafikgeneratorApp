@@ -15,16 +15,21 @@ public class ReceiveData extends AbstractActivity {
 	private String ip;
 	private int port;
 	private int seconds;
-	private String fileName = "";
+	private String filePath = "";
 	private int timeout;
 	private float random;
 	private int retransmitt;
 	private int nStart;
 	private float probingRate;
 	private int payloadSize;
+	private int connections;
 	
 	private Intent intent;
-	    
+	
+    public boolean bool = false;
+    public int indexer = 0;
+    private int progressbarUpdate = 1;
+    
     /** Called when the activity is first created. */  
     @Override  
     public void onCreate(Bundle savedInstanceState)  
@@ -40,12 +45,17 @@ public class ReceiveData extends AbstractActivity {
 	    payloadSize = parseInt("payloadsize");
 	    port = parseInt("port");
 	    seconds = parseInt("time");
+	    connections = parseInt("connections");
 	    
-	    fileName = intent.getStringExtra("filename");
+	    filePath = intent.getStringExtra("filename");
 	    ip = intent.getStringExtra("ip");
 	    
-        //Initialize a LoadViewTask object and call the execute() method  
-        new LoadViewTask().execute();         
+        //Initialize a LoadViewTask object and call the execute() method 
+	    for(int i = 0; i < connections; i++)
+	    {
+	    	System.out.println("Creating processes nr : " + i);
+	    	new LoadViewTask().execute();
+	    }
     } 
     
     private float parseFloat(String s)
@@ -54,7 +64,7 @@ public class ReceiveData extends AbstractActivity {
 			float floatReturn = Float.parseFloat(intent.getStringExtra(s));
 			return floatReturn;
 		} catch (NumberFormatException e) {
-			return -1.0f;
+			return 0.0f;
 		}
     }
     
@@ -64,42 +74,40 @@ public class ReceiveData extends AbstractActivity {
 			int intReturn = Integer.parseInt(intent.getStringExtra(s));
 			return intReturn;
 		} catch (NumberFormatException e) {
-			return -1;
+			return 0;
 		}
     }
-  
+    
     //To use the AsyncTask, it must be subclassed  
     private class LoadViewTask extends AsyncTask<Void, Integer, Void>  
     {  
+    	private int index;
         //Before running code in separate thread  
         @Override  
         protected void onPreExecute()  
         {  
-            //Create a new progress dialog  
-            progressDialog = new ProgressDialog(ReceiveData.this);  
-            //Set the progress dialog to display a horizontal progress bar  
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);  
-            //Set the dialog title
-            progressDialog.setTitle("Loading...");  
-            //Set the dialog message 
-            progressDialog.setMessage("Receiving data... Please wait.");  
-            //This dialog can't be canceled by pressing the back key  
-            progressDialog.setCancelable(true);  
-            //This dialog isn't indeterminate  
-            progressDialog.setIndeterminate(false);  
-            //The maximum number of items is 100  
-            progressDialog.setMax(10000);  
-            //Set the current progress to zero  
-            progressDialog.setProgress(0);  
-            //Display the progress dialog  
-            progressDialog.show();  
+        	this.index = indexer;
+        	indexer++;
+        	if(this.index == 0)
+        	{
+	            progressDialog = new ProgressDialog(ReceiveData.this);  
+	            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);  
+	            progressDialog.setTitle("Loading...");  
+	            progressDialog.setMessage("Sending data... Please wait.");  
+	            progressDialog.setCancelable(true);  
+	            progressDialog.setIndeterminate(false);  
+	            progressDialog.setMax(connections);   
+	            progressDialog.setProgress(0);  
+	            progressDialog.show();
+        	}
         }  
   
         //The code to be executed in a background thread.  
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-        	//xxx Put code here
+        	Sending.sendData(filePath);
+        	publishProgress(progressbarUpdate++);
         	return null;  
         }  
   
@@ -111,15 +119,18 @@ public class ReceiveData extends AbstractActivity {
             progressDialog.setProgress(values[0]);  
         }  
   
+
         //after executing the code in the thread  
         @Override  
         protected void onPostExecute(Void result)  
         {  
-            //close the progress dialog  
-            progressDialog.dismiss();  
-            //initialize the View
-			setResult(RESULT_OK);
-			finish();
+        	System.out.println("End of process nr : " + this.index);
+			if(progressbarUpdate == (connections + 1))
+			{
+	            progressDialog.dismiss();
+				setResult(RESULT_OK);
+				finish();
+			}
         }  
-    } 
+    }  
 }

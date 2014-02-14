@@ -89,6 +89,7 @@ public class Main extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
+    			System.out.println("Receiving done!");
                 // create a Dialog component
                 final Dialog dialog = new Dialog(context);
  
@@ -97,11 +98,11 @@ public class Main extends AbstractActivity {
                 dialog.setTitle("Receiving from Server");
  
                 TextView txt = (TextView) dialog.findViewById(R.id.txt);
-                
+ 
                 //xxx change this to something useful
                 txt.setText("Packets : 10/10 \n" +
-            			"Time : 10 sec");
- 
+                			"Time : 10 sec");
+                	
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
  
                 dialogButton.setOnClickListener(new OnClickListener() {
@@ -110,7 +111,6 @@ public class Main extends AbstractActivity {
                         dialog.dismiss();
                     }
                 });
- 
                 dialog.show();
     		}
     	}
