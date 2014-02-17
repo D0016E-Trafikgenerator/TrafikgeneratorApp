@@ -46,5 +46,7 @@
     <string name="CoAP">CoAP</string>
     <string name="OK">OK</string>
     <string name="Parallell">Connections</string>
+    <string name="blu_notfound_inlist">bluetooth not found</string>
+    <string name="blu_cancelled">bluetooth cancel</string>
 
 </resources>

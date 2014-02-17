@@ -1,7 +1,5 @@
 package se.ltu.trafikgeneratorcoap;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import se.ltu.trafikgeneratorcoap.send.Sending;
 import android.os.AsyncTask;
 import android.os.Bundle;

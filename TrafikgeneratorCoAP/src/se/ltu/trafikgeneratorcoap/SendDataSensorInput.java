@@ -1,9 +1,13 @@
 package se.ltu.trafikgeneratorcoap;
 
-import se.ltu.trafikgeneratorcoap.R;
-
 import android.os.Bundle;
+import android.content.Intent;
 import android.view.Menu;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import java.net.Inet4Address;
+import se.ltu.trafikgeneratorcoap.R;
 
 public class SendDataSensorInput extends AbstractActivity {
 
@@ -19,5 +23,124 @@ public class SendDataSensorInput extends AbstractActivity {
 		getMenuInflater().inflate(R.menu.send_data_sensor_input, menu);
 		return true;
 	}
-
+	
+	private String fileName = "";
+	private String filePath = "";
+	private String timeout = "";			//default : 2
+	private String random = "";				//default : 1.5 
+	private String retransmitt = "";		//default : 4
+	private String nStart = "";				//default : 1
+	private String probingRate = "";		//default : 1.0
+	private String payloadSize = "";		//default : 512
+	private String port = "";				//default : 5683
+	private String ip = "";
+	private String time = "";				//default : 10
+	private String connections = "1";		//default : 1
+	
+	public void next(View view){
+		//Port Field
+		EditText portField = (EditText) findViewById(R.id.Port);
+		String portString = portField.getText().toString();
+		if (!portString.equals(""))
+			port = portString;
+	    
+		//Time Field
+		EditText timeField = (EditText) findViewById(R.id.Time);
+		String timeString = timeField.getText().toString();
+		if (!timeString.equals(""))
+			time = timeString;
+		
+		EditText timeoutField = (EditText) findViewById(R.id.timeout);
+		String timeoutString = timeoutField.getText().toString();
+		if(!timeoutString.equals(""))
+			timeout = timeoutString;
+		
+		EditText randomField = (EditText) findViewById(R.id.random);
+		String randomString = randomField.getText().toString();
+		if(!randomString.equals(""))
+			random = randomString;
+		
+		EditText retransmittField = (EditText) findViewById(R.id.retransmitt);
+		String retransmittString = retransmittField.getText().toString();
+		if(!retransmittString.equals(""))
+			retransmitt = retransmittString;
+		
+		EditText nstartField = (EditText) findViewById(R.id.nStart);
+		String nstartString = nstartField.getText().toString();
+		if(!nstartString.equals(""))
+			nStart = nstartString;
+		
+		EditText probingrateField = (EditText) findViewById(R.id.probingRate);
+		String probingrateString = probingrateField.getText().toString();
+		if(!probingrateString.equals(""))
+			probingRate = probingrateString;
+		
+		EditText connectionField = (EditText) findViewById(R.id.connections);
+		String connectionString = connectionField.getText().toString();
+		if(!connectionString.equals(""))
+			connections = connectionString;
+		
+		EditText payloadsizeField = (EditText) findViewById(R.id.payloadSize);
+		String payloadsizeString = payloadsizeField.getText().toString();
+		if(!payloadsizeString.equals(""))
+			payloadSize = payloadsizeString;
+	
+		//IP-Field
+		EditText ipField = (EditText) findViewById(R.id.IPAddress);
+		String ipString = ipField.getText().toString();
+		//Check if IP-Address is valid
+		boolean validIP = false;
+		try {
+			Inet4Address.getByName(ipString);
+			ip = ipString;
+			validIP = true;
+		} catch (Exception e) {
+			TextView v = (TextView) findViewById(R.id.Error);
+			v.setText("IP-Address not valid");	
+		}
+	
+		if (validIP && !connections.equals("") && !connections.equals("0")) 
+		{
+		    Intent intent = new Intent(this, SendDataSensor.class);
+		    intent.putExtra("timeout", timeout);
+		    intent.putExtra("random", random);
+		    intent.putExtra("retransmitt", retransmitt);
+		    intent.putExtra("nstart", nStart);
+		    intent.putExtra("probingrate", probingRate);
+		    intent.putExtra("payloadsize", payloadSize);
+		    intent.putExtra("filename", filePath);
+		    intent.putExtra("port", port);
+			intent.putExtra("time", time);
+		    intent.putExtra("ip", ip);
+		    intent.putExtra("connections", connections);
+		    startActivityForResult(intent, ResultType.SEND_DATA_SENSOR.index());
+		} 
+	}
+	
+	public void load(View view){
+		Intent intent = new Intent(this, AndroidExplorer.class);
+		startActivityForResult(intent, ResultType.LOAD_FILE.index());
+	}
+	
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) 
+    {
+    	if(requestCode == ResultType.LOAD_FILE.index())
+    	{
+    		if(resultCode == RESULT_OK)
+    		{
+    			filePath = data.getStringExtra("path");
+    			fileName = data.getStringExtra("name");
+    			TextView v = (TextView) findViewById(R.id.Error);
+    			v.setText("Config file:  " + fileName);
+    		}
+    	}
+    	if(requestCode == ResultType.SEND_DATA_SENSOR.index())
+    	{
+    		if(resultCode == RESULT_OK)
+    		{
+    			setResult(RESULT_OK);
+    			finish();
+    		}
+    	}
+    }
 }

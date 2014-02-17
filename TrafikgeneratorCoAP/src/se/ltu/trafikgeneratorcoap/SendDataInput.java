@@ -7,9 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import java.net.Inet4Address;
-
 import se.ltu.trafikgeneratorcoap.R;
-
 
 public class SendDataInput extends AbstractActivity {
 

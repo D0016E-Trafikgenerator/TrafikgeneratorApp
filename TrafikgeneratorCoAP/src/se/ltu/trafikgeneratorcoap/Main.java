@@ -37,13 +37,13 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void sendDataSensor(View view) {
-		/*Intent intent = new Intent(this, SendDataSensorInput.class);
-		startActivityForResult(intent, ResultType.SEND_DATA_SENSOR.index());*/
+		Intent intent = new Intent(this, SendDataSensorInput.class);
+		startActivityForResult(intent, ResultType.SEND_DATA_SENSOR.index());
 	}
 	
 	public void receiveDataSensor(View view) {
-		/*Intent intent = new Intent(this, ReceiveDataSensorInput.class);
-		startActivityForResult(intent, ResultType.RECEIVE_DATA_SENSOR.index());*/
+		Intent intent = new Intent(this, ReceiveDataSensorInput.class);
+		startActivityForResult(intent, ResultType.RECEIVE_DATA_SENSOR.index());
 	}
 	
 	public void exit(View view){
@@ -119,6 +119,7 @@ public class Main extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
+    			System.out.println("Sending done (Sensor)!");
                 // create a Dialog component
                 final Dialog dialog = new Dialog(context);
  
@@ -127,11 +128,11 @@ public class Main extends AbstractActivity {
                 dialog.setTitle("Sending to Sensor");
  
                 TextView txt = (TextView) dialog.findViewById(R.id.txt);
-                
+ 
                 //xxx change this to something useful
                 txt.setText("Packets : 10/10 \n" +
-            			"Time : 10 sec");
- 
+                			"Time : 10 sec");
+                	
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
  
                 dialogButton.setOnClickListener(new OnClickListener() {
@@ -140,7 +141,6 @@ public class Main extends AbstractActivity {
                         dialog.dismiss();
                     }
                 });
- 
                 dialog.show();
     		}
     	}
@@ -149,6 +149,7 @@ public class Main extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
+    			System.out.println("Receiving done (Sensor)!");
                 // create a Dialog component
                 final Dialog dialog = new Dialog(context);
  
@@ -157,11 +158,11 @@ public class Main extends AbstractActivity {
                 dialog.setTitle("Receiving from Sensor");
  
                 TextView txt = (TextView) dialog.findViewById(R.id.txt);
-                
+ 
                 //xxx change this to something useful
                 txt.setText("Packets : 10/10 \n" +
-            			"Time : 10 sec");
- 
+                			"Time : 10 sec");
+                	
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
  
                 dialogButton.setOnClickListener(new OnClickListener() {
@@ -170,7 +171,6 @@ public class Main extends AbstractActivity {
                         dialog.dismiss();
                     }
                 });
- 
                 dialog.show();
     		}
     	}
