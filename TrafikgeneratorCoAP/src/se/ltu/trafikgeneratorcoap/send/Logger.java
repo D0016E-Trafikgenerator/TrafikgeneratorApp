@@ -2,23 +2,27 @@ package se.ltu.trafikgeneratorcoap.send;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import android.os.Environment;
 
 public class Logger {
-	//TODO: Allow for own supplied tcpdump.
+	//TODO: Allow for user supplied tcpdump binary
 	static public boolean start(String token, Integer port) {
-		String file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator +
-				"trafikgeneratorcoap" + File.separator + "logs" + File.separator + token + ".pcap";
-		String command = "su && tcpdump-coap -s 65535 -w " + file + " 'port " + port + "' &";
-		try {
-			Runtime.getRuntime().exec(command);
-		} catch (IOException e) {
-			return false;
+		File appRoot = new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap");
+		File subDir = new File(appRoot, "logs");
+		File file = new File(subDir, (new SimpleDateFormat("yyyyMMdd", Locale.getDefault())).format(new Date()) + token + "-sndr.pcap");
+		if (!file.exists()) {
+			String command = "su && tcpdump-coap -s 65535 -w " + file.toString() + " 'port " + port + "' &";
+			try {
+				Runtime.getRuntime().exec(command);
+			} catch (IOException e) {
+				return false;
+			}			
 		}
-		if ((new File(file)).exists())
-			return true;
-		return false;
+		return true;
 	}
 	static public boolean stop() {
 		try {
