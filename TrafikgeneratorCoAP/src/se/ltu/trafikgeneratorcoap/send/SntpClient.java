@@ -17,9 +17,9 @@
 package se.ltu.trafikgeneratorcoap.send;
 
 import android.os.SystemClock;
-import android.util.Log;
+//import android.util.Log;
 
-import java.io.IOException;
+//import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -38,9 +38,9 @@ import java.net.InetAddress;
  */
 public class SntpClient
 {
-    private static final String TAG = "SntpClient";
+    //private static final String TAG = "SntpClient";
 
-    private static final int REFERENCE_TIME_OFFSET = 16;
+    //private static final int REFERENCE_TIME_OFFSET = 16;
     private static final int ORIGINATE_TIME_OFFSET = 24;
     private static final int RECEIVE_TIME_OFFSET = 32;
     private static final int TRANSMIT_TIME_OFFSET = 40;
@@ -120,7 +120,7 @@ public class SntpClient
             mNtpTimeReference = responseTicks;
             mRoundTripTime = roundTripTime;
         } catch (Exception e) {
-            if (false) Log.d(TAG, "request time failed: " + e);
+            //if (false) Log.d(TAG, "request time failed: " + e);
             return false;
         } finally {
             if (socket != null) {

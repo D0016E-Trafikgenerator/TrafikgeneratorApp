@@ -1,7 +1,12 @@
 package se.ltu.trafikgeneratorcoap.send;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Locale;
 
+import ch.ethz.inf.vs.californium.network.config.NetworkConfig;
 
 public class TrafficConfig {
 	private String  meta_author                     = "";
@@ -119,5 +124,66 @@ public class TrafficConfig {
 			case TRAFFIC_MODE:                 return traffic_mode;
 			default:                           return null;
 		}
+	}
+	public NetworkConfig toNetworkConfig() {
+		NetworkConfig config = new NetworkConfig();
+		config.setInt("DEFAULT_COAP_PORT", this.getIntegerSetting(Settings.TEST_TESTPORT));
+		config.setInt("ACK_TIMEOUT", this.getIntegerSetting(Settings.COAP_ACK_TIMEOUT));
+		config.setInt("NSTART", this.getIntegerSetting(Settings.COAP_NSTART));
+		config.setInt("MAX_RETRANSMIT", this.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT));
+		config.setInt("MAX_MESSAGE_SIZE", this.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE));
+		config.setFloat("ACK_RANDOM_FACTOR", this.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR));
+		return config;
+	}
+	static public String fileToString(String filename) {
+		FileReader fil;
+		StringBuilder stringBuilder;
+		try {
+			fil = new FileReader (filename);
+			BufferedReader reader = new BufferedReader(fil);
+			String line = null;
+			stringBuilder = new StringBuilder();
+			String endofline = System.getProperty("line.separator");
+			while ((line = reader.readLine()) != null) {
+				stringBuilder.append(line);
+				stringBuilder.append(endofline);
+			}
+			reader.close();
+		} catch (FileNotFoundException e) {
+			return null;
+		} catch (IOException e) {
+			return null;
+		}
+		return stringBuilder.toString();
+	}
+	static public String networkConfigToStringList (NetworkConfig config) {
+		String list = "";
+		list += "DEFAULT_COAP_PORT=" + Integer.toString(config.getInt("DEFAULT_COAP_PORT"));
+		list += ",ACK_TIMEOUT=" + Integer.toString(config.getInt("ACK_TIMEOUT"));
+		list += ",ACK_RANDOM_FACTOR=" + Float.toString(config.getFloat("ACK_RANDOM_FACTOR"));
+		list += ",ACK_TIMEOUT_SCALE=" + Integer.toString(config.getInt("ACK_TIMEOUT_SCALE"));
+		list += ",NSTART=" + Integer.toString(config.getInt("NSTART"));
+		list += ",DEFAULT_LEISURE=" + Integer.toString(config.getInt("DEFAULT_LEISURE"));
+		list += ",MAX_RETRANSMIT=" + Integer.toString(config.getInt("MAX_RETRANSMIT"));
+		list += ",EXCHANGE_LIFECYCLE=" + Long.toString(config.getLong("EXCHANGE_LIFECYCLE"));
+		list += ",MAX_MESSAGE_SIZE=" + Integer.toString(config.getInt("MAX_MESSAGE_SIZE"));
+		return list;
+	}
+	static public NetworkConfig stringListToNetworkConfig (String list) {
+		String[] array = list.split(",");
+		NetworkConfig config = new NetworkConfig();
+		for (int i = 0; i < array.length; i++) {
+			if (array[i].equals(""))
+				continue;
+			String[] setting = array[i].split("=");
+			//else if (setting.equals(""))
+			if (setting.equals("DEFAULT_COAP_PORT") || setting.equals("ACK_TIMEOUT") || setting.equals("ACK_TIMEOUT_SCALE") || setting.equals("NSTART") || setting.equals("DEFAULT_LEISURE") || setting.equals("MAX_RETRANSMIT") || setting.equals("MAX_MESSAGE_SIZE"))
+				config.setInt(array[0], Integer.valueOf(array[1]));
+			else if (setting.equals("ACK_RANDOM_FACTOR"))
+				config.setFloat(array[0], Float.valueOf(array[1]));
+			else if (setting.equals("EXCHANGE_LIFECYCLE"))
+				config.setFloat(array[0], Long.valueOf(array[1]));
+		}
+		return config;
 	}
 }
