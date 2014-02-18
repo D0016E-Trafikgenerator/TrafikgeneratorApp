@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -29,10 +30,17 @@ public class AndroidExplorer extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.file_system);
         myPath = (TextView)findViewById(R.id.path);
-        
         root = Environment.getExternalStorageDirectory().getPath();
         
-        getDir(root);
+        try 
+        {
+			getDir(root + "/trafikgeneratorcoap");
+		} 
+        catch (Exception e) 
+		{
+			new File(root + "/trafikgeneratorcoap").mkdir();
+		}
+        getDir(root + "/trafikgeneratorcoap");
     }
     
     private void getDir(String dirPath)
