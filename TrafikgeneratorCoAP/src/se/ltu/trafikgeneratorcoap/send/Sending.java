@@ -3,6 +3,7 @@ package se.ltu.trafikgeneratorcoap.send;
 import java.util.Random;
 
 import android.os.SystemClock;
+import android.util.Log;
 
 import ch.ethz.inf.vs.californium.coap.CoAP;
 import ch.ethz.inf.vs.californium.coap.Request;
@@ -25,15 +26,18 @@ public class Sending {
 				int seconds = Math.round(config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME));
 				CoAP.Type type = config.getStringSetting(Settings.COAP_MESSAGETYPE).equals("CON")?CoAP.Type.CON:CoAP.Type.NON;
 				//Test protocol 1.2b.2
-				if (internetTimeClient.requestTime(uri, 1000)) {
+				if (true || internetTimeClient.requestTime(uri, 1000)) {
 					long ntp_offset = internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime()
 							- internetTimeClient.getNtpTimeReference() - System.currentTimeMillis();
+					ntp_offset = 0;
 					//Test protocol 1.2b.3
 					Request control = Request.newPost();
-					control.setURI("coap://" + uri + "/control?" +
+					String controlPayload = 
 							"TYPE=" + config.getStringSetting(Settings.COAP_MESSAGETYPE) +
 							",NTP_OFFSET=" + Long.toString(ntp_offset) + ";" + 
-							TrafficConfig.networkConfigToStringList(config.toNetworkConfig()));
+							TrafficConfig.networkConfigToStringList(config.toNetworkConfig());
+					control.setURI("coap://" + uri + "/control");
+					control.setPayload(controlPayload);
 					control.send();
 					Response response;
 					try {
@@ -50,7 +54,7 @@ public class Sending {
 										while ((internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime()
 												- internetTimeClient.getNtpTimeReference()) < endtime) {
 											test = Request.newPost();
-											test.setURI("coap://" + uri + ":" + testport + "/dummydata");
+											test.setURI("coap://" + uri + ":" + testport + "/test");
 											test.setType(type);
 											test.setPayload(DummyGenerator.makeDummydata((new Random()).nextLong(), payloadSize));
 											test.send();
@@ -69,9 +73,11 @@ public class Sending {
 							//Test protocol 1.2b.6
 							ntp_offset = internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime()
 									- internetTimeClient.getNtpTimeReference() - System.currentTimeMillis();
+							ntp_offset = 0;
 							control = Request.newDelete();
-							control.setURI("coap://" + uri + "/control?" +
-									",NTP_OFFSET=" + Long.toString(ntp_offset));
+							control.setURI("coap://" + uri + "/control?" + "token=" + token);
+							control.setPayload("NTP_OFFSET=" + Long.toString(ntp_offset));
+							control.send();
 							//Test protocol 1.2b.8
 							response = control.waitForResponse();
 							if (!response.equals(null) && response.getCode().equals(ResponseCode.DELETED)) {

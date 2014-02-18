@@ -14,6 +14,7 @@ public class Logger {
 		File appRoot = new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap");
 		File subDir = new File(appRoot, "logs");
 		File file = new File(subDir, (new SimpleDateFormat("yyyyMMdd", Locale.getDefault())).format(new Date()) + token + "-sndr.pcap");
+		file.getParentFile().mkdirs();
 		if (!file.exists()) {
 			String command = "su && tcpdump-coap -s 65535 -w " + file.toString() + " 'port " + port + "' &";
 			try {
