@@ -45,14 +45,15 @@ public class Sending {
 						String token = response.getTokenString();
 						//Test protocol 1.2b.5
 						if (!response.equals(null) && response.getCode().equals(ResponseCode.CREATED) && Logger.start(token, testport)) {
+							Thread.sleep(500);
 							if (config.getStringSetting(Settings.TRAFFIC_TYPE).equals("CONSTANT_SOURCE")) {
 								if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("TIME")) {
 									for (int i = 1; i <= numberOfTests; i++) {
 										long endtime = (internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime()
 												- internetTimeClient.getNtpTimeReference()) +  ((long) Math.round(1000 * seconds));
+										endtime = ((long) Math.round(1000 * seconds)) + SystemClock.elapsedRealtime();
 										Request test;
-										while ((internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime()
-												- internetTimeClient.getNtpTimeReference()) < endtime) {
+										while (SystemClock.elapsedRealtime() < endtime) {
 											test = Request.newPost();
 											test.setURI("coap://" + uri + ":" + testport + "/test");
 											test.setType(type);
@@ -81,6 +82,7 @@ public class Sending {
 							//Test protocol 1.2b.8
 							response = control.waitForResponse();
 							if (!response.equals(null) && response.getCode().equals(ResponseCode.DELETED)) {
+								Thread.sleep(500);
 								if (Logger.stop() && FileSender.sendLog(uri, token)) {
 									;
 								}
