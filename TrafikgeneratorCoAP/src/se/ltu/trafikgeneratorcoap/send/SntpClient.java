@@ -38,6 +38,11 @@ import java.net.InetAddress;
  */
 public class SntpClient
 {
+	private String host;
+	public String getHost() {
+		return host;
+	}
+	
     //private static final String TAG = "SntpClient";
 
     //private static final int REFERENCE_TIME_OFFSET = 16;
@@ -46,7 +51,7 @@ public class SntpClient
     private static final int TRANSMIT_TIME_OFFSET = 40;
     private static final int NTP_PACKET_SIZE = 48;
 
-    private static final int NTP_PORT = 123;
+    //private static final int NTP_PORT = 123;
     private static final int NTP_MODE_CLIENT = 3;
     private static final int NTP_VERSION = 3;
 
@@ -70,14 +75,15 @@ public class SntpClient
      * @param timeout network timeout in milliseconds.
      * @return true if the transaction was successful.
      */
-    public boolean requestTime(String host, int timeout) {
+    public boolean requestTime(String host, int port, int timeout) {
+    	this.host = host;
         DatagramSocket socket = null;
         try {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
             InetAddress address = InetAddress.getByName(host);
             byte[] buffer = new byte[NTP_PACKET_SIZE];
-            DatagramPacket request = new DatagramPacket(buffer, buffer.length, address, NTP_PORT);
+            DatagramPacket request = new DatagramPacket(buffer, buffer.length, address, port);
 
             // set mode = 3 (client) and version = 3
             // mode is in low 3 bits of first byte

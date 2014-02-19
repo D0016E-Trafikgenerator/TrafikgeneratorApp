@@ -2,12 +2,8 @@ package se.ltu.trafikgeneratorcoap.send;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import android.os.Environment;
-import android.util.Log;
 import ch.ethz.inf.vs.californium.coap.Request;
 
 public class FileSender {
@@ -27,13 +23,22 @@ public class FileSender {
 		controlMessage.setPayload(bFile);
 		controlMessage.send();
 	}
-	static public boolean sendLog(String uri, String token) {
+	static public boolean sendLog(String uri, String token, String date) {
 		File appRoot = new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap");
 		File subDir = new File(appRoot, "logs");
-		File file = new File(subDir, (new SimpleDateFormat("yyyyMMdd", Locale.getDefault())).format(new Date()) + "-" + token + "-sndr.pcap");
+		File file = new File(subDir, date + "-" + token + "-sndr.pcap");
 		if (!file.exists())
 			return false;
-		sendFile(uri, file, "?token=" + token);
+		sendFile(uri, file, "?type=log&token=" + token + "&time=" + date);
+		return true;
+	}
+	static public boolean sendMeta(String uri, String token, String date) {
+		File appRoot = new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap");
+		File subDir = new File(appRoot, "logs");
+		File file = new File(subDir, date + "-" + token + "-meta.txt");
+		if (!file.exists())
+			return false;
+		sendFile(uri, file, "?type=meta&token=" + token + "&time=" + date);
 		return true;
 	}
 }

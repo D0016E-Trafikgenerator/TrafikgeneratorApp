@@ -14,6 +14,7 @@ public class TrafficConfig {
 
 	private String  test_server;
 	private Integer test_testport                   = 56830;
+	private Integer test_ntpport                    = 123;
 	private Integer test_repeats                    = 1;
 	private Float   test_intermission               = (float) 10000.0;
 	private Integer test_paralleltransfers          = 1;
@@ -38,13 +39,10 @@ public class TrafficConfig {
 	private Float   traffic_idle_time               = (float) 500.0;
 
 	public TrafficConfig(String configuration) {
-		String[] all_rows = configuration.split("\n");
-		// Remove comments.
-		for (int i = 0; i < all_rows.length; i++) {
-			all_rows[i] = all_rows[i].split("#", 2)[0];
-		}
+		String[] all_rows = configuration.split(System.getProperty("line.separator"));
 		// Set... settings.
 		for (int i = 0; i < all_rows.length; i++) {
+			all_rows[i] = all_rows[i].split("#", 2)[0];
 			if (all_rows[i].trim().equals("")) { continue; }
 			String[] row   = all_rows[i].split("\\s+", 2);
 			String type    = row[0];
@@ -67,6 +65,7 @@ public class TrafficConfig {
 				case TEST_TESTPORT:                test_testport                = Integer.valueOf(data); continue;
 				case TEST_REPEATS:                 test_repeats                 = Integer.valueOf(data); continue;
 				case TEST_PARALLELTRANSFERS:       test_paralleltransfers       = Integer.valueOf(data); continue;
+				case TEST_NTPPORT:                 test_ntpport                 = Integer.valueOf(data); continue;
 				case COAP_ACK_TIMEOUT:             coap_ack_timeout             = Integer.valueOf(data); continue;
 				case COAP_MAX_RETRANSMIT:          coap_max_retransmit          = Integer.valueOf(data); continue;
 				case COAP_NSTART:                  coap_nstart                  = Integer.valueOf(data); continue;
@@ -104,6 +103,7 @@ public class TrafficConfig {
 			case TEST_TESTPORT:                return test_testport;
 			case TEST_REPEATS:                 return test_repeats;
 			case TEST_PARALLELTRANSFERS:       return test_paralleltransfers;
+			case TEST_NTPPORT:                 return test_ntpport;
 			case COAP_ACK_TIMEOUT:             return coap_ack_timeout;
 			case COAP_MAX_RETRANSMIT:          return coap_max_retransmit;
 			case COAP_NSTART:                  return coap_nstart;
@@ -165,7 +165,6 @@ public class TrafficConfig {
 		list += ",NSTART=" + Integer.toString(config.getInt("NSTART"));
 		list += ",DEFAULT_LEISURE=" + Integer.toString(config.getInt("DEFAULT_LEISURE"));
 		list += ",MAX_RETRANSMIT=" + Integer.toString(config.getInt("MAX_RETRANSMIT"));
-//		list += ",EXCHANGE_LIFECYCLE=" + Long.toString(config.getLong("EXCHANGE_LIFECYCLE"));
 		list += ",MAX_MESSAGE_SIZE=" + Integer.toString(config.getInt("MAX_MESSAGE_SIZE"));
 		return list;
 	}
@@ -176,15 +175,29 @@ public class TrafficConfig {
 			if (array[i].equals(""))
 				continue;
 			String[] setting = array[i].split("=");
-			//else if (setting.equals(""))
 			if (setting[0].equals("DEFAULT_COAP_PORT") || setting[0].equals("ACK_TIMEOUT") || setting[0].equals("ACK_TIMEOUT_SCALE") || setting[0].equals("NSTART") || setting[0].equals("DEFAULT_LEISURE") || setting[0].equals("MAX_RETRANSMIT") || setting[0].equals("MAX_MESSAGE_SIZE")) {
 				config.setInt(setting[0], Integer.valueOf(setting[1]));
 			}
 			else if (setting[0].equals("ACK_RANDOM_FACTOR"))
 				config.setFloat(setting[0], Float.valueOf(setting[1]));
-			//else if (setting[0].equals("EXCHANGE_LIFECYCLE"))
-				//config.setFloat(setting[0], Long.valueOf(setting[1]));
 		}
 		return config;
+	}
+	static public String configToTrimmedString(String filename) {
+		String config = fileToString(filename);
+		String[] all_rows = config.split(System.getProperty("line.separator"));
+		StringBuilder trimmedString = new StringBuilder(config.length());
+		// Remove comments.
+		for (int i = 0; i < all_rows.length; i++) {
+			all_rows[i] = all_rows[i].split("#", 2)[0];
+			if (all_rows[i].trim().equals("")) { continue; }
+			String[] row   = all_rows[i].split("\\s+", 2);
+			String type    = row[0];
+			String setting = row[1].split("=", 2)[0];
+			String data    = row[1].split("=", 2)[1].trim();
+			setting = (type + "_" + setting).toUpperCase(Locale.getDefault());
+			trimmedString.append(setting + "=" + data + System.getProperty("line.separator"));
+		}
+		return trimmedString.toString();
 	}
 }
