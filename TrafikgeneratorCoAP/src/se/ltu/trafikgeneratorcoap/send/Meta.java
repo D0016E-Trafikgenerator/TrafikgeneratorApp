@@ -51,8 +51,14 @@ public class Meta {
 			if (when.equals("BEFORE"))
 				file.getParentFile().mkdirs();
 			BufferedWriter buf = new BufferedWriter(new FileWriter(file));
-			buf.write("DATETIME=" + date);
-			buf.newLine();
+
+			if (when.equals("BEFORE")) {
+				buf.write("DATETIME=" + date);
+				buf.newLine();
+				buf.write(TrafficConfig.configToTrimmedString(config));
+				buf.newLine();
+			}
+			
 			buf.write(when + "_TEST NTP_SERVER=" + ntpServer);
 			buf.newLine();
 			buf.write(when + "_TEST NTP_ERROR=" + ntpError);

@@ -44,7 +44,7 @@ public class Sending {
 					String token = response.getTokenString();
 					//Test protocol 1.3a.4 & 1.3a.5
 					if (!response.equals(null) && response.getCode().equals(ResponseCode.CREATED) && Logger.start(token, testport)
-							&& (internetTimeClient.requestTime(uri, ntpPort, 1000) || internetTimeClient.requestTime("pool.ntp.org", 123, 1000))) {
+							&& (internetTimeClient.requestTime(uri.split(":")[0], ntpPort, 1000) || internetTimeClient.requestTime("pool.ntp.org", 123, 1000))) {
 						String ntp_uri = internetTimeClient.getHost();
 						long ntpError = internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime()
 								- internetTimeClient.getNtpTimeReference() - System.currentTimeMillis();
@@ -74,7 +74,7 @@ public class Sending {
 								control.setURI("coap://" + uri + "/control?" + "token=" + token);
 								control.send();
 								//Test protocol 1.3a.7
-								if (internetTimeClient.requestTime(uri, ntpPort, 1000))
+								if (internetTimeClient.requestTime(uri.split(":")[0], ntpPort, 1000))
 									internetTimeClient.requestTime("pool.ntp.org", 123, 1000);
 								ntpError = internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime()
 										- internetTimeClient.getNtpTimeReference() - System.currentTimeMillis();
