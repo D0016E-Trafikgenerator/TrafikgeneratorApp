@@ -79,4 +79,7 @@ public class Meta {
 	static public boolean afterTest(String token, String date, String ntpServer, Long ntpError) {
 		return writeToFile("AFTER", null, token, date, ntpServer, ntpError);
 	}
+	static public boolean beforeTest(TrafficConfig config, String token, String date, String ntpServer, Long ntpError) {
+		return writeToFile("BEFORE", TrafficConfig.configToString(config), token, date, ntpServer, ntpError);
+	}
 }

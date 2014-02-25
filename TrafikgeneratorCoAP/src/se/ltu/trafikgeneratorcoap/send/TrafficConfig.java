@@ -242,4 +242,32 @@ public class TrafficConfig {
 		}
 		return trimmedString.toString();
 	}
+	static public String configToString(TrafficConfig config) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(Settings.META_AUTHOR.toString() + "=" + config.getStringSetting(Settings.META_AUTHOR) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.META_TITLE.toString() + "=" + config.getStringSetting(Settings.META_TITLE) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TEST_SERVER.toString() + "=" + config.getStringSetting(Settings.TEST_SERVER) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TEST_TESTPORT.toString() + "=" + config.getIntegerSetting(Settings.TEST_TESTPORT) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TEST_NTPPORT.toString() + "=" + config.getIntegerSetting(Settings.TEST_NTPPORT) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TEST_REPEATS.toString() + "=" + config.getIntegerSetting(Settings.TEST_REPEATS) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TEST_INTERMISSION.toString() + "=" + config.getDecimalSetting(Settings.TEST_INTERMISSION) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TEST_PARALLELTRANSFERS.toString() + "=" + config.getIntegerSetting(Settings.TEST_PARALLELTRANSFERS) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.COAP_MESSAGETYPE.toString() + "=" + config.getStringSetting(Settings.COAP_MESSAGETYPE) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.COAP_ACK_TIMEOUT.toString() + "=" + config.getIntegerSetting(Settings.COAP_ACK_TIMEOUT) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.COAP_ACK_RANDOM_FACTOR.toString() + "=" + config.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.COAP_MAX_RETRANSMIT.toString() + "=" + config.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.COAP_NSTART.toString() + "=" + config.getIntegerSetting(Settings.COAP_NSTART) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.COAP_PROBING_RATE.toString() + "=" + config.getIntegerSetting(Settings.COAP_PROBING_RATE) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_TYPE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_TYPE) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_MODE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_MODE) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_MAXSENDTIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_MAXMESSAGES.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_RATE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_RATE) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_MESSAGESIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_INTERMISSION.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_INTERMISSION) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_RANDOMFACTOR.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_RANDOMFACTOR) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_BURST_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_BURST_TIME) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.TRAFFIC_IDLE_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_IDLE_TIME) + System.getProperty("line.separator"));
+		return stringBuilder.toString();
+	}
 }
