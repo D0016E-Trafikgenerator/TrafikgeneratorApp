@@ -98,6 +98,21 @@ public class TrafficConfig {
 			default:                           return null;
 		}
 	}
+	public void setDecimalSetting(Settings setting, Float value) {
+		switch (setting) {
+			case TEST_INTERMISSION:            test_intermission = value;
+			case COAP_ACK_RANDOM_FACTOR:       coap_ack_random_factor = value;
+			case TRAFFIC_MAXSENDTIME:          if (traffic_type.equals("ONOFF_SOURCE"))
+				                                   traffic_onoff_maxsendtime = value;
+				                               else
+				                            	   traffic_constant_maxsendtime = value;
+			case TRAFFIC_INTERMISSION:         traffic_intermission = value;
+			case TRAFFIC_RANDOMFACTOR:         traffic_randomfactor = value;
+			case TRAFFIC_BURST_TIME:           traffic_burst_time = value;
+			case TRAFFIC_IDLE_TIME:            traffic_idle_time = value;
+			default:                           return;
+		}
+	}
 	public Integer getIntegerSetting(Settings setting) {
 		switch (setting) {
 			case TEST_TESTPORT:                return test_testport;
@@ -114,6 +129,22 @@ public class TrafficConfig {
 			default:                           return null;
 		}
 	}
+	public void setIntegerSetting(Settings setting, Integer value) {
+		switch (setting) {
+			case TEST_TESTPORT:                test_testport = value;
+			case TEST_REPEATS:                 test_repeats = value;
+			case TEST_PARALLELTRANSFERS:       test_paralleltransfers = value;
+			case TEST_NTPPORT:                 test_ntpport = value;
+			case COAP_ACK_TIMEOUT:             coap_ack_timeout = value;
+			case COAP_MAX_RETRANSMIT:          coap_max_retransmit = value;
+			case COAP_NSTART:                  coap_nstart = value;
+			case COAP_PROBING_RATE:            coap_probing_rate = value;
+			case TRAFFIC_MAXMESSAGES:          traffic_maxmessages = value;
+			case TRAFFIC_RATE:                 traffic_rate = value;
+			case TRAFFIC_MESSAGESIZE:          traffic_messagesize = value;
+			default:                           return;
+		}
+	}
 	public String getStringSetting(Settings setting) {
 		switch (setting) {
 			case META_AUTHOR:                  return meta_author;
@@ -123,6 +154,17 @@ public class TrafficConfig {
 			case TRAFFIC_TYPE:                 return traffic_type;
 			case TRAFFIC_MODE:                 return traffic_mode;
 			default:                           return null;
+		}
+	}
+	public void setStringSetting(Settings setting, String value) {
+		switch (setting) {
+			case META_AUTHOR:                  meta_author = value;
+			case META_TITLE:                   meta_title = value;
+			case TEST_SERVER:                  test_server = value;
+			case COAP_MESSAGETYPE:             coap_messagetype = value;
+			case TRAFFIC_TYPE:                 traffic_type = value;
+			case TRAFFIC_MODE:                 traffic_mode = value;
+			default:                           return;
 		}
 	}
 	public NetworkConfig toNetworkConfig() {
