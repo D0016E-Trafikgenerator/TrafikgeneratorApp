@@ -1,7 +1,12 @@
 package se.ltu.trafikgeneratorcoap.send;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Locale;
 
+import ch.ethz.inf.vs.californium.network.config.NetworkConfig;
 
 public class TrafficConfig {
 	private String  meta_author                     = "";
@@ -9,6 +14,7 @@ public class TrafficConfig {
 
 	private String  test_server;
 	private Integer test_testport                   = 56830;
+	private Integer test_ntpport                    = 123;
 	private Integer test_repeats                    = 1;
 	private Float   test_intermission               = (float) 10000.0;
 	private Integer test_paralleltransfers          = 1;
@@ -33,13 +39,10 @@ public class TrafficConfig {
 	private Float   traffic_idle_time               = (float) 500.0;
 
 	public TrafficConfig(String configuration) {
-		String[] all_rows = configuration.split("\n");
-		// Remove comments.
-		for (int i = 0; i < all_rows.length; i++) {
-			all_rows[i] = all_rows[i].split("#", 2)[0];
-		}
+		String[] all_rows = configuration.split(System.getProperty("line.separator"));
 		// Set... settings.
 		for (int i = 0; i < all_rows.length; i++) {
+			all_rows[i] = all_rows[i].split("#", 2)[0];
 			if (all_rows[i].trim().equals("")) { continue; }
 			String[] row   = all_rows[i].split("\\s+", 2);
 			String type    = row[0];
@@ -62,6 +65,7 @@ public class TrafficConfig {
 				case TEST_TESTPORT:                test_testport                = Integer.valueOf(data); continue;
 				case TEST_REPEATS:                 test_repeats                 = Integer.valueOf(data); continue;
 				case TEST_PARALLELTRANSFERS:       test_paralleltransfers       = Integer.valueOf(data); continue;
+				case TEST_NTPPORT:                 test_ntpport                 = Integer.valueOf(data); continue;
 				case COAP_ACK_TIMEOUT:             coap_ack_timeout             = Integer.valueOf(data); continue;
 				case COAP_MAX_RETRANSMIT:          coap_max_retransmit          = Integer.valueOf(data); continue;
 				case COAP_NSTART:                  coap_nstart                  = Integer.valueOf(data); continue;
@@ -99,6 +103,7 @@ public class TrafficConfig {
 			case TEST_TESTPORT:                return test_testport;
 			case TEST_REPEATS:                 return test_repeats;
 			case TEST_PARALLELTRANSFERS:       return test_paralleltransfers;
+			case TEST_NTPPORT:                 return test_ntpport;
 			case COAP_ACK_TIMEOUT:             return coap_ack_timeout;
 			case COAP_MAX_RETRANSMIT:          return coap_max_retransmit;
 			case COAP_NSTART:                  return coap_nstart;
@@ -119,5 +124,80 @@ public class TrafficConfig {
 			case TRAFFIC_MODE:                 return traffic_mode;
 			default:                           return null;
 		}
+	}
+	public NetworkConfig toNetworkConfig() {
+		NetworkConfig config = new NetworkConfig();
+		config.setInt("DEFAULT_COAP_PORT", this.getIntegerSetting(Settings.TEST_TESTPORT));
+		config.setInt("ACK_TIMEOUT", this.getIntegerSetting(Settings.COAP_ACK_TIMEOUT));
+		config.setInt("NSTART", this.getIntegerSetting(Settings.COAP_NSTART));
+		config.setInt("MAX_RETRANSMIT", this.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT));
+		config.setInt("MAX_MESSAGE_SIZE", this.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE));
+		config.setFloat("ACK_RANDOM_FACTOR", this.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR));
+		return config;
+	}
+	static public String fileToString(String filename) {
+		FileReader fil;
+		StringBuilder stringBuilder;
+		try {
+			fil = new FileReader (filename);
+			BufferedReader reader = new BufferedReader(fil);
+			String line = null;
+			stringBuilder = new StringBuilder();
+			String endofline = System.getProperty("line.separator");
+			while ((line = reader.readLine()) != null) {
+				stringBuilder.append(line);
+				stringBuilder.append(endofline);
+			}
+			reader.close();
+		} catch (FileNotFoundException e) {
+			return null;
+		} catch (IOException e) {
+			return null;
+		}
+		return stringBuilder.toString();
+	}
+	static public String networkConfigToStringList (NetworkConfig config) {
+		String list = "";
+		list += "DEFAULT_COAP_PORT=" + Integer.toString(config.getInt("DEFAULT_COAP_PORT"));
+		list += ",ACK_TIMEOUT=" + Integer.toString(config.getInt("ACK_TIMEOUT"));
+		list += ",ACK_RANDOM_FACTOR=" + Float.toString(config.getFloat("ACK_RANDOM_FACTOR"));
+		list += ",ACK_TIMEOUT_SCALE=" + Integer.toString(config.getInt("ACK_TIMEOUT_SCALE"));
+		list += ",NSTART=" + Integer.toString(config.getInt("NSTART"));
+		list += ",DEFAULT_LEISURE=" + Integer.toString(config.getInt("DEFAULT_LEISURE"));
+		list += ",MAX_RETRANSMIT=" + Integer.toString(config.getInt("MAX_RETRANSMIT"));
+		list += ",MAX_MESSAGE_SIZE=" + Integer.toString(config.getInt("MAX_MESSAGE_SIZE"));
+		return list;
+	}
+	static public NetworkConfig stringListToNetworkConfig (String list) {
+		String[] array = list.split(",");
+		NetworkConfig config = new NetworkConfig();
+		for (int i = 0; i < array.length; i++) {
+			if (array[i].equals(""))
+				continue;
+			String[] setting = array[i].split("=");
+			if (setting[0].equals("DEFAULT_COAP_PORT") || setting[0].equals("ACK_TIMEOUT") || setting[0].equals("ACK_TIMEOUT_SCALE") || setting[0].equals("NSTART") || setting[0].equals("DEFAULT_LEISURE") || setting[0].equals("MAX_RETRANSMIT") || setting[0].equals("MAX_MESSAGE_SIZE")) {
+				config.setInt(setting[0], Integer.valueOf(setting[1]));
+			}
+			else if (setting[0].equals("ACK_RANDOM_FACTOR"))
+				config.setFloat(setting[0], Float.valueOf(setting[1]));
+		}
+		return config;
+	}
+	static public String configToTrimmedString(String filename) {
+		String config = fileToString(filename);
+		String[] all_rows = config.split(System.getProperty("line.separator"));
+		StringBuilder trimmedString = new StringBuilder(config.length());
+		// Remove comments.
+		for (int i = 0; i < all_rows.length; i++) {
+			all_rows[i] = all_rows[i].split("#", 2)[0];
+			if (all_rows[i].trim().equals("")) { continue; }
+			String[] row   = all_rows[i].split("\\s+", 2);
+			String type    = row[0];
+			String setting = row[1].split("=", 2)[0];
+			String data    = row[1].split("=", 2)[1].trim();
+			setting = (type + "_" + setting).toUpperCase(Locale.getDefault());
+			trimmedString.append(setting + "=" + data + System.getProperty("line.separator"));
+		}
+		return trimmedString.toString();
 	}
 }

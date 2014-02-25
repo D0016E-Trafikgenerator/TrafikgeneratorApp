@@ -106,7 +106,7 @@ public class ReceiveData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-        	Sending.sendData(filePath);
+        	Sending.sendData(filePath, getBaseContext());
         	publishProgress(progressbarUpdate++);
         	return null;  
         }  

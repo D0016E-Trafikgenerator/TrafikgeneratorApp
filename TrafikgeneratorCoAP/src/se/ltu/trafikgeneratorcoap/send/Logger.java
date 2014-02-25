@@ -1,44 +1,46 @@
 package se.ltu.trafikgeneratorcoap.send;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-import android.util.Log;
+import android.os.Environment;
 
 public class Logger {
-	private PrintWriter writeMe;
-	
-	public Logger(TrafficConfig config, String filename) {
-		try {
-			writeMe = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
-			log_config(config);
-		} catch (IOException e) {
-			;
+	static Process process;
+	//TODO: Allow for user supplied tcpdump binary
+	static public boolean start(String token, Integer port) {
+		File appRoot = new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap");
+		File subDir = new File(appRoot, "logs");
+		File file = new File(subDir, (new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())).format(new Date()) + "-" + token + "-sndr.pcap");
+		file.getParentFile().mkdirs();
+		if (!file.exists()) {
+			String command = "su ; tcpdump-coap -s 65535 -w " + file.toString() + " 'port " + port + "'";
+			try {
+				process = Runtime.getRuntime().exec("su ; echo \"hej\"");
+				process.waitFor();
+				process = Runtime.getRuntime().exec(command);
+			} catch (IOException e) {
+				return false;
+			} catch (InterruptedException e) {
+				return false;
+			}
 		}
+		return true;
 	}
-	private void log_config(TrafficConfig config) {
-		writeMe.print("PORT:" + config.getIntegerSetting(Settings.TEST_TESTPORT) + "\t");
-		writeMe.print("ACK_TIMEOUT:" + config.getIntegerSetting(Settings.COAP_ACK_TIMEOUT) + "\t");
-		writeMe.print("ACK_RANDOM_FACTOR:" + config.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR) + "\t");
-		writeMe.print("MAX_RETRANSMIT:" + config.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT) + "\t");
-		writeMe.print("NSTART:" + config.getIntegerSetting(Settings.COAP_NSTART) + "\t");
-		writeMe.print("PROBING_RATE:" + config.getIntegerSetting(Settings.COAP_PROBING_RATE) + "\t");
-		writeMe.print("TYPE:" + config.getStringSetting(Settings.COAP_MESSAGETYPE) + "\t");
-		writeMe.print("LOGGER: app\t");
-		writeMe.println("TARGET_IP:" + config.getStringSetting(Settings.TEST_SERVER) + "\t");
-	}
-	public void log(Long time, String event, Integer messageID, String messageType, Integer payloadSize, Integer code, String token) {
-		String poo = String.format("%d   %s   %d   %s   %d   %d   %s", time, event, messageID, messageType, payloadSize, code, token);
-		writeMe.println(poo);
-		Log.i("dummycoap", poo);
-		return;
-	}
-	public void flush() {
-		writeMe.flush();
-	}
-	public void close() {
-		writeMe.close();
+	static public boolean stop() {
+		try {
+			process = Runtime.getRuntime().exec("su ; killall tcpdump-coap");
+		} catch (IOException e) {
+			return false;
+		}
+		try {
+			process.waitFor();
+		} catch (InterruptedException e) {
+			return false;
+		}
+		return true;
 	}
 }
