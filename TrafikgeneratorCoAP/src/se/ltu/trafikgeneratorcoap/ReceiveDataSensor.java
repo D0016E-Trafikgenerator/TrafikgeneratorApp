@@ -1,6 +1,7 @@
 package se.ltu.trafikgeneratorcoap;
 
 import se.ltu.trafikgeneratorcoap.send.Sending;
+import android.bluetooth.BluetoothAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.ProgressDialog;
@@ -9,7 +10,9 @@ import android.content.Intent;
 public class ReceiveDataSensor extends AbstractActivity {
 
     //A ProgressDialog object  
-    private ProgressDialog progressDialog;  
+    private ProgressDialog progressDialog;
+    
+    private int BTDuration = 300;
   
 	private String ip;
 	private int port;
@@ -25,15 +28,21 @@ public class ReceiveDataSensor extends AbstractActivity {
 	
 	private Intent intent;
 	
-    public boolean bool = false;
     public int indexer = 0;
     private int progressbarUpdate = 1;
+    
+	public void enableBlu(){
+		Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+		discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,
+								BTDuration );
+		startActivityForResult(discoveryIntent, ResultType.REQUEST_BT.index());
+	}
     
     /** Called when the activity is first created. */  
     @Override  
     public void onCreate(Bundle savedInstanceState)  
     {  
-        super.onCreate(savedInstanceState);          
+        super.onCreate(savedInstanceState);
         intent = getIntent();
         timeout = parseInt("timeout");
         random = parseFloat("random");
@@ -44,16 +53,11 @@ public class ReceiveDataSensor extends AbstractActivity {
 	    port = parseInt("port");
 	    seconds = parseInt("time");
 	    connections = parseInt("connections");
-	    
 	    filePath = intent.getStringExtra("filename");
 	    ip = intent.getStringExtra("ip");
 	    
-        //Initialize a LoadViewTask object and call the execute() method 
-	    for(int i = 0; i < connections; i++)
-	    {
-	    	System.out.println("Creating processes nr : " + i);
-	    	new LoadViewTask().execute();
-	    }
+	    System.out.println("BT");
+	    enableBlu();
     } 
     
     private float parseFloat(String s)
@@ -130,5 +134,22 @@ public class ReceiveDataSensor extends AbstractActivity {
 				finish();
 			}
         } 
+    }
+    
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) 
+    {
+    	if(requestCode == ResultType.REQUEST_BT.index())
+    	{
+    		if(resultCode == BTDuration)
+    		{
+    			System.out.println("BT Enabled");
+    	        //Initialize a LoadViewTask object and call the execute() method 
+    		    for(int i = 0; i < connections; i++)
+    		    {
+    		    	System.out.println("Creating processes nr : " + i);
+    		    	new LoadViewTask().execute();
+    		    }
+    		}
+    	}
     }
 }

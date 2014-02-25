@@ -37,8 +37,8 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void sendDataSensor(View view) {
-		Intent intent = new Intent(this, SendDataSensorInput.class);
-		startActivityForResult(intent, ResultType.SEND_DATA_SENSOR.index());
+		/*Intent intent = new Intent(this, SendDataSensorInput.class);
+		startActivityForResult(intent, ResultType.SEND_DATA_SENSOR.index());*/
 	}
 	
 	public void receiveDataSensor(View view) {
@@ -50,9 +50,7 @@ public class Main extends AbstractActivity {
         finish();
         System.exit(0);
 	}
-	
-	final Context context = this;
-	
+		
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
     	if(requestCode == ResultType.SEND_DATA.index())
@@ -61,7 +59,7 @@ public class Main extends AbstractActivity {
     		{
     			System.out.println("Sending done!");
                 // create a Dialog component
-                final Dialog dialog = new Dialog(context);
+                final Dialog dialog = new Dialog((Context)this);
  
                 //tell the Dialog to use the dialog.xml as it's layout description
                 dialog.setContentView(R.layout.dialog);
@@ -91,7 +89,7 @@ public class Main extends AbstractActivity {
     		{
     			System.out.println("Receiving done!");
                 // create a Dialog component
-                final Dialog dialog = new Dialog(context);
+                final Dialog dialog = new Dialog((Context)this);
  
                 //tell the Dialog to use the dialog.xml as it's layout description
                 dialog.setContentView(R.layout.dialog);
@@ -121,7 +119,7 @@ public class Main extends AbstractActivity {
     		{
     			System.out.println("Sending done (Sensor)!");
                 // create a Dialog component
-                final Dialog dialog = new Dialog(context);
+                final Dialog dialog = new Dialog((Context)this);
  
                 //tell the Dialog to use the dialog.xml as it's layout description
                 dialog.setContentView(R.layout.dialog);
@@ -151,7 +149,7 @@ public class Main extends AbstractActivity {
     		{
     			System.out.println("Receiving done (Sensor)!");
                 // create a Dialog component
-                final Dialog dialog = new Dialog(context);
+                final Dialog dialog = new Dialog((Context)this);
  
                 //tell the Dialog to use the dialog.xml as it's layout description
                 dialog.setContentView(R.layout.dialog);

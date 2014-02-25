@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class ReceiveDataSensorInput extends AbstractActivity {
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -103,7 +103,7 @@ public class ReceiveDataSensorInput extends AbstractActivity {
 	
 		if (validIP && !connections.equals("") && !connections.equals("0")) 
 		{
-		    Intent intent = new Intent(this, SendDataSensor.class);
+		    Intent intent = new Intent(this, ReceiveDataSensor.class);
 		    intent.putExtra("timeout", timeout);
 		    intent.putExtra("random", random);
 		    intent.putExtra("retransmitt", retransmitt);

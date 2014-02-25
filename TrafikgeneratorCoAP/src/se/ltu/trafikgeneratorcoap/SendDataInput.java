@@ -113,7 +113,7 @@ public class SendDataInput extends AbstractActivity {
 			intent.putExtra("time", time);
 		    intent.putExtra("ip", ip);
 		    intent.putExtra("connections", connections);
-		    startActivityForResult(intent, ResultType.SENDING_DATA.index());
+		    startActivityForResult(intent, ResultType.SEND_DATA.index());
 		} 
 	}
 	
@@ -134,7 +134,7 @@ public class SendDataInput extends AbstractActivity {
     			v.setText("Config file:  " + fileName);
     		}
     	}
-    	if(requestCode == ResultType.SENDING_DATA.index())
+    	if(requestCode == ResultType.SEND_DATA.index())
     	{
     		if(resultCode == RESULT_OK)
     		{

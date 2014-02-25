@@ -5,9 +5,9 @@ public enum ResultType {
 	RECEIVE_DATA(1),
 	ANALYSE_DATA(2),
 	LOAD_FILE(3),
-	SENDING_DATA(4),
-	SEND_DATA_SENSOR(5),
-	RECEIVE_DATA_SENSOR(6);
+	SEND_DATA_SENSOR(4),
+	RECEIVE_DATA_SENSOR(5),
+	REQUEST_BT(6);
 	
 	private final int index;   
 
