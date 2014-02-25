@@ -1,6 +1,7 @@
 package se.ltu.trafikgeneratorcoap;
 
 import se.ltu.trafikgeneratorcoap.send.Sending;
+import se.ltu.trafikgeneratorcoap.send.TrafficConfig;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.ProgressDialog;
@@ -27,6 +28,8 @@ public class SendData extends AbstractActivity {
     public boolean bool = false;
     public int indexer = 0;
     private int progressbarUpdate = 1;
+    
+    private final TrafficConfig config = new TrafficConfig(TrafficConfig.fileToString(filePath));
     
     /** Called when the activity is first created. */  
     @Override  
