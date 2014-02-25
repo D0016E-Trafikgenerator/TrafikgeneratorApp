@@ -42,8 +42,8 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void receiveDataSensor(View view) {
-		Intent intent = new Intent(this, ReceiveDataSensorInput.class);
-		startActivityForResult(intent, ResultType.RECEIVE_DATA_SENSOR.index());
+		/*Intent intent = new Intent(this, ReceiveDataSensorInput.class);
+		startActivityForResult(intent, ResultType.RECEIVE_DATA_SENSOR.index());*/
 	}
 	
 	public void exit(View view){
