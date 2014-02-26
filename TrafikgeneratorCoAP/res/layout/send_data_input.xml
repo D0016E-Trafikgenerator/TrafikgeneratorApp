@@ -112,11 +112,11 @@
                 android:inputType="number" />
 
             <EditText
-                android:id="@+id/connections"
+                android:id="@+id/sleep"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/Parallell"
+                android:hint="@string/Sleep"
                 android:inputType="number" />
         </LinearLayout>
     </ScrollView>
@@ -130,5 +130,14 @@
         android:layout_marginTop="50dp"
         android:text="Leave blank for default values!"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/Send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="send"
+        android:text="Send" />
 
 </RelativeLayout>

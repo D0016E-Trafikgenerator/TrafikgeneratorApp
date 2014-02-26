@@ -24,82 +24,103 @@ public class SendDataInput extends AbstractActivity {
 		return true;
 	}
 	
-	private String fileName = "";
-	private String filePath = "";
-	private String timeout = "";			//default : 2
-	private String random = "";				//default : 1.5 
-	private String retransmitt = "";		//default : 4
-	private String nStart = "";				//default : 1
-	private String probingRate = "";		//default : 1.0
-	private String payloadSize = "";		//default : 512
-	private String port = "";				//default : 5683
-	private String ip = "";
-	private String time = "";				//default : 10
-	private String connections = "1";		//default : 1
+	private int length = 10;
+	private int counter = 0;
+	
+	private String[] fileName = 	new String[length];
+	private String[] filePath = 	new String[length];
+	private String[] ip = 			new String[length];
+	
+	private String[] timeout = 		new String[length];
+	private String[] retransmitt = 	new String[length];		
+	private String[] nStart = 		new String[length];	
+	private String[] payloadSize = 	new String[length];	
+	private String[] port = 		new String[length];	
+	private String[] time = 		new String[length];
+	private String[] sleep = 		new String[length];
+	
+	private String[] random = 		new String[length];	
+	private String[] probingRate = 	new String[length];
 	
 	public void next(View view){
 		//Port Field
 		EditText portField = (EditText) findViewById(R.id.Port);
 		String portString = portField.getText().toString();
 		if (!portString.equals(""))
-			port = portString;
+			port[counter] = portString;
 	    
 		//Time Field
 		EditText timeField = (EditText) findViewById(R.id.Time);
 		String timeString = timeField.getText().toString();
 		if (!timeString.equals(""))
-			time = timeString;
+			time[counter] = timeString;
 		
 		EditText timeoutField = (EditText) findViewById(R.id.timeout);
 		String timeoutString = timeoutField.getText().toString();
 		if(!timeoutString.equals(""))
-			timeout = timeoutString;
+			timeout[counter] = timeoutString;
 		
 		EditText randomField = (EditText) findViewById(R.id.random);
 		String randomString = randomField.getText().toString();
 		if(!randomString.equals(""))
-			random = randomString;
+			random[counter] = randomString;
 		
 		EditText retransmittField = (EditText) findViewById(R.id.retransmitt);
 		String retransmittString = retransmittField.getText().toString();
 		if(!retransmittString.equals(""))
-			retransmitt = retransmittString;
+			retransmitt[counter] = retransmittString;
 		
 		EditText nstartField = (EditText) findViewById(R.id.nStart);
 		String nstartString = nstartField.getText().toString();
 		if(!nstartString.equals(""))
-			nStart = nstartString;
+			nStart[counter] = nstartString;
 		
 		EditText probingrateField = (EditText) findViewById(R.id.probingRate);
 		String probingrateString = probingrateField.getText().toString();
 		if(!probingrateString.equals(""))
-			probingRate = probingrateString;
-		
-		EditText connectionField = (EditText) findViewById(R.id.connections);
-		String connectionString = connectionField.getText().toString();
-		if(!connectionString.equals(""))
-			connections = connectionString;
+			probingRate[counter] = probingrateString;
 		
 		EditText payloadsizeField = (EditText) findViewById(R.id.payloadSize);
 		String payloadsizeString = payloadsizeField.getText().toString();
 		if(!payloadsizeString.equals(""))
-			payloadSize = payloadsizeString;
+			payloadSize[counter] = payloadsizeString;
+		
+		EditText sleepField = (EditText) findViewById(R.id.sleep);
+		String sleepString = sleepField.getText().toString();
+		if(!sleepString.equals(""))
+			sleep[counter] = sleepString;
 	
-		//IP-Field
 		EditText ipField = (EditText) findViewById(R.id.IPAddress);
 		String ipString = ipField.getText().toString();
 		//Check if IP-Address is valid
 		boolean validIP = false;
 		try {
 			Inet4Address.getByName(ipString);
-			ip = ipString;
+			ip[counter] = ipString;
 			validIP = true;
 		} catch (Exception e) {
 			TextView v = (TextView) findViewById(R.id.Error);
 			v.setText("IP-Address not valid");	
 		}
 	
-		if (validIP && !connections.equals("") && !connections.equals("0")) 
+		System.out.println("Counter: " + counter + " | " + filePath[counter] + " | ");
+		if (validIP && !(filePath[counter] == null)) 
+		{
+			counter++;
+			counter = Math.max(counter, 0);
+			counter = Math.min(counter, length-1);
+			
+			//xxx Ask if user wants another file
+			
+			
+		} 
+		validIP = false;
+	}
+	
+	public void send(View view)
+	{
+		next(view);
+		if(!(filePath[0] == null))
 		{
 		    Intent intent = new Intent(this, SendData.class);
 		    intent.putExtra("timeout", timeout);
@@ -112,9 +133,10 @@ public class SendDataInput extends AbstractActivity {
 		    intent.putExtra("port", port);
 			intent.putExtra("time", time);
 		    intent.putExtra("ip", ip);
-		    intent.putExtra("connections", connections);
+		    intent.putExtra("sleep", sleep);
+		    intent.putExtra("totalconfigs", counter);
 		    startActivityForResult(intent, ResultType.SEND_DATA.index());
-		} 
+	    }
 	}
 	
 	public void load(View view){
@@ -128,10 +150,10 @@ public class SendDataInput extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
-    			filePath = data.getStringExtra("path");
-    			fileName = data.getStringExtra("name");
+    			filePath[counter] = data.getStringExtra("path");
+    			fileName[counter] = data.getStringExtra("name");
     			TextView v = (TextView) findViewById(R.id.Error);
-    			v.setText("Config file:  " + fileName);
+    			v.setText("Config file:  " + fileName[counter]);
     		}
     	}
     	if(requestCode == ResultType.SEND_DATA.index())
