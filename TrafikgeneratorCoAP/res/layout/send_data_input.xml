@@ -10,13 +10,13 @@
     tools:context=".Main" >
 
     <Button
-        android:id="@+id/Continue"
+        android:id="@+id/Next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:onClick="next"
-        android:text="@string/Continue" />
+        android:text="@string/Next" />
 
     <Button
         android:id="@+id/Load"
@@ -130,14 +130,5 @@
         android:layout_marginTop="50dp"
         android:text="Leave blank for default values!"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <Button
-        android:id="@+id/Send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="send"
-        android:text="Send" />
 
 </RelativeLayout>

@@ -36,16 +36,6 @@ public class Main extends AbstractActivity {
 		startActivityForResult(intent, ResultType.RECEIVE_DATA.index());
 	}
 	
-	public void sendDataSensor(View view) {
-		/*Intent intent = new Intent(this, SendDataSensorInput.class);
-		startActivityForResult(intent, ResultType.SEND_DATA_SENSOR.index());*/
-	}
-	
-	public void receiveDataSensor(View view) {
-		/*Intent intent = new Intent(this, ReceiveDataSensorInput.class);
-		startActivityForResult(intent, ResultType.RECEIVE_DATA_SENSOR.index());*/
-	}
-	
 	public void exit(View view){
         finish();
         System.exit(0);
@@ -101,67 +91,7 @@ public class Main extends AbstractActivity {
                 txt.setText("Packets : 10/10 \n" +
                 			"Time : 10 sec");
                 	
-                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
- 
-                dialogButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-    		}
-    	}
-    	
-    	if(requestCode == ResultType.SEND_DATA_SENSOR.index())
-    	{
-    		if(resultCode == RESULT_OK)
-    		{
-    			System.out.println("Sending done (Sensor)!");
-                // create a Dialog component
-                final Dialog dialog = new Dialog((Context)this);
- 
-                //tell the Dialog to use the dialog.xml as it's layout description
-                dialog.setContentView(R.layout.dialog);
-                dialog.setTitle("Sending to Sensor");
- 
-                TextView txt = (TextView) dialog.findViewById(R.id.txt);
- 
-                //xxx change this to something useful
-                txt.setText("Packets : 10/10 \n" +
-                			"Time : 10 sec");
-                	
-                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
- 
-                dialogButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-    		}
-    	}
-    	
-    	if(requestCode == ResultType.RECEIVE_DATA_SENSOR.index())
-    	{
-    		if(resultCode == RESULT_OK)
-    		{
-    			System.out.println("Receiving done (Sensor)!");
-                // create a Dialog component
-                final Dialog dialog = new Dialog((Context)this);
- 
-                //tell the Dialog to use the dialog.xml as it's layout description
-                dialog.setContentView(R.layout.dialog);
-                dialog.setTitle("Receiving from Sensor");
- 
-                TextView txt = (TextView) dialog.findViewById(R.id.txt);
- 
-                //xxx change this to something useful
-                txt.setText("Packets : 10/10 \n" +
-                			"Time : 10 sec");
-                	
-                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
+                Button dialogButton = (Button) dialog.findViewById(R.id.yes);
  
                 dialogButton.setOnClickListener(new OnClickListener() {
                     @Override

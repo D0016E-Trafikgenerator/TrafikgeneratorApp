@@ -48,5 +48,8 @@
     <string name="Sleep">Sleeptime</string>
     <string name="blu_notfound_inlist">bluetooth not found</string>
     <string name="blu_cancelled">bluetooth cancel</string>
+    <string name="Next">Next</string>
+    <string name="Yes">Yes</string>
+    <string name="No">No</string>
 
 </resources>
