@@ -102,7 +102,9 @@ public class SendDataInput extends AbstractActivity {
 		boolean validIP = false;
 		try {
 			Inet4Address.getByName(ipString);
-			ip[totalConfigs] = ipString;
+			if(!ipString.equals(""))
+				ip[totalConfigs] = ipString;
+			
 			validIP = true;
 		} catch (Exception e) {
 			TextView infoField = (TextView) findViewById(R.id.Error);

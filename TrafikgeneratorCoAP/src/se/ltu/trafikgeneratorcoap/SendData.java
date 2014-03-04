@@ -56,7 +56,7 @@ public class SendData extends AbstractActivity {
 	    sleep = 			intent.getStringArrayExtra("sleep");
 	    totalConfigs =		intent.getIntExtra("totalConfigs", 0);
 	    
-	    Log.d("SendData", "Configs: " + totalConfigs);
+	    Log.d("SendData", "Configs: " + ip[0]);
 	    
 	    config = new TrafficConfig[totalConfigs];
 
@@ -85,7 +85,7 @@ public class SendData extends AbstractActivity {
 	    	config[taskIndex].setDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR, parseFloat(random[taskIndex]));
 	    if(probingRate[taskIndex] != null)
 	    	config[taskIndex].setDecimalSetting(Settings.COAP_PROBING_RATE, parseFloat(probingRate[taskIndex]));
-	    
+    	
 	    if(ip[taskIndex] != null)
 	    	config[taskIndex].setStringSetting(Settings.TEST_SERVER, ip[taskIndex]);
 	    
@@ -156,6 +156,7 @@ public class SendData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
+    	    Log.d("SendData", "IP: " + config[this.processNumber].getStringSetting(Settings.TEST_SERVER));
         	Sending.sendData(config[this.processNumber], getApplicationContext());
         	publishProgress(progressbarUpdate++);
         	Log.d("SendData", "End of process nr : " + this.processNumber);
