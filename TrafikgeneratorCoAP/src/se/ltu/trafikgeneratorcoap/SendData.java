@@ -156,7 +156,7 @@ public class SendData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-        	//Sending.sendData(config[this.processNumber], getApplicationContext());
+        	Sending.sendData(config[this.processNumber], getApplicationContext());
         	publishProgress(progressbarUpdate++);
         	Log.d("SendData", "End of process nr : " + this.processNumber);
         	if(this.processNumber != (totalConfigs-1))
