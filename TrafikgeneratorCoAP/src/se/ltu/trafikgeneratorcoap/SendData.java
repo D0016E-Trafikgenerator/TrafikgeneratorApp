@@ -5,6 +5,7 @@ import se.ltu.trafikgeneratorcoap.send.TrafficConfig;
 import se.ltu.trafikgeneratorcoap.send.Settings;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.app.ProgressDialog;
 import android.content.Intent;
 
@@ -53,7 +54,7 @@ public class SendData extends AbstractActivity {
 	    sleep = 			intent.getStringArrayExtra("sleep");
 	    totalConfigs =		intent.getIntExtra("totalConfigs", 0);
 	    
-	    System.out.println("Configs: " + probingRate[0]);
+	    System.out.println("Configs: " + totalConfigs);
 	    
 	    config = new TrafficConfig[totalConfigs];
 
@@ -85,13 +86,14 @@ public class SendData extends AbstractActivity {
 	    
 	    config[taskIndex].setStringSetting(Settings.TEST_SERVER, ip[taskIndex]);
 	    
+	    System.out.println("Done!");
+	    
     	new LoadViewTask().execute();
     }
     
     private Float parseFloat(String s)
     {
-    	System.out.println("parseFloat: " + s);
-    	
+    	Log.d("parseFloat","parseFloat: " + s);
 		try {
 			return Float.parseFloat(s);
 		} catch (NumberFormatException e) {
@@ -101,7 +103,7 @@ public class SendData extends AbstractActivity {
     
     private Integer parseInt(String s)
     {
-    	System.out.println("parseInt: " + s);
+    	Log.d("parseInt","parseInt: " + s);
 	    try {
 			return Integer.parseInt(s);
 		} catch (NumberFormatException e) {
@@ -111,7 +113,7 @@ public class SendData extends AbstractActivity {
     
     private Long parseLong(String s)
     {
-    	System.out.println("parseLong: " + s);
+    	Log.d("parseLong","parseLong: " + s);
     	try {
 			return Long.parseLong(s);
 		} catch (NumberFormatException e) {

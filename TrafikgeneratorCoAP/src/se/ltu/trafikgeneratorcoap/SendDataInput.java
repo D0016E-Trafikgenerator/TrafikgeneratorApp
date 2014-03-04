@@ -42,7 +42,7 @@ public class SendDataInput extends AbstractActivity {
 	private String[] nStart = 		new String[length];	
 	private String[] payloadSize = 	new String[length];	
 	private String[] port = 		new String[length];	
-	private String[] time = 		new String[length];
+	private String[] seconds = 		new String[length];
 	private String[] sleep = 		new String[length];
 	
 	private String[] random = 		new String[length];	
@@ -59,7 +59,7 @@ public class SendDataInput extends AbstractActivity {
 		EditText timeField = (EditText) findViewById(R.id.Time);
 		String timeString = timeField.getText().toString();
 		if (!timeString.equals(""))
-			time[totalConfigs] = timeString;
+			seconds[totalConfigs] = timeString;
 		
 		EditText timeoutField = (EditText) findViewById(R.id.timeout);
 		String timeoutString = timeoutField.getText().toString();
@@ -146,7 +146,7 @@ public class SendDataInput extends AbstractActivity {
         		    intent.putExtra("payloadSize", payloadSize);
         		    intent.putExtra("filePath", filePath);
         		    intent.putExtra("port", port);
-        			intent.putExtra("seconds", time);
+        			intent.putExtra("seconds", seconds);
         		    intent.putExtra("ip", ip);
         		    intent.putExtra("sleep", sleep);
         		    intent.putExtra("totalConfigs", totalConfigs);
@@ -174,16 +174,16 @@ public class SendDataInput extends AbstractActivity {
         		    Intent intent = new Intent(th, SendData.class);
         		    intent.putExtra("timeout", timeout);
         		    intent.putExtra("random", random);
-        		    intent.putExtra("retransmitt", retransmit);
+        		    intent.putExtra("retransmit", retransmit);
         		    intent.putExtra("nStart", nStart);
         		    intent.putExtra("probingRate", probingRate);
         		    intent.putExtra("payloadSize", payloadSize);
         		    intent.putExtra("filePath", filePath);
         		    intent.putExtra("port", port);
-        			intent.putExtra("time", time);
+        			intent.putExtra("seconds", seconds);
         		    intent.putExtra("ip", ip);
         		    intent.putExtra("sleep", sleep);
-        		    intent.putExtra("totalconfigs", totalConfigs);
+        		    intent.putExtra("totalConfigs", totalConfigs);
                     dialog.dismiss();
         		    startActivityForResult(intent, ResultType.SEND_DATA.index());
                 }
@@ -205,6 +205,11 @@ public class SendDataInput extends AbstractActivity {
 	public void load(View view){
 		Intent intent = new Intent(this, AndroidExplorer.class);
 		startActivityForResult(intent, ResultType.LOAD_FILE.index());
+	}
+	
+	private void cont()
+	{
+		
 	}
 	
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
