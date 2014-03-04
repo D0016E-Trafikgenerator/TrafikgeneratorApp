@@ -15,9 +15,8 @@ import ch.ethz.inf.vs.californium.coap.CoAP.ResponseCode;
 
 public class Sending {
 	static Context context;
-	public static void sendData(final String filename, final Context context) {
+	public static void sendData(TrafficConfig config, Context context) {
 		Sending.context = context;
-		final TrafficConfig config = new TrafficConfig(TrafficConfig.fileToString(filename));
 		SntpClient internetTimeClient = new SntpClient();
 		int numberOfTests = config.getIntegerSetting(Settings.TEST_REPEATS);
 		int timeBetweenTests = Math.round(config.getDecimalSetting(Settings.TEST_INTERMISSION));
@@ -45,7 +44,7 @@ public class Sending {
 				String ntp_uri = internetTimeClient.getHost();
 				long ntpError = internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime()
 						- internetTimeClient.getNtpTimeReference() - System.currentTimeMillis();
-				Meta.beforeTest(filename, token, date, ntp_uri, ntpError);
+				Meta.beforeTest(config, token, date, ntp_uri, ntpError);
 				boolean testDone = false;
 				if (config.getStringSetting(Settings.TRAFFIC_TYPE).equals("CONSTANT_SOURCE")) {
 					if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("TIME")) {
