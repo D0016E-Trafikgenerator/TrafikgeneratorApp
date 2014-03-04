@@ -37,7 +37,7 @@ public class ReceiveData extends AbstractActivity {
     @Override  
     public void onCreate(Bundle savedInstanceState)  
     {  
-		System.out.println("Sending");
+		Log.d("SendData", "Sending");
         super.onCreate(savedInstanceState);  
         
         intent = getIntent();
@@ -54,7 +54,7 @@ public class ReceiveData extends AbstractActivity {
 	    sleep = 			intent.getStringArrayExtra("sleep");
 	    totalConfigs =		intent.getIntExtra("totalConfigs", 0);
 	    
-	    System.out.println("Configs: " + totalConfigs);
+	    Log.d("SendData", "Configs: " + totalConfigs);
 	    
 	    config = new TrafficConfig[totalConfigs];
 
@@ -63,7 +63,7 @@ public class ReceiveData extends AbstractActivity {
     
     private void nextTask(int taskIndex)
     {	    
-    	System.out.println("Creating config from: " + filePath[taskIndex]);
+    	Log.d("SendData", "Creating config from: " + filePath[taskIndex]);
     	config[taskIndex] = new TrafficConfig(TrafficConfig.fileToString(filePath[taskIndex]));
     	
 	    if(timeout[taskIndex] != null)
@@ -85,8 +85,6 @@ public class ReceiveData extends AbstractActivity {
 	    	config[taskIndex].setDecimalSetting(Settings.COAP_PROBING_RATE, parseFloat(probingRate[taskIndex]));
 	    
 	    config[taskIndex].setStringSetting(Settings.TEST_SERVER, ip[taskIndex]);
-	    
-	    System.out.println("Done!");
 	    
     	new LoadViewTask().execute();
     }
@@ -130,7 +128,7 @@ public class ReceiveData extends AbstractActivity {
         protected void onPreExecute()  
         {  
         	this.processNumber = indexer++;
-        	System.out.println("Creating process nr: " + this.processNumber);
+        	Log.d("SendData", "Creating process nr: " + this.processNumber);
         	if(this.processNumber == 0)
         	{
 	            progressDialog = new ProgressDialog(ReceiveData.this);  
@@ -149,9 +147,9 @@ public class ReceiveData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-        	Sending.sendData(config[this.processNumber], getApplicationContext());
+        	//Sending.sendData(config[this.processNumber], getApplicationContext());
         	publishProgress(progressbarUpdate++);
-        	System.out.println("End of process nr : " + this.processNumber);
+        	Log.d("SendData", "End of process nr : " + this.processNumber);
         	if(!(this.processNumber == (totalConfigs-1)))
         	{
         		try { Thread.sleep(parseLong(sleep[this.processNumber])); } catch (InterruptedException e) {}
@@ -179,5 +177,5 @@ public class ReceiveData extends AbstractActivity {
 				finish();
 			}
         }  
-    }  
+    }   
 }

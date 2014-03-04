@@ -159,8 +159,6 @@ public class SendDataInput extends AbstractActivity {
 		}
 		else if((filePath[totalConfigs] == null))
 		{
-			System.out.println("No file chosen!");
-			
             final Dialog dialog = new Dialog((Context)this);
             dialog.setContentView(R.layout.dialog_files);
             dialog.setTitle("Are you sure?");
@@ -207,11 +205,6 @@ public class SendDataInput extends AbstractActivity {
 		startActivityForResult(intent, ResultType.LOAD_FILE.index());
 	}
 	
-	private void cont()
-	{
-		
-	}
-	
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
     	if(requestCode == ResultType.LOAD_FILE.index())
@@ -229,6 +222,11 @@ public class SendDataInput extends AbstractActivity {
     		if(resultCode == RESULT_OK)
     		{
     			setResult(RESULT_OK);
+    			finish();
+    		}
+    		if(resultCode == RESULT_CANCELED)
+    		{
+    			setResult(RESULT_CANCELED);
     			finish();
     		}
     	}

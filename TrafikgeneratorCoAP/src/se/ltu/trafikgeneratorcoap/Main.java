@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Button;
@@ -32,8 +33,8 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void recieveData(View view) {
-		/*Intent intent = new Intent(this, ReceiveDataInput.class);
-		startActivityForResult(intent, ResultType.RECEIVE_DATA.index());*/
+		Intent intent = new Intent(this, ReceiveDataInput.class);
+		startActivityForResult(intent, ResultType.RECEIVE_DATA.index());
 	}
 	
 	public void exit(View view){
@@ -47,7 +48,7 @@ public class Main extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
-    			System.out.println("Sending done!");
+    			Log.d("Main", "Sending done!");
                 // create a Dialog component
                 final Dialog dialog = new Dialog((Context)this);
  
@@ -71,13 +72,17 @@ public class Main extends AbstractActivity {
                 });
                 dialog.show();
     		}
+    		if(resultCode == RESULT_CANCELED)
+    		{
+    			Log.d("Main", "Task Canceled!");
+    		}
     	}
     	
     	if(requestCode == ResultType.RECEIVE_DATA.index())
     	{
     		if(resultCode == RESULT_OK)
     		{
-    			System.out.println("Receiving done!");
+    			Log.d("Main", "Receiving done!");
                 // create a Dialog component
                 final Dialog dialog = new Dialog((Context)this);
  

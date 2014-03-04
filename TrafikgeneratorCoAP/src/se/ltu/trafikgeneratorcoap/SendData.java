@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 
 public class SendData extends AbstractActivity {  
@@ -37,7 +39,7 @@ public class SendData extends AbstractActivity {
     @Override  
     public void onCreate(Bundle savedInstanceState)  
     {  
-		System.out.println("Sending");
+		Log.d("SendData", "Sending");
         super.onCreate(savedInstanceState);  
         
         intent = getIntent();
@@ -54,7 +56,7 @@ public class SendData extends AbstractActivity {
 	    sleep = 			intent.getStringArrayExtra("sleep");
 	    totalConfigs =		intent.getIntExtra("totalConfigs", 0);
 	    
-	    System.out.println("Configs: " + totalConfigs);
+	    Log.d("SendData", "Configs: " + totalConfigs);
 	    
 	    config = new TrafficConfig[totalConfigs];
 
@@ -63,7 +65,7 @@ public class SendData extends AbstractActivity {
     
     private void nextTask(int taskIndex)
     {	    
-    	System.out.println("Creating config from: " + filePath[taskIndex]);
+    	Log.d("SendData", "Creating config from: " + filePath[taskIndex]);
     	config[taskIndex] = new TrafficConfig(TrafficConfig.fileToString(filePath[taskIndex]));
     	
 	    if(timeout[taskIndex] != null)
@@ -84,9 +86,8 @@ public class SendData extends AbstractActivity {
 	    if(probingRate[taskIndex] != null)
 	    	config[taskIndex].setDecimalSetting(Settings.COAP_PROBING_RATE, parseFloat(probingRate[taskIndex]));
 	    
-	    config[taskIndex].setStringSetting(Settings.TEST_SERVER, ip[taskIndex]);
-	    
-	    System.out.println("Done!");
+	    if(ip[taskIndex] != null)
+	    	config[taskIndex].setStringSetting(Settings.TEST_SERVER, ip[taskIndex]);
 	    
     	new LoadViewTask().execute();
     }
@@ -130,14 +131,20 @@ public class SendData extends AbstractActivity {
         protected void onPreExecute()  
         {  
         	this.processNumber = indexer++;
-        	System.out.println("Creating process nr: " + this.processNumber);
+        	Log.d("SendData", "Creating process nr: " + this.processNumber);
         	if(this.processNumber == 0)
         	{
 	            progressDialog = new ProgressDialog(SendData.this);  
 	            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);  
 	            progressDialog.setTitle("Loading...");  
 	            progressDialog.setMessage("Sending data... Please wait.");  
-	            progressDialog.setCancelable(true);  
+	            progressDialog.setCancelable(true);
+	            progressDialog.setOnCancelListener(new OnCancelListener() {
+	                @Override
+	                public void onCancel(DialogInterface dialog) {
+	                    cancel(true);
+	                }
+	            });
 	            progressDialog.setIndeterminate(false);  
 	            progressDialog.setMax(totalConfigs);   
 	            progressDialog.setProgress(0);  
@@ -149,10 +156,10 @@ public class SendData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-        	Sending.sendData(config[this.processNumber], getApplicationContext());
+        	//Sending.sendData(config[this.processNumber], getApplicationContext());
         	publishProgress(progressbarUpdate++);
-        	System.out.println("End of process nr : " + this.processNumber);
-        	if(!(this.processNumber == (totalConfigs-1)))
+        	Log.d("SendData", "End of process nr : " + this.processNumber);
+        	if(this.processNumber != (totalConfigs-1))
         	{
         		try { Thread.sleep(parseLong(sleep[this.processNumber])); } catch (InterruptedException e) {}
         		nextTask(this.processNumber + 1);
@@ -167,6 +174,14 @@ public class SendData extends AbstractActivity {
             //set the current progress of the progress dialog  
             progressDialog.setProgress(values[0]);  
         }  
+        
+        @Override
+        protected void onCancelled() {
+        	Log.d("SendData", "Task Canceled!");
+            progressDialog.dismiss();
+			setResult(RESULT_CANCELED);
+			finish();
+        }
   
         //after executing the code in the thread  
         @Override  
