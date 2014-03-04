@@ -1,10 +1,11 @@
 package se.ltu.trafikgeneratorcoap;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import se.ltu.trafikgeneratorcoap.send.Sending;
+import se.ltu.trafikgeneratorcoap.send.TrafficConfig;
+import se.ltu.trafikgeneratorcoap.send.Settings;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.app.ProgressDialog;
 import android.content.Intent;
 
@@ -12,83 +13,125 @@ public class ReceiveData extends AbstractActivity {
     //A ProgressDialog object  
     private ProgressDialog progressDialog;  
   
-	private String ip;
-	private int port;
-	private int seconds;
-	private String filePath = "";
-	private int timeout;
-	private float random;
-	private int retransmitt;
-	private int nStart;
-	private float probingRate;
-	private int payloadSize;
-	private int connections;
+    private String[] ip;
+	private String[] port;
+	private String[] seconds;
+	private String[] filePath;
+	private String[] timeout;
+	private String[] random;
+	private String[] retransmit;
+	private String[] nStart;
+	private String[] probingRate;
+	private String[] payloadSize;
+	private String[] sleep;
 	
 	private Intent intent;
-	
-    public boolean bool = false;
+	private int totalConfigs;
+
     public int indexer = 0;
     private int progressbarUpdate = 1;
+    
+    private TrafficConfig[] config;
     
     /** Called when the activity is first created. */  
     @Override  
     public void onCreate(Bundle savedInstanceState)  
     {  
+		System.out.println("Sending");
         super.onCreate(savedInstanceState);  
-  
+        
         intent = getIntent();
-        timeout = parseInt("timeout");
-        random = parseFloat("random");
-        retransmitt = parseInt("retransmitt");
-        nStart = parseInt("nstart");
-	    probingRate = parseFloat("probingrate");
-	    payloadSize = parseInt("payloadsize");
-	    port = parseInt("port");
-	    seconds = parseInt("time");
-	    connections = parseInt("connections");
+        timeout = 			intent.getStringArrayExtra("timeout");
+        retransmit = 		intent.getStringArrayExtra("retransmit");
+        nStart = 			intent.getStringArrayExtra("nStart");
+	    payloadSize = 		intent.getStringArrayExtra("payloadSize");
+	    port = 				intent.getStringArrayExtra("port");
+	    seconds = 			intent.getStringArrayExtra("seconds");
+        random = 			intent.getStringArrayExtra("random");
+	    probingRate = 		intent.getStringArrayExtra("probingRate");
+	    filePath = 			intent.getStringArrayExtra("filePath");
+	    ip = 				intent.getStringArrayExtra("ip");
+	    sleep = 			intent.getStringArrayExtra("sleep");
+	    totalConfigs =		intent.getIntExtra("totalConfigs", 0);
 	    
-	    filePath = intent.getStringExtra("filename");
-	    ip = intent.getStringExtra("ip");
+	    System.out.println("Configs: " + totalConfigs);
 	    
-        //Initialize a LoadViewTask object and call the execute() method 
-	    for(int i = 0; i < connections; i++)
-	    {
-	    	System.out.println("Creating processes nr : " + i);
-	    	new LoadViewTask().execute();
-	    }
-    } 
+	    config = new TrafficConfig[totalConfigs];
+
+	    nextTask(indexer);
+    }
     
-    private float parseFloat(String s)
+    private void nextTask(int taskIndex)
+    {	    
+    	System.out.println("Creating config from: " + filePath[taskIndex]);
+    	config[taskIndex] = new TrafficConfig(TrafficConfig.fileToString(filePath[taskIndex]));
+    	
+	    if(timeout[taskIndex] != null)
+	    	config[taskIndex].setIntegerSetting(Settings.COAP_ACK_TIMEOUT, parseInt(timeout[taskIndex]));
+	    if(retransmit[taskIndex] != null)
+	    	config[taskIndex].setIntegerSetting(Settings.COAP_MAX_RETRANSMIT, parseInt(retransmit[taskIndex]));
+	    if(nStart[taskIndex] != null)
+	    	config[taskIndex].setIntegerSetting(Settings.COAP_NSTART, parseInt(nStart[taskIndex]));
+	    if(payloadSize[taskIndex] != null)
+	    	config[taskIndex].setIntegerSetting(Settings.TRAFFIC_MESSAGESIZE, parseInt(payloadSize[taskIndex]));
+	    if(port[taskIndex] != null)
+	    	config[taskIndex].setIntegerSetting(Settings.TEST_TESTPORT, parseInt(port[taskIndex]));
+	    if(seconds[taskIndex] != null)
+	    	config[taskIndex].setIntegerSetting(Settings.TRAFFIC_MAXSENDTIME, parseInt(seconds[taskIndex]));	 
+	    
+	    if(random[taskIndex] != null)
+	    	config[taskIndex].setDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR, parseFloat(random[taskIndex]));
+	    if(probingRate[taskIndex] != null)
+	    	config[taskIndex].setDecimalSetting(Settings.COAP_PROBING_RATE, parseFloat(probingRate[taskIndex]));
+	    
+	    config[taskIndex].setStringSetting(Settings.TEST_SERVER, ip[taskIndex]);
+	    
+	    System.out.println("Done!");
+	    
+    	new LoadViewTask().execute();
+    }
+    
+    private Float parseFloat(String s)
     {
-	    try {
-			float floatReturn = Float.parseFloat(intent.getStringExtra(s));
-			return floatReturn;
+    	Log.d("parseFloat","parseFloat: " + s);
+		try {
+			return Float.parseFloat(s);
 		} catch (NumberFormatException e) {
-			return 0.0f;
+			return null;
 		}
     }
     
-    private int parseInt(String s)
+    private Integer parseInt(String s)
     {
+    	Log.d("parseInt","parseInt: " + s);
 	    try {
-			int intReturn = Integer.parseInt(intent.getStringExtra(s));
-			return intReturn;
+			return Integer.parseInt(s);
 		} catch (NumberFormatException e) {
-			return 0;
+			return null;
+		}
+    }
+    
+    private Long parseLong(String s)
+    {
+    	Log.d("parseLong","parseLong: " + s);
+    	try {
+			return Long.parseLong(s);
+		} catch (NumberFormatException e) {
+			return (long) 1000;
 		}
     }
     
     //To use the AsyncTask, it must be subclassed  
     private class LoadViewTask extends AsyncTask<Void, Integer, Void>  
     {  
-    	private int index;
+    	private int processNumber;
         //Before running code in separate thread  
         @Override  
         protected void onPreExecute()  
         {  
-        	this.index = indexer;
-        	indexer++;
-        	if(this.index == 0)
+        	this.processNumber = indexer++;
+        	System.out.println("Creating process nr: " + this.processNumber);
+        	if(this.processNumber == 0)
         	{
 	            progressDialog = new ProgressDialog(ReceiveData.this);  
 	            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);  
@@ -96,7 +139,7 @@ public class ReceiveData extends AbstractActivity {
 	            progressDialog.setMessage("Sending data... Please wait.");  
 	            progressDialog.setCancelable(true);  
 	            progressDialog.setIndeterminate(false);  
-	            progressDialog.setMax(connections);   
+	            progressDialog.setMax(totalConfigs);   
 	            progressDialog.setProgress(0);  
 	            progressDialog.show();
         	}
@@ -106,9 +149,15 @@ public class ReceiveData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-        	Sending.sendData(filePath, getBaseContext());
+        	Sending.sendData(config[this.processNumber], getApplicationContext());
         	publishProgress(progressbarUpdate++);
-        	return null;  
+        	System.out.println("End of process nr : " + this.processNumber);
+        	if(!(this.processNumber == (totalConfigs-1)))
+        	{
+        		try { Thread.sleep(parseLong(sleep[this.processNumber])); } catch (InterruptedException e) {}
+        		nextTask(this.processNumber + 1);
+        	}
+        	return null;
         }  
   
         //Update the progress  
@@ -119,13 +168,11 @@ public class ReceiveData extends AbstractActivity {
             progressDialog.setProgress(values[0]);  
         }  
   
-
         //after executing the code in the thread  
         @Override  
         protected void onPostExecute(Void result)  
         {  
-        	System.out.println("End of process nr : " + this.index);
-			if(progressbarUpdate == (connections + 1))
+			if(progressbarUpdate == (totalConfigs + 1))
 			{
 	            progressDialog.dismiss();
 				setResult(RESULT_OK);

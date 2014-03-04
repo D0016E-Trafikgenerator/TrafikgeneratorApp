@@ -32,8 +32,8 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void recieveData(View view) {
-		Intent intent = new Intent(this, ReceiveDataInput.class);
-		startActivityForResult(intent, ResultType.RECEIVE_DATA.index());
+		/*Intent intent = new Intent(this, ReceiveDataInput.class);
+		startActivityForResult(intent, ResultType.RECEIVE_DATA.index());*/
 	}
 	
 	public void exit(View view){
