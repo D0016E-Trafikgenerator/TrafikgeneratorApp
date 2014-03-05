@@ -5,6 +5,8 @@ import java.net.Inet4Address;
 import se.ltu.trafikgeneratorcoap.R;
 
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;

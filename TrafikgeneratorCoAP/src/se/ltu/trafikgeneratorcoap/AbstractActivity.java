@@ -1,6 +1,7 @@
 package se.ltu.trafikgeneratorcoap;
 
 import android.os.Bundle;
+import android.view.Window;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 

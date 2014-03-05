@@ -12,9 +12,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 
 public class SendData extends AbstractActivity {  
-    //A ProgressDialog object  
-    private ProgressDialog progressDialog;  
-  
+	  
     private String[] ip;
 	private String[] port;
 	private String[] seconds;
@@ -26,20 +24,18 @@ public class SendData extends AbstractActivity {
 	private String[] probingRate;
 	private String[] payloadSize;
 	private String[] sleep;
-	
-	private Intent intent;
-	private int totalConfigs;
-
-    public int indexer = 0;
-    private int progressbarUpdate = 1;
-    
     private TrafficConfig[] config;
     
-    /** Called when the activity is first created. */  
+    private ProgressDialog progressDialog;  
+	private Intent intent;
+	private int totalConfigs;
+    private int indexer = 0;
+    private int progressbarUpdate = 0;
+ 
     @Override  
     public void onCreate(Bundle savedInstanceState)  
     {  
-		Log.d("SendData", "Sending");
+		Log.d("SendData", "Task Started!");
         super.onCreate(savedInstanceState);  
         
         intent = getIntent();
@@ -122,11 +118,9 @@ public class SendData extends AbstractActivity {
 		}
     }
     
-    //To use the AsyncTask, it must be subclassed  
     private class LoadViewTask extends AsyncTask<Void, Integer, Void>  
     {  
     	private int processNumber;
-        //Before running code in separate thread  
         @Override  
         protected void onPreExecute()  
         {  
@@ -157,8 +151,12 @@ public class SendData extends AbstractActivity {
         protected Void doInBackground(Void... params)  
         {   
     	    Log.d("SendData", "IP: " + config[this.processNumber].getStringSetting(Settings.TEST_SERVER));
-        	Sending.sendData(config[this.processNumber], getApplicationContext());
-        	publishProgress(progressbarUpdate++);
+        	try {
+				Sending.sendData(config[this.processNumber], getApplicationContext());
+			} catch (Exception e1) {
+				Log.e("SendData", "Something went terribly wrong in sendData!");
+			}
+        	publishProgress(++progressbarUpdate);
         	Log.d("SendData", "End of process nr : " + this.processNumber);
         	if(this.processNumber != (totalConfigs-1))
         	{
@@ -168,7 +166,6 @@ public class SendData extends AbstractActivity {
         	return null;
         }  
   
-        //Update the progress  
         @Override  
         protected void onProgressUpdate(Integer... values)  
         {  
@@ -184,12 +181,12 @@ public class SendData extends AbstractActivity {
 			finish();
         }
   
-        //after executing the code in the thread  
         @Override  
         protected void onPostExecute(Void result)  
         {  
-			if(progressbarUpdate == (totalConfigs + 1))
+			if(progressbarUpdate == (totalConfigs))
 			{
+	        	Log.d("SendData", "Task Done!");
 	            progressDialog.dismiss();
 				setResult(RESULT_OK);
 				finish();

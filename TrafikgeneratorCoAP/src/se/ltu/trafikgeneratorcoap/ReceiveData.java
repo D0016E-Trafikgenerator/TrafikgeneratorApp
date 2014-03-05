@@ -1,6 +1,5 @@
 package se.ltu.trafikgeneratorcoap;
 
-import se.ltu.trafikgeneratorcoap.send.Sending;
 import se.ltu.trafikgeneratorcoap.send.TrafficConfig;
 import se.ltu.trafikgeneratorcoap.send.Settings;
 import android.os.AsyncTask;

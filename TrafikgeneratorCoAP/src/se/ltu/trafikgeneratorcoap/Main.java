@@ -3,12 +3,14 @@ package se.ltu.trafikgeneratorcoap;
 import se.ltu.trafikgeneratorcoap.R;
 
 import android.os.Bundle;
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.view.View.OnClickListener;
@@ -49,10 +51,8 @@ public class Main extends AbstractActivity {
     		if(resultCode == RESULT_OK)
     		{
     			Log.d("Main", "Sending done!");
-                // create a Dialog component
                 final Dialog dialog = new Dialog((Context)this);
  
-                //tell the Dialog to use the dialog.xml as it's layout description
                 dialog.setContentView(R.layout.dialog_ok);
                 dialog.setTitle("Sending to Server");
  
@@ -83,10 +83,8 @@ public class Main extends AbstractActivity {
     		if(resultCode == RESULT_OK)
     		{
     			Log.d("Main", "Receiving done!");
-                // create a Dialog component
                 final Dialog dialog = new Dialog((Context)this);
  
-                //tell the Dialog to use the dialog.xml as it's layout description
                 dialog.setContentView(R.layout.dialog_ok);
                 dialog.setTitle("Receiving from Server");
  

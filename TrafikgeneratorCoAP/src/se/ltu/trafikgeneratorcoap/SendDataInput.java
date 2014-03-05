@@ -1,10 +1,12 @@
 package se.ltu.trafikgeneratorcoap;
 
 import android.os.Bundle;
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -25,9 +27,12 @@ public class SendDataInput extends AbstractActivity{
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.send_input, menu);
-		return true;
+		ActionBar act = getActionBar();
+		act.setDisplayShowHomeEnabled(false);
+		act.setDisplayShowTitleEnabled(false);
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.send_input, menu);
+	    return super.onCreateOptionsMenu(menu);
 	}
 	
 	private int length = 10;
