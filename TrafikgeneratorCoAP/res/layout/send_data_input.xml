@@ -9,31 +9,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Main" >
 
-    <Button
-        android:id="@+id/Next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:onClick="next"
-        android:text="@string/Next" />
-
-    <Button
-        android:id="@+id/Load"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:onClick="load"
-        android:text="@string/LoadFile" />
-
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignLeft="@+id/Load"
-        android:layout_alignTop="@+id/Error" 
-        android:layout_marginTop="40dp">
+        android:layout_alignTop="@+id/Error"
+        android:layout_marginTop="40dp" >
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -125,18 +106,9 @@
         android:id="@+id/Error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/Load"
-        android:layout_marginTop="50dp"
+        android:layout_alignLeft="@+id/scrollView1"
+        android:layout_alignParentTop="true"
         android:text="@string/Blank"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <Button
-        android:id="@+id/RemoveFile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="remove"
-        android:text="@string/Back" />
 
 </RelativeLayout>

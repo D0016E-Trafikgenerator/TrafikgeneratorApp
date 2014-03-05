@@ -10,24 +10,6 @@
     tools:context=".Main" >
 
     <Button
-        android:id="@+id/ReceiveDataSensor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/SendDataSensor"
-        android:layout_centerHorizontal="true"
-        android:onClick="receiveDataSensor"
-        android:text="@string/ReceiveSensor" />
-
-    <Button
-        android:id="@+id/SendDataSensor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:onClick="sendDataSensor"
-        android:text="@string/SendSensor" />
-
-    <Button
         android:id="@+id/Exit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,16 +19,6 @@
         android:text="@string/Exit" />
 
     <Button
-        android:id="@+id/SendData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="56dp"
-        android:onClick="sendData"
-        android:text="@string/Send" />
-
-    <Button
         android:id="@+id/RecieveData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,5 +26,15 @@
         android:layout_centerHorizontal="true"
         android:onClick="recieveData"
         android:text="@string/Receive" />
+
+    <Button
+        android:id="@+id/SendData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="142dp"
+        android:onClick="sendData"
+        android:text="@string/Send" />
 
 </RelativeLayout>

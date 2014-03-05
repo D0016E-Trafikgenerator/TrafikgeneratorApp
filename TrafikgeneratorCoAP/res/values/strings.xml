@@ -7,11 +7,10 @@
     <string name="title_activity_send_data">SendDataActivity</string>
     <string name="title_activity_send_input">Sending to Server</string>
     <string name="title_activity_send">SendActivity</string>
-    <string name="title_activity_recieve_input">Recieving from Server</string>
+    <string name="title_activity_recieve_input">Receiving from Server</string>
     <string name="title_activity_recieve">RecieveActivity</string>
     <string name="title_activity_analyse_input">AnalyseInputActivity</string>
     <string name="title_activity_analyse">AnalyseActivity</string>
-    <string name="Analyse">Analyse</string>
     <string name="Send">Send to Server</string>
     <string name="Receive">Receive from Server</string>
     <string name="Exit">Exit</string>
@@ -46,8 +45,6 @@
     <string name="CoAP">CoAP</string>
     <string name="OK">OK</string>
     <string name="Sleep">Sleeptime</string>
-    <string name="blu_notfound_inlist">bluetooth not found</string>
-    <string name="blu_cancelled">bluetooth cancel</string>
     <string name="Next">Next</string>
     <string name="Yes">Yes</string>
     <string name="No">No</string>
@@ -55,5 +52,8 @@
     <string name="Cancel">Cancel</string>
     <string name="Remove">Remove</string>
     <string name="RemoveFile">Remove File</string>
+    
+    <item name="RemoveFile" type="id"/>
+    <item name="AddFile" type="id"/>
 
 </resources>

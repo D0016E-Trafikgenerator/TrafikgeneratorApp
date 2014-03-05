@@ -3,14 +3,12 @@ package se.ltu.trafikgeneratorcoap;
 import se.ltu.trafikgeneratorcoap.R;
 
 import android.os.Bundle;
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.view.View.OnClickListener;
@@ -94,7 +92,7 @@ public class Main extends AbstractActivity {
                 txt.setText("Packets : 10/10 \n" +
                 			"Time : 10 sec");
                 	
-                Button dialogButton = (Button) dialog.findViewById(R.id.AddFile);
+                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
  
                 dialogButton.setOnClickListener(new OnClickListener() {
                     @Override

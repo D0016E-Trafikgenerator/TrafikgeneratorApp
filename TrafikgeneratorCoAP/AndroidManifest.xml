@@ -8,8 +8,6 @@
         android:minSdkVersion="11"
         android:targetSdkVersion="19" />
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -19,10 +17,10 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="se.ltu.trafikgeneratorcoap.Main"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:theme="@style/AppThemeActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -32,11 +30,13 @@
         </activity>
         <activity
             android:name="se.ltu.trafikgeneratorcoap.SendDataInput"
-            android:label="@string/title_activity_send_input">
+            android:label="@string/title_activity_send_input"
+            android:theme="@style/AppThemeActionBar">
         </activity>
         <activity
             android:name="se.ltu.trafikgeneratorcoap.ReceiveDataInput"
-            android:label="@string/title_activity_recieve_input">
+            android:label="@string/title_activity_recieve_input"
+            android:theme="@style/AppThemeActionBar">
         </activity>
         <activity
             android:name="se.ltu.trafikgeneratorcoap.ReceiveData"
@@ -49,26 +49,6 @@
         <activity
             android:name="se.ltu.trafikgeneratorcoap.AndroidExplorer"
             android:label="@string/title_activity_file_system">
-        </activity>
-        <activity
-            android:name="se.ltu.trafikgeneratorcoap.CoAPVariables"
-            android:label="@string/title_activity_co_apvariables">
-        </activity>
-        <activity
-            android:name="se.ltu.trafikgeneratorcoap.SendDataSensor"
-            android:label="@string/title_activity_send_data_sensor">
-        </activity>
-        <activity
-            android:name="se.ltu.trafikgeneratorcoap.SendDataSensorInput"
-            android:label="@string/title_activity_send_data_sensor_input">
-        </activity>
-        <activity
-            android:name="se.ltu.trafikgeneratorcoap.ReceiveDataSensor"
-            android:label="@string/title_activity_recieve_data_sensor">
-        </activity>
-        <activity
-            android:name="se.ltu.trafikgeneratorcoap.ReceiveDataSensorInput"
-            android:label="@string/title_activity_receive_data_sensor_input">
         </activity>
         <activity
             android:name="se.ltu.trafikgeneratorcoap.AbstractActivity"
