@@ -56,7 +56,7 @@ public class SendData extends AbstractActivity {
 	    sleep = 			intent.getStringArrayExtra("sleep");
 	    totalConfigs =		intent.getIntExtra("totalConfigs", 0);
 	    
-	    Log.d("SendData", "Configs: " + ip[0]);
+	    Log.d("SendData", "Configs: " + totalConfigs);
 	    
 	    config = new TrafficConfig[totalConfigs];
 

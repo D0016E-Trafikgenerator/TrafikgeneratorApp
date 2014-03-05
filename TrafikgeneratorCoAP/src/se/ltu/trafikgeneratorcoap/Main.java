@@ -33,8 +33,8 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void recieveData(View view) {
-		Intent intent = new Intent(this, ReceiveDataInput.class);
-		startActivityForResult(intent, ResultType.RECEIVE_DATA.index());
+		/*Intent intent = new Intent(this, ReceiveDataInput.class);
+		startActivityForResult(intent, ResultType.RECEIVE_DATA.index());*/
 	}
 	
 	public void exit(View view){
@@ -53,7 +53,7 @@ public class Main extends AbstractActivity {
                 final Dialog dialog = new Dialog((Context)this);
  
                 //tell the Dialog to use the dialog.xml as it's layout description
-                dialog.setContentView(R.layout.dialog);
+                dialog.setContentView(R.layout.dialog_ok);
                 dialog.setTitle("Sending to Server");
  
                 TextView txt = (TextView) dialog.findViewById(R.id.txt);
@@ -87,7 +87,7 @@ public class Main extends AbstractActivity {
                 final Dialog dialog = new Dialog((Context)this);
  
                 //tell the Dialog to use the dialog.xml as it's layout description
-                dialog.setContentView(R.layout.dialog);
+                dialog.setContentView(R.layout.dialog_ok);
                 dialog.setTitle("Receiving from Server");
  
                 TextView txt = (TextView) dialog.findViewById(R.id.txt);
@@ -96,7 +96,7 @@ public class Main extends AbstractActivity {
                 txt.setText("Packets : 10/10 \n" +
                 			"Time : 10 sec");
                 	
-                Button dialogButton = (Button) dialog.findViewById(R.id.yes);
+                Button dialogButton = (Button) dialog.findViewById(R.id.AddFile);
  
                 dialogButton.setOnClickListener(new OnClickListener() {
                     @Override

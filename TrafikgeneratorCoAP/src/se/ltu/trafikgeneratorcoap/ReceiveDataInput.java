@@ -121,12 +121,12 @@ public class ReceiveDataInput extends AbstractActivity {
 			totalConfigs = Math.min(totalConfigs, length-1);
 			
             final Dialog dialog = new Dialog((Context)this);
-            dialog.setContentView(R.layout.dialog_files);
+            dialog.setContentView(R.layout.dialog_yesno);
             dialog.setTitle("More files?");
             TextView txt = (TextView) dialog.findViewById(R.id.txt);
             txt.setText("Do you want to add another file?");
             	
-            Button dialogButtonYes = (Button) dialog.findViewById(R.id.yes);
+            Button dialogButtonYes = (Button) dialog.findViewById(R.id.AddFile);
             dialogButtonYes.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -136,7 +136,7 @@ public class ReceiveDataInput extends AbstractActivity {
                 }
             });
             
-            Button dialogButtonNo = (Button) dialog.findViewById(R.id.no);
+            Button dialogButtonNo = (Button) dialog.findViewById(R.id.Cont);
             dialogButtonNo.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -163,12 +163,12 @@ public class ReceiveDataInput extends AbstractActivity {
 		else if((filePath[totalConfigs] == null))
 		{
             final Dialog dialog = new Dialog((Context)this);
-            dialog.setContentView(R.layout.dialog_files);
+            dialog.setContentView(R.layout.dialog_yesno);
             dialog.setTitle("Are you sure?");
             TextView txt = (TextView) dialog.findViewById(R.id.txt);
             txt.setText("Do you want to continue without adding a file?");
             
-            Button dialogButtonYes = (Button) dialog.findViewById(R.id.yes);
+            Button dialogButtonYes = (Button) dialog.findViewById(R.id.AddFile);
             dialogButtonYes.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -190,7 +190,7 @@ public class ReceiveDataInput extends AbstractActivity {
                 }
             });
             
-            Button dialogButtonNo = (Button) dialog.findViewById(R.id.no);
+            Button dialogButtonNo = (Button) dialog.findViewById(R.id.Cont);
             dialogButtonNo.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {

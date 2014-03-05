@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/txt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/hello_world"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/Cancel"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/RemoveFile"
+        android:layout_alignBottom="@+id/RemoveFile"
+        android:layout_marginLeft="28dp"
+        android:layout_toRightOf="@+id/RemoveFile"
+        android:text="@string/Cancel" />
+
+    <Button
+        android:id="@+id/RemoveFile"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/txt"
+        android:layout_marginLeft="31dp"
+        android:text="@string/RemoveFile" />
+
+</RelativeLayout>

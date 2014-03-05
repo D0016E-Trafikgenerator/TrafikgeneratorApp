@@ -126,9 +126,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/Load"
-        android:layout_alignTop="@+id/Continue" 
         android:layout_marginTop="50dp"
-        android:text="Leave blank for default values!"
+        android:text="@string/Blank"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/RemoveFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="remove"
+        android:text="@string/Back" />
 
 </RelativeLayout>

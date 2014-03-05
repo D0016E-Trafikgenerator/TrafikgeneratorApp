@@ -13,10 +13,10 @@ import android.widget.TextView;
 import java.net.Inet4Address;
 import se.ltu.trafikgeneratorcoap.R;
 
-public class SendDataInput extends AbstractActivity {
-
+public class SendDataInput extends AbstractActivity{
+	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.send_data_input);
 		TextView infoField = (TextView) findViewById(R.id.Error);
@@ -24,7 +24,7 @@ public class SendDataInput extends AbstractActivity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu){
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.send_input, menu);
 		return true;
@@ -49,13 +49,11 @@ public class SendDataInput extends AbstractActivity {
 	private String[] probingRate = 	new String[length];
 	
 	public void next(View view){
-		//Port Field
 		EditText portField = (EditText) findViewById(R.id.Port);
 		String portString = portField.getText().toString();
 		if (!portString.equals(""))
 			port[totalConfigs] = portString;
 	    
-		//Time Field
 		EditText timeField = (EditText) findViewById(R.id.Time);
 		String timeString = timeField.getText().toString();
 		if (!timeString.equals(""))
@@ -98,108 +96,28 @@ public class SendDataInput extends AbstractActivity {
 	
 		EditText ipField = (EditText) findViewById(R.id.IPAddress);
 		String ipString = ipField.getText().toString();
-		//Check if IP-Address is valid
 		boolean validIP = false;
 		try {
 			Inet4Address.getByName(ipString);
 			if(!ipString.equals(""))
 				ip[totalConfigs] = ipString;
-			
 			validIP = true;
 		} catch (Exception e) {
 			TextView infoField = (TextView) findViewById(R.id.Error);
 			infoField.setText("IP-Address not valid");
 		}
 		
-        final SendDataInput th = this;
-	
-		if (validIP && !(filePath[totalConfigs] == null)) 
+		if (validIP && filePath[totalConfigs] != null) 
 		{
 			totalConfigs++;
 			totalConfigs = Math.max(totalConfigs, 0);
 			totalConfigs = Math.min(totalConfigs, length-1);
-			
-            final Dialog dialog = new Dialog((Context)this);
-            dialog.setContentView(R.layout.dialog_files);
-            dialog.setTitle("More files?");
-            TextView txt = (TextView) dialog.findViewById(R.id.txt);
-            txt.setText("Do you want to add another file?");
-            	
-            Button dialogButtonYes = (Button) dialog.findViewById(R.id.yes);
-            dialogButtonYes.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-        			TextView infoField = (TextView) findViewById(R.id.Error);
-        			infoField.setText("Add another file!");
-                    dialog.dismiss();
-                }
-            });
-            
-            Button dialogButtonNo = (Button) dialog.findViewById(R.id.no);
-            dialogButtonNo.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-        		    Intent intent = new Intent(th, SendData.class);
-        		    intent.putExtra("timeout", timeout);
-        		    intent.putExtra("random", random);
-        		    intent.putExtra("retransmit", retransmit);
-        		    intent.putExtra("nStart", nStart);
-        		    intent.putExtra("probingRate", probingRate);
-        		    intent.putExtra("payloadSize", payloadSize);
-        		    intent.putExtra("filePath", filePath);
-        		    intent.putExtra("port", port);
-        			intent.putExtra("seconds", seconds);
-        		    intent.putExtra("ip", ip);
-        		    intent.putExtra("sleep", sleep);
-        		    intent.putExtra("totalConfigs", totalConfigs);
-                    dialog.dismiss();
-        		    startActivityForResult(intent, ResultType.SEND_DATA.index());
-                }
-            });
-            
-            dialog.show();
+            addFileDialog(this);
 		}
-		else if((filePath[totalConfigs] == null))
+		else if((filePath[totalConfigs] == null) && totalConfigs != 0)
 		{
-            final Dialog dialog = new Dialog((Context)this);
-            dialog.setContentView(R.layout.dialog_files);
-            dialog.setTitle("Are you sure?");
-            TextView txt = (TextView) dialog.findViewById(R.id.txt);
-            txt.setText("Do you want to continue without adding a file?");
-            
-            Button dialogButtonYes = (Button) dialog.findViewById(R.id.yes);
-            dialogButtonYes.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-        		    Intent intent = new Intent(th, SendData.class);
-        		    intent.putExtra("timeout", timeout);
-        		    intent.putExtra("random", random);
-        		    intent.putExtra("retransmit", retransmit);
-        		    intent.putExtra("nStart", nStart);
-        		    intent.putExtra("probingRate", probingRate);
-        		    intent.putExtra("payloadSize", payloadSize);
-        		    intent.putExtra("filePath", filePath);
-        		    intent.putExtra("port", port);
-        			intent.putExtra("seconds", seconds);
-        		    intent.putExtra("ip", ip);
-        		    intent.putExtra("sleep", sleep);
-        		    intent.putExtra("totalConfigs", totalConfigs);
-                    dialog.dismiss();
-        		    startActivityForResult(intent, ResultType.SEND_DATA.index());
-                }
-            });
-            
-            Button dialogButtonNo = (Button) dialog.findViewById(R.id.no);
-            dialogButtonNo.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-            dialog.show();
-            
+			continueDialog(this);
 		}
-		validIP = false;
 	}
 	
 	public void load(View view){
@@ -207,8 +125,137 @@ public class SendDataInput extends AbstractActivity {
 		startActivityForResult(intent, ResultType.LOAD_FILE.index());
 	}
 	
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) 
-    {
+	public void remove(View view){
+		if(totalConfigs != 0)
+			removeFileDialog(this);
+	}
+	
+	private void addFileDialog(final SendDataInput context){
+		final Dialog dialog = new Dialog((Context)this);
+        dialog.setContentView(R.layout.dialog_add_file);
+        dialog.setTitle("Add file?");
+        TextView txt = (TextView) dialog.findViewById(R.id.txt);
+        txt.setText("Add another file?");
+        	
+        Button dialogButtonAddFile = (Button) dialog.findViewById(R.id.AddFile);
+        dialogButtonAddFile.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+    			TextView infoField = (TextView) findViewById(R.id.Error);
+    			infoField.setText("Add another file!");
+                dialog.dismiss();
+            }
+        });
+        
+        Button dialogButtonContinue = (Button) dialog.findViewById(R.id.Continue);
+        dialogButtonContinue.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+    		    Intent intent = new Intent(context, SendData.class);
+    		    intent.putExtra("timeout", timeout);
+    		    intent.putExtra("random", random);
+    		    intent.putExtra("retransmit", retransmit);
+    		    intent.putExtra("nStart", nStart);
+    		    intent.putExtra("probingRate", probingRate);
+    		    intent.putExtra("payloadSize", payloadSize);
+    		    intent.putExtra("filePath", filePath);
+    		    intent.putExtra("port", port);
+    			intent.putExtra("seconds", seconds);
+    		    intent.putExtra("ip", ip);
+    		    intent.putExtra("sleep", sleep);
+    		    intent.putExtra("totalConfigs", totalConfigs);
+                dialog.dismiss();
+    		    startActivityForResult(intent, ResultType.SEND_DATA.index());
+            }
+        });
+        
+        dialog.show();
+	}
+	
+	private void continueDialog(final SendDataInput context){
+        final Dialog dialog = new Dialog((Context)this);
+        dialog.setContentView(R.layout.dialog_continue);
+        dialog.setTitle("Are you sure?");
+        TextView txt = (TextView) dialog.findViewById(R.id.txt);
+        txt.setText("Continue without adding a file?");
+        
+        Button dialogButtonContinue = (Button) dialog.findViewById(R.id.Continue);
+        dialogButtonContinue.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+    		    Intent intent = new Intent(context, SendData.class);
+    		    intent.putExtra("timeout", timeout);
+    		    intent.putExtra("random", random);
+    		    intent.putExtra("retransmit", retransmit);
+    		    intent.putExtra("nStart", nStart);
+    		    intent.putExtra("probingRate", probingRate);
+    		    intent.putExtra("payloadSize", payloadSize);
+    		    intent.putExtra("filePath", filePath);
+    		    intent.putExtra("port", port);
+    			intent.putExtra("seconds", seconds);
+    		    intent.putExtra("ip", ip);
+    		    intent.putExtra("sleep", sleep);
+    		    intent.putExtra("totalConfigs", totalConfigs);
+                dialog.dismiss();
+    		    startActivityForResult(intent, ResultType.SEND_DATA.index());
+            }
+        });
+        
+        Button dialogButtonCancel = (Button) dialog.findViewById(R.id.Cancel);
+        dialogButtonCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+	}
+	
+	private void removeFileDialog(final SendDataInput context){
+        final Dialog dialog = new Dialog((Context)this);
+        dialog.setContentView(R.layout.dialog_remove_file);
+        dialog.setTitle("Are you sure?");
+        TextView txt = (TextView) dialog.findViewById(R.id.txt);
+        txt.setText("Remove the latest file added?");
+        
+        Button dialogButtonRemoveFile = (Button) dialog.findViewById(R.id.RemoveFile);
+        dialogButtonRemoveFile.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+    			totalConfigs--;
+    			totalConfigs = Math.max(totalConfigs, 0);
+    			totalConfigs = Math.min(totalConfigs, length-1);
+            	
+    			TextView infoField = (TextView) findViewById(R.id.Error);
+    			infoField.setText(fileName[totalConfigs] + " Removed!");
+    			
+            	fileName[totalConfigs] = null;
+            	filePath[totalConfigs] = null;
+            	ip[totalConfigs] = null;
+            	timeout[totalConfigs] = null;
+            	retransmit[totalConfigs] = null;		
+            	nStart[totalConfigs] = null;
+            	payloadSize[totalConfigs] = null;
+            	port[totalConfigs] = null;
+            	seconds[totalConfigs] = null;
+            	sleep[totalConfigs] = null;
+            	random[totalConfigs] = null;
+            	probingRate[totalConfigs] = null;
+            	dialog.dismiss();
+            }
+        });
+        
+        Button dialogButtonCancel = (Button) dialog.findViewById(R.id.Cancel);
+        dialogButtonCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+	}
+	
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if(requestCode == ResultType.LOAD_FILE.index())
     	{
     		if(resultCode == RESULT_OK)
