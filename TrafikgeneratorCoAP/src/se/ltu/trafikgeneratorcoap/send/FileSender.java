@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import android.os.Environment;
+import android.util.Log;
 import ch.ethz.inf.vs.californium.coap.Request;
+import ch.ethz.inf.vs.californium.coap.CoAP.ResponseCode;
+import ch.ethz.inf.vs.californium.coap.Response;
 
 public class FileSender {
-	static public void sendFile(String uri, File file, String query) {
+	static public boolean sendFile(String uri, File file, String query) {
 		Request controlMessage = Request.newPost();
 		controlMessage.setURI("coap://" + uri + "/file" + query);
 		FileInputStream fileInputStream = null;
@@ -22,6 +25,13 @@ public class FileSender {
         }
 		controlMessage.setPayload(bFile);
 		controlMessage.send();
+		try {
+			Response response = controlMessage.waitForResponse();
+			Log.d("dummycoap", response.toString());
+			return response.getCode().equals(ResponseCode.VALID);
+		} catch (InterruptedException e) {
+			return false;
+		}
 	}
 	static public boolean sendLog(String uri, String token, String date) {
 		File appRoot = new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap");
@@ -29,8 +39,7 @@ public class FileSender {
 		File file = new File(subDir, date + "-" + token + "-sndr.pcap");
 		if (!file.exists())
 			return false;
-		sendFile(uri, file, "?type=log&token=" + token + "&time=" + date);
-		return true;
+		return sendFile(uri, file, "?type=log&token=" + token + "&time=" + date);
 	}
 	static public boolean sendMeta(String uri, String token, String date) {
 		File appRoot = new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap");
@@ -38,7 +47,6 @@ public class FileSender {
 		File file = new File(subDir, date + "-" + token + "-meta.txt");
 		if (!file.exists())
 			return false;
-		sendFile(uri, file, "?type=meta&token=" + token + "&time=" + date);
-		return true;
+		return sendFile(uri, file, "?type=meta&token=" + token + "&time=" + date);
 	}
 }

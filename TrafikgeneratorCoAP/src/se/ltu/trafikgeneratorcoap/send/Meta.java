@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 public class Meta {
 	static int gsmSignalStrength = 99;
@@ -20,7 +21,7 @@ public class Meta {
 		if ((when.equals("BEFORE") && file.exists()) || (when.equals("AFTER") && !file.exists()))
 			return false;
 		try {
-			Context context = Sending.context;
+			/*Context context = Sending.context;
 			PhoneStateListener listener = new PhoneStateListener() {
 				public void onSignalStrengthsChanged(SignalStrength signalStrength){
 					Meta.gsmSignalStrength = signalStrength.getGsmSignalStrength();
@@ -47,15 +48,15 @@ public class Meta {
 				case 14: networkType = "eHRPD"; break;
 				case 15: networkType = "HSPA+"; break;
 				default: networkType = "UNKNOWN";
-			}
+			}*/
 			if (when.equals("BEFORE"))
 				file.getParentFile().mkdirs();
-			BufferedWriter buf = new BufferedWriter(new FileWriter(file));
+			BufferedWriter buf = new BufferedWriter(new FileWriter(file, file.exists()));
 
 			if (when.equals("BEFORE")) {
 				buf.write("DATETIME=" + date);
 				buf.newLine();
-				buf.write(TrafficConfig.configToTrimmedString(config));
+				buf.write(config);
 				buf.newLine();
 			}
 			
@@ -63,7 +64,7 @@ public class Meta {
 			buf.newLine();
 			buf.write(when + "_TEST NTP_ERROR=" + ntpError);
 			buf.newLine();
-			buf.write(when + "_TEST NETWORK_TYPE=" + networkType);
+			buf.write(when + "_TEST NETWORK_TYPE=" + "networkType");
 			buf.newLine();
 			buf.write(when + "_TEST SIGNAL_STRENGTH=" + Meta.gsmSignalStrength);
 			buf.newLine();

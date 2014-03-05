@@ -7,6 +7,7 @@ import java.util.Random;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.util.Log;
 
 import ch.ethz.inf.vs.californium.coap.CoAP;
 import ch.ethz.inf.vs.californium.coap.Request;
@@ -16,8 +17,10 @@ import ch.ethz.inf.vs.californium.coap.CoAP.ResponseCode;
 public class Sending {
 	static Context context;
 	public static void sendData(TrafficConfig config, Context context) {
+		Log.d("dummycoap", config.getStringSetting(Settings.TEST_SERVER));
 		Sending.context = context;
 		SntpClient internetTimeClient = new SntpClient();
+		SntpClient internetTimeClient2 = new SntpClient();
 		int numberOfTests = config.getIntegerSetting(Settings.TEST_REPEATS);
 		int timeBetweenTests = Math.round(config.getDecimalSetting(Settings.TEST_INTERMISSION));
 		int timeBetweenPackets = Math.round(config.getDecimalSetting(Settings.TRAFFIC_INTERMISSION));
@@ -58,18 +61,22 @@ public class Sending {
 					control.setURI("coap://" + uri + "/control?" + "token=" + token);
 					control.send();
 					//Test protocol 1.3a.7
-					if (internetTimeClient.requestTime(uri.split(":")[0], ntpPort, 1000))
-						internetTimeClient.requestTime("pool.ntp.org", 123, 1000);
-					ntpError = internetTimeClient.getNtpTime() + SystemClock.elapsedRealtime()
-							- internetTimeClient.getNtpTimeReference() - System.currentTimeMillis();
+					if (internetTimeClient2.requestTime(uri.split(":")[0], ntpPort, 1000))
+						internetTimeClient2.requestTime("pool.ntp.org", 123, 1000);
+					ntpError = internetTimeClient2.getNtpTime() + SystemClock.elapsedRealtime()
+							- internetTimeClient2.getNtpTimeReference() - System.currentTimeMillis();
 					Meta.afterTest(token, date, ntp_uri, ntpError);
+					//Log.d("dummycoap", "");
+					Log.d("dummycoap", "lesse if he closes the server...");
 					response = control.waitForResponse();
 					if (!response.equals(null) && response.getCode().equals(ResponseCode.DELETED)) {
 						Thread.sleep(500);
 						//Test protocol 1.3a.9
-						if (Logger.stop() && FileSender.sendLog(uri, token, date)) {
+						Log.d("dummycoap", "lesse if he wants the meta...");
+						if (Logger.stop() && FileSender.sendMeta(uri, token, date)) {
 							//Test protocol 1.3a.10
-							FileSender.sendMeta(uri, token, date);
+							Log.d("dummycoap", "lesse if he wants the log...");
+							FileSender.sendLog(uri, token, date);
 						}
 					}
 				}

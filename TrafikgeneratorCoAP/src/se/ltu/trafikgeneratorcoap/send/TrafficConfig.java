@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Locale;
 
+import android.util.Log;
+
 import ch.ethz.inf.vs.californium.network.config.NetworkConfig;
 
 public class TrafficConfig {
@@ -37,9 +39,11 @@ public class TrafficConfig {
 	private Float   traffic_randomfactor            = (float) 1.0;
 	private Float   traffic_burst_time              = (float) 500.0;
 	private Float   traffic_idle_time               = (float) 500.0;
+	
+	static private String newline = "\n";//System.getProperty("line.separator");
 
 	public TrafficConfig(String configuration) {
-		String[] all_rows = configuration.split(System.getProperty("line.separator"));
+		String[] all_rows = configuration.split(newline);
 		// Set... settings.
 		for (int i = 0; i < all_rows.length; i++) {
 			all_rows[i] = all_rows[i].split("#", 2)[0];
@@ -185,7 +189,7 @@ public class TrafficConfig {
 			BufferedReader reader = new BufferedReader(fil);
 			String line = null;
 			stringBuilder = new StringBuilder();
-			String endofline = System.getProperty("line.separator");
+			String endofline = newline;
 			while ((line = reader.readLine()) != null) {
 				stringBuilder.append(line);
 				stringBuilder.append(endofline);
@@ -227,7 +231,9 @@ public class TrafficConfig {
 	}
 	static public String configToTrimmedString(String filename) {
 		String config = fileToString(filename);
-		String[] all_rows = config.split(System.getProperty("line.separator"));
+		Log.d("dummycoap", String.valueOf(config.length()));
+		Log.d("dummycoap", newline);
+		String[] all_rows = config.split(newline);
 		StringBuilder trimmedString = new StringBuilder(config.length());
 		// Remove comments.
 		for (int i = 0; i < all_rows.length; i++) {
@@ -238,36 +244,36 @@ public class TrafficConfig {
 			String setting = row[1].split("=", 2)[0];
 			String data    = row[1].split("=", 2)[1].trim();
 			setting = (type + "_" + setting).toUpperCase(Locale.getDefault());
-			trimmedString.append(setting + "=" + data + System.getProperty("line.separator"));
+			trimmedString.append(setting + "=" + data + newline);
 		}
 		return trimmedString.toString();
 	}
 	static public String configToString(TrafficConfig config) {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(Settings.META_AUTHOR.toString() + "=" + config.getStringSetting(Settings.META_AUTHOR) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.META_TITLE.toString() + "=" + config.getStringSetting(Settings.META_TITLE) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TEST_SERVER.toString() + "=" + config.getStringSetting(Settings.TEST_SERVER) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TEST_TESTPORT.toString() + "=" + config.getIntegerSetting(Settings.TEST_TESTPORT) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TEST_NTPPORT.toString() + "=" + config.getIntegerSetting(Settings.TEST_NTPPORT) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TEST_REPEATS.toString() + "=" + config.getIntegerSetting(Settings.TEST_REPEATS) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TEST_INTERMISSION.toString() + "=" + config.getDecimalSetting(Settings.TEST_INTERMISSION) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TEST_PARALLELTRANSFERS.toString() + "=" + config.getIntegerSetting(Settings.TEST_PARALLELTRANSFERS) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.COAP_MESSAGETYPE.toString() + "=" + config.getStringSetting(Settings.COAP_MESSAGETYPE) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.COAP_ACK_TIMEOUT.toString() + "=" + config.getIntegerSetting(Settings.COAP_ACK_TIMEOUT) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.COAP_ACK_RANDOM_FACTOR.toString() + "=" + config.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.COAP_MAX_RETRANSMIT.toString() + "=" + config.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.COAP_NSTART.toString() + "=" + config.getIntegerSetting(Settings.COAP_NSTART) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.COAP_PROBING_RATE.toString() + "=" + config.getIntegerSetting(Settings.COAP_PROBING_RATE) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_TYPE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_TYPE) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_MODE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_MODE) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_MAXSENDTIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_MAXMESSAGES.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_RATE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_RATE) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_MESSAGESIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_INTERMISSION.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_INTERMISSION) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_RANDOMFACTOR.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_RANDOMFACTOR) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_BURST_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_BURST_TIME) + System.getProperty("line.separator"));
-		stringBuilder.append(Settings.TRAFFIC_IDLE_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_IDLE_TIME) + System.getProperty("line.separator"));
+		stringBuilder.append(Settings.META_AUTHOR.toString() + "=" + config.getStringSetting(Settings.META_AUTHOR) + newline);
+		stringBuilder.append(Settings.META_TITLE.toString() + "=" + config.getStringSetting(Settings.META_TITLE) + newline);
+		stringBuilder.append(Settings.TEST_SERVER.toString() + "=" + config.getStringSetting(Settings.TEST_SERVER) + newline);
+		stringBuilder.append(Settings.TEST_TESTPORT.toString() + "=" + config.getIntegerSetting(Settings.TEST_TESTPORT) + newline);
+		stringBuilder.append(Settings.TEST_NTPPORT.toString() + "=" + config.getIntegerSetting(Settings.TEST_NTPPORT) + newline);
+		stringBuilder.append(Settings.TEST_REPEATS.toString() + "=" + config.getIntegerSetting(Settings.TEST_REPEATS) + newline);
+		stringBuilder.append(Settings.TEST_INTERMISSION.toString() + "=" + config.getDecimalSetting(Settings.TEST_INTERMISSION) + newline);
+		stringBuilder.append(Settings.TEST_PARALLELTRANSFERS.toString() + "=" + config.getIntegerSetting(Settings.TEST_PARALLELTRANSFERS) + newline);
+		stringBuilder.append(Settings.COAP_MESSAGETYPE.toString() + "=" + config.getStringSetting(Settings.COAP_MESSAGETYPE) + newline);
+		stringBuilder.append(Settings.COAP_ACK_TIMEOUT.toString() + "=" + config.getIntegerSetting(Settings.COAP_ACK_TIMEOUT) + newline);
+		stringBuilder.append(Settings.COAP_ACK_RANDOM_FACTOR.toString() + "=" + config.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR) + newline);
+		stringBuilder.append(Settings.COAP_MAX_RETRANSMIT.toString() + "=" + config.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT) + newline);
+		stringBuilder.append(Settings.COAP_NSTART.toString() + "=" + config.getIntegerSetting(Settings.COAP_NSTART) + newline);
+		stringBuilder.append(Settings.COAP_PROBING_RATE.toString() + "=" + config.getIntegerSetting(Settings.COAP_PROBING_RATE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_TYPE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_TYPE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_MODE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_MODE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_MAXSENDTIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME) + newline);
+		stringBuilder.append(Settings.TRAFFIC_MAXMESSAGES.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES) + newline);
+		stringBuilder.append(Settings.TRAFFIC_RATE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_RATE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_MESSAGESIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_INTERMISSION.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_INTERMISSION) + newline);
+		stringBuilder.append(Settings.TRAFFIC_RANDOMFACTOR.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_RANDOMFACTOR) + newline);
+		stringBuilder.append(Settings.TRAFFIC_BURST_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_BURST_TIME) + newline);
+		stringBuilder.append(Settings.TRAFFIC_IDLE_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_IDLE_TIME) + newline);
 		return stringBuilder.toString();
 	}
 }
