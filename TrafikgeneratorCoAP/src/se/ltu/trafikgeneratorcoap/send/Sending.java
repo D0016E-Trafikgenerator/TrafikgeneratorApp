@@ -15,20 +15,24 @@ import ch.ethz.inf.vs.californium.coap.Response;
 import ch.ethz.inf.vs.californium.coap.CoAP.ResponseCode;
 
 public class Sending {
-	static Context context;
+	private static Context context;
+	private static Random random = new Random();
+	private static int sentMessages = 0;
+	private static long lastSentMessage = 0L;
 	public static void sendData(TrafficConfig config, Context context) {
-		Log.d("dummycoap", config.getStringSetting(Settings.TEST_SERVER));
+		//Log.d("dummycoap", "");
 		Sending.context = context;
 		SntpClient internetTimeClient = new SntpClient();
 		SntpClient internetTimeClient2 = new SntpClient();
 		int numberOfTests = config.getIntegerSetting(Settings.TEST_REPEATS);
 		int timeBetweenTests = Math.round(config.getDecimalSetting(Settings.TEST_INTERMISSION));
-		int timeBetweenPackets = Math.round(config.getDecimalSetting(Settings.TRAFFIC_INTERMISSION));
 		String uri = config.getStringSetting(Settings.TEST_SERVER);
 		int testport = config.getIntegerSetting(Settings.TEST_TESTPORT);
 		int payloadSize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE);
 		int seconds = Math.round(config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME));
 		int ntpPort = config.getIntegerSetting(Settings.TEST_NTPPORT);
+		int maxMessages = config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES);
+		int sendrate = config.getIntegerSetting(Settings.TRAFFIC_RATE);
 		String date = (new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())).format(new Date());
 		CoAP.Type type = config.getStringSetting(Settings.COAP_MESSAGETYPE).equals("CON")?CoAP.Type.CON:CoAP.Type.NON;
 		//Test protocol 1.3a.2
@@ -49,11 +53,33 @@ public class Sending {
 						- internetTimeClient.getNtpTimeReference() - System.currentTimeMillis();
 				Meta.beforeTest(config, token, date, ntp_uri, ntpError);
 				boolean testDone = false;
+				int packetsize = 59 + payloadSize;
+				float packetsPerSecond = (float)sendrate / (float)packetsize;
+				int timeBetweenPackets = (int) Math.round(1000.0/packetsPerSecond);
+				Log.d("dummycoap", "payloadSize: " + payloadSize +
+						"\npacketsize: " + packetsize +
+						"\nsendrate: " + sendrate + 
+						"\npacketsPerSecond: " + packetsPerSecond +
+						"\ntimeBetweenPackets: " + timeBetweenPackets + 
+						"ms\npackets to send: at most " + Math.round((numberOfTests*seconds*1000)/((float)timeBetweenPackets)) +
+						"(or " + maxMessages + ")");
+				Thread.sleep(4000);
 				if (config.getStringSetting(Settings.TRAFFIC_TYPE).equals("CONSTANT_SOURCE")) {
 					if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("TIME")) {
-						Sending.runTest(seconds, uri, testport, type, payloadSize, timeBetweenPackets, timeBetweenTests, numberOfTests);
+						Sending.runTimeTest(seconds, uri, testport, type, payloadSize, timeBetweenPackets, timeBetweenTests, numberOfTests);
 						testDone = true;
 					}
+					else if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("MESSAGES")) {
+						Sending.runMessageTest(maxMessages, uri, testport, type, payloadSize, timeBetweenPackets, timeBetweenTests, numberOfTests);
+						testDone = true;
+					}
+					else if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("FILETRANSFER")) {
+						Sending.runMessageTest(maxMessages, uri, testport, type, payloadSize, timeBetweenPackets, timeBetweenTests, numberOfTests);
+						testDone = true;
+					}
+				}
+				else if (config.getStringSetting(Settings.TRAFFIC_TYPE).equals("ONOFF_SOURCE")) {
+					;
 				}
 				if (testDone) {
 					//Test protocol 1.3a.6
@@ -66,16 +92,12 @@ public class Sending {
 					ntpError = internetTimeClient2.getNtpTime() + SystemClock.elapsedRealtime()
 							- internetTimeClient2.getNtpTimeReference() - System.currentTimeMillis();
 					Meta.afterTest(token, date, ntp_uri, ntpError);
-					//Log.d("dummycoap", "");
-					Log.d("dummycoap", "lesse if he closes the server...");
 					response = control.waitForResponse();
 					if (!response.equals(null) && response.getCode().equals(ResponseCode.DELETED)) {
 						Thread.sleep(500);
 						//Test protocol 1.3a.9
-						Log.d("dummycoap", "lesse if he wants the meta...");
 						if (Logger.stop() && FileSender.sendMeta(uri, token, date)) {
 							//Test protocol 1.3a.10
-							Log.d("dummycoap", "lesse if he wants the log...");
 							FileSender.sendLog(uri, token, date);
 						}
 					}
@@ -83,23 +105,53 @@ public class Sending {
 			}
 		} catch (InterruptedException e1) {;}
 	}
-	private static void runTest(Integer seconds, String uri, Integer testport, CoAP.Type type, Integer payloadSize,
+	private static void runTimeTest(Integer seconds, String uri, Integer testport, CoAP.Type type, Integer payloadSize,
 			Integer timeBetweenPackets, Integer timeBetweenTests, Integer numberOfTests) {
 		try {
 			for (int i = 1; i <= numberOfTests; i++) {
 				long endtime = ((long) Math.round(1000 * seconds)) + SystemClock.elapsedRealtime();
 				while (SystemClock.elapsedRealtime() < endtime) {
+					long timeToNextSend = lastSentMessage + timeBetweenPackets - SystemClock.elapsedRealtime();
+					if (timeToNextSend > 0) {
+						Thread.sleep(timeToNextSend);
+					}
 					Request test;
 					test = Request.newPost();
 					test.setURI("coap://" + uri + ":" + testport + "/test");
 					test.setType(type);
-					test.setPayload(DummyGenerator.makeDummydata((new Random()).nextLong(), payloadSize));
+					test.setPayload(DummyGenerator.makeDummydata(random.nextLong(), payloadSize));
 					test.send();
+					lastSentMessage = SystemClock.elapsedRealtime();
 					/*if (test.isConfirmable())
 						while (!test.isAcknowledged() && !test.isTimeouted() && !test.isCanceled() && !test.isRejected())
 							Thread.sleep(1);*/
-					if (timeBetweenPackets >= 0)
-						Thread.sleep(timeBetweenPackets+1);
+				}
+	    		if (i < numberOfTests)
+					Thread.sleep(timeBetweenTests);
+			}
+		} catch (InterruptedException e) {;}
+	}
+	private static void runMessageTest(Integer maxMessages, String uri, Integer testport, CoAP.Type type, Integer payloadSize,
+			Integer timeBetweenPackets, Integer timeBetweenTests, Integer numberOfTests) {
+		try {
+			for (int i = 1; i <= numberOfTests; i++) {
+				while (sentMessages <= maxMessages) {
+					Log.d("dummycoap", "sentMessages, maxMessages " + sentMessages +" "+ maxMessages);
+					long timeToNextSend = lastSentMessage + timeBetweenPackets - SystemClock.elapsedRealtime();
+					if (timeToNextSend > 0) {
+						Thread.sleep(timeToNextSend);
+					}
+					Request test;
+					test = Request.newPost();
+					test.setURI("coap://" + uri + ":" + testport + "/test");
+					test.setType(type);
+					test.setPayload(DummyGenerator.makeDummydata(random.nextLong(), payloadSize));
+					test.send();
+					sentMessages += 1;
+					lastSentMessage = SystemClock.elapsedRealtime();
+					/*if (test.isConfirmable())
+						while (!test.isAcknowledged() && !test.isTimeouted() && !test.isCanceled() && !test.isRejected())
+							Thread.sleep(1);*/
 				}
 	    		if (i < numberOfTests)
 					Thread.sleep(timeBetweenTests);
