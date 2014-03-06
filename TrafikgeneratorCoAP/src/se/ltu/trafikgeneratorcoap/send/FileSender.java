@@ -27,7 +27,6 @@ public class FileSender {
 		controlMessage.send();
 		try {
 			Response response = controlMessage.waitForResponse();
-			Log.d("dummycoap", response.toString());
 			return response.getCode().equals(ResponseCode.VALID);
 		} catch (InterruptedException e) {
 			return false;

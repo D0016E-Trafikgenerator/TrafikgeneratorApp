@@ -15,6 +15,8 @@ import ch.ethz.inf.vs.californium.coap.Response;
 import ch.ethz.inf.vs.californium.coap.CoAP.ResponseCode;
 
 public class Sending {
+	private static int maxpacketsize = 1024;
+	private static int headersize = 59;
 	private static Context context;
 	private static Random random = new Random();
 	private static int sentMessages = 0;
@@ -29,6 +31,7 @@ public class Sending {
 		String uri = config.getStringSetting(Settings.TEST_SERVER);
 		int testport = config.getIntegerSetting(Settings.TEST_TESTPORT);
 		int payloadSize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE);
+		if (payloadSize + headersize > maxpacketsize) payloadSize = maxpacketsize-headersize;
 		int seconds = Math.round(config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME));
 		int ntpPort = config.getIntegerSetting(Settings.TEST_NTPPORT);
 		int maxMessages = config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES);
@@ -53,7 +56,7 @@ public class Sending {
 						- internetTimeClient.getNtpTimeReference() - System.currentTimeMillis();
 				Meta.beforeTest(config, token, date, ntp_uri, ntpError);
 				boolean testDone = false;
-				int packetsize = 59 + payloadSize;
+				int packetsize = headersize + payloadSize;
 				float packetsPerSecond = (float)sendrate / (float)packetsize;
 				int timeBetweenPackets = (int) Math.round(1000.0/packetsPerSecond);
 				Log.d("dummycoap", "payloadSize: " + payloadSize +
@@ -63,7 +66,7 @@ public class Sending {
 						"\ntimeBetweenPackets: " + timeBetweenPackets + 
 						"ms\npackets to send: at most " + Math.round((numberOfTests*seconds*1000)/((float)timeBetweenPackets)) +
 						"(or " + maxMessages + ")");
-				Thread.sleep(4000);
+				Thread.sleep(5000);
 				if (config.getStringSetting(Settings.TRAFFIC_TYPE).equals("CONSTANT_SOURCE")) {
 					if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("TIME")) {
 						Sending.runTimeTest(seconds, uri, testport, type, payloadSize, timeBetweenPackets, timeBetweenTests, numberOfTests);
@@ -94,9 +97,9 @@ public class Sending {
 					Meta.afterTest(token, date, ntp_uri, ntpError);
 					response = control.waitForResponse();
 					if (!response.equals(null) && response.getCode().equals(ResponseCode.DELETED)) {
-						Thread.sleep(500);
 						//Test protocol 1.3a.9
 						if (Logger.stop() && FileSender.sendMeta(uri, token, date)) {
+							Thread.sleep(5000);
 							//Test protocol 1.3a.10
 							FileSender.sendLog(uri, token, date);
 						}
@@ -135,8 +138,8 @@ public class Sending {
 			Integer timeBetweenPackets, Integer timeBetweenTests, Integer numberOfTests) {
 		try {
 			for (int i = 1; i <= numberOfTests; i++) {
-				while (sentMessages <= maxMessages) {
-					Log.d("dummycoap", "sentMessages, maxMessages " + sentMessages +" "+ maxMessages);
+				while (sentMessages < maxMessages) {
+					//Log.d("dummycoap", "sentMessages, maxMessages " + sentMessages +" "+ maxMessages);
 					long timeToNextSend = lastSentMessage + timeBetweenPackets - SystemClock.elapsedRealtime();
 					if (timeToNextSend > 0) {
 						Thread.sleep(timeToNextSend);
@@ -146,6 +149,8 @@ public class Sending {
 					test.setURI("coap://" + uri + ":" + testport + "/test");
 					test.setType(type);
 					test.setPayload(DummyGenerator.makeDummydata(random.nextLong(), payloadSize));
+//					if ((sentMessages+1) < 10 || (maxMessages-sentMessages) < 10)
+//						Log.d("dummycoap", "payloadstring" + test.getPayloadString().substring(0, 50).replaceAll("[\u0000-\u001f]", ""));
 					test.send();
 					sentMessages += 1;
 					lastSentMessage = SystemClock.elapsedRealtime();

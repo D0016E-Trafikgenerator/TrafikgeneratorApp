@@ -32,7 +32,7 @@ public class Logger {
 	}
 	static public boolean stop() {
 		try {
-			process = Runtime.getRuntime().exec("su ; killall tcpdump-coap");
+			process = Runtime.getRuntime().exec("su ; killall -s SIGINT tcpdump-coap");
 		} catch (IOException e) {
 			return false;
 		}

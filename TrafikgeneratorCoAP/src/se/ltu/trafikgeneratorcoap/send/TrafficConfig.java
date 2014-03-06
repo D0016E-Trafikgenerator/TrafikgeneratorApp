@@ -41,8 +41,10 @@ public class TrafficConfig {
 	private Float   traffic_idle_time               = (float) 500.0;
 	
 	static private String newline = "\n";//System.getProperty("line.separator");
+	private String originalConfig;
 
 	public TrafficConfig(String configuration) {
+		StringBuilder trimmedOriginal = new StringBuilder();
 		String[] all_rows = configuration.split(newline);
 		// Set... settings.
 		for (int i = 0; i < all_rows.length; i++) {
@@ -56,36 +58,37 @@ public class TrafficConfig {
 			if (setting.equals("META_TESTVERSION"))
 					continue;
 			switch (Settings.valueOf(setting)) {
-				case TEST_INTERMISSION:            test_intermission            = Float.valueOf(data); continue;
-				case COAP_ACK_RANDOM_FACTOR:       coap_ack_random_factor       = Float.valueOf(data); continue;
+				case TEST_INTERMISSION:            test_intermission            = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case COAP_ACK_RANDOM_FACTOR:       coap_ack_random_factor       = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TRAFFIC_MAXSENDTIME:          if (traffic_type.equals("ONOFF_SOURCE"))
-					                                   { traffic_onoff_maxsendtime    = Float.valueOf(data); continue; }
+					                                   { traffic_onoff_maxsendtime    = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue; }
 					                               else
-					                                   { traffic_constant_maxsendtime = Float.valueOf(data); continue; }
-				case TRAFFIC_INTERMISSION:         traffic_intermission         = Float.valueOf(data); continue;
-				case TRAFFIC_RANDOMFACTOR:         traffic_randomfactor         = Float.valueOf(data); continue;
-				case TRAFFIC_BURST_TIME:           traffic_burst_time           = Float.valueOf(data); continue;
-				case TRAFFIC_IDLE_TIME:            traffic_idle_time            = Float.valueOf(data); continue;
-				case TEST_TESTPORT:                test_testport                = Integer.valueOf(data); continue;
-				case TEST_REPEATS:                 test_repeats                 = Integer.valueOf(data); continue;
-				case TEST_PARALLELTRANSFERS:       test_paralleltransfers       = Integer.valueOf(data); continue;
-				case TEST_NTPPORT:                 test_ntpport                 = Integer.valueOf(data); continue;
-				case COAP_ACK_TIMEOUT:             coap_ack_timeout             = Integer.valueOf(data); continue;
-				case COAP_MAX_RETRANSMIT:          coap_max_retransmit          = Integer.valueOf(data); continue;
-				case COAP_NSTART:                  coap_nstart                  = Integer.valueOf(data); continue;
-				case COAP_PROBING_RATE:            coap_probing_rate            = Integer.valueOf(data); continue;
-				case TRAFFIC_MAXMESSAGES:          traffic_maxmessages          = Integer.valueOf(data); continue;
-				case TRAFFIC_RATE:                 traffic_rate                 = Integer.valueOf(data); continue;
-				case TRAFFIC_MESSAGESIZE:          traffic_messagesize          = Integer.valueOf(data); continue;
-				case META_AUTHOR:                  meta_author                  = data; continue;
-				case META_TITLE:                   meta_title                   = data; continue;
-				case TEST_SERVER:                  test_server                  = data.replaceAll("\\s+", ""); continue;
-				case COAP_MESSAGETYPE:             coap_messagetype             = data; continue;
-				case TRAFFIC_TYPE:                 traffic_type                 = data; continue;
-				case TRAFFIC_MODE:                 traffic_mode                 = data; continue;
+					                                   { traffic_constant_maxsendtime = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue; }
+				case TRAFFIC_INTERMISSION:         traffic_intermission         = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_RANDOMFACTOR:         traffic_randomfactor         = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_BURST_TIME:           traffic_burst_time           = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_IDLE_TIME:            traffic_idle_time            = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TEST_TESTPORT:                test_testport                = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TEST_REPEATS:                 test_repeats                 = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TEST_PARALLELTRANSFERS:       test_paralleltransfers       = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TEST_NTPPORT:                 test_ntpport                 = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case COAP_ACK_TIMEOUT:             coap_ack_timeout             = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case COAP_MAX_RETRANSMIT:          coap_max_retransmit          = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case COAP_NSTART:                  coap_nstart                  = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case COAP_PROBING_RATE:            coap_probing_rate            = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_MAXMESSAGES:          traffic_maxmessages          = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_RATE:                 traffic_rate                 = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_MESSAGESIZE:          traffic_messagesize          = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case META_AUTHOR:                  meta_author                  = data; trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case META_TITLE:                   meta_title                   = data; trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TEST_SERVER:                  test_server                  = data.replaceAll("\\s+", ""); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case COAP_MESSAGETYPE:             coap_messagetype             = data; trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_TYPE:                 traffic_type                 = data; trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_MODE:                 traffic_mode                 = data; trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				default:                           continue;
 			}
 		}
+		originalConfig = trimmedOriginal.toString();
 	}
 	public Float getDecimalSetting(Settings setting) {
 		switch (setting) {
@@ -134,6 +137,7 @@ public class TrafficConfig {
 		}
 	}
 	public void setIntegerSetting(Settings setting, Integer value) {
+		//TODO: uppdatera configOrig??? Eller sätt så bara visar overrides av default
 		switch (setting) {
 			case TEST_TESTPORT:                test_testport = value;
 			case TEST_REPEATS:                 test_repeats = value;
@@ -189,10 +193,9 @@ public class TrafficConfig {
 			BufferedReader reader = new BufferedReader(fil);
 			String line = null;
 			stringBuilder = new StringBuilder();
-			String endofline = newline;
 			while ((line = reader.readLine()) != null) {
 				stringBuilder.append(line);
-				stringBuilder.append(endofline);
+				stringBuilder.append(newline);
 			}
 			reader.close();
 		} catch (FileNotFoundException e) {
@@ -231,8 +234,6 @@ public class TrafficConfig {
 	}
 	static public String configToTrimmedString(String filename) {
 		String config = fileToString(filename);
-		Log.d("dummycoap", String.valueOf(config.length()));
-		Log.d("dummycoap", newline);
 		String[] all_rows = config.split(newline);
 		StringBuilder trimmedString = new StringBuilder(config.length());
 		// Remove comments.
@@ -275,5 +276,8 @@ public class TrafficConfig {
 		stringBuilder.append(Settings.TRAFFIC_BURST_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_BURST_TIME) + newline);
 		stringBuilder.append(Settings.TRAFFIC_IDLE_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_IDLE_TIME) + newline);
 		return stringBuilder.toString();
+	}
+	public String getOriginal() {
+		return originalConfig;
 	}
 }
