@@ -25,11 +25,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="se.ltu.trafikgeneratorcoap.SendData"
+            android:name="se.ltu.trafikgeneratorcoap.HandleData"
             android:label="@string/title_activity_send_data" >
         </activity>
         <activity
-            android:name="se.ltu.trafikgeneratorcoap.SendDataInput"
+            android:name="se.ltu.trafikgeneratorcoap.InputData"
             android:label="@string/title_activity_send_input"
             android:theme="@style/AppThemeActionBar">
         </activity>

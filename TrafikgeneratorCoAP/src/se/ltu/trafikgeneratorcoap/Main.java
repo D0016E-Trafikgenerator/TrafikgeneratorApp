@@ -1,9 +1,6 @@
 package se.ltu.trafikgeneratorcoap;
 
-import java.io.File;
-
 import se.ltu.trafikgeneratorcoap.R;
-
 import android.os.Bundle;
 import android.app.Dialog;
 import android.content.Context;
@@ -30,18 +27,20 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void sendData(View view) {
-		Intent intent = new Intent(this, SendDataInput.class);
-		startActivityForResult(intent, ResultType.SEND_DATA.index());
+		Intent intent = new Intent(this, InputData.class);
+	    intent.putExtra("ResultType", ResultType.SEND_DATA.ordinal());
+		startActivityForResult(intent, ResultType.SEND_DATA.ordinal());
 	}
 	
 	public void recieveData(View view) {
-		/*Intent intent = new Intent(this, ReceiveDataInput.class);
-		startActivityForResult(intent, ResultType.RECEIVE_DATA.index());*/
+		Intent intent = new Intent(this, InputData.class);
+	    intent.putExtra("ResultType", ResultType.RECEIVE_DATA.ordinal());
+		startActivityForResult(intent, ResultType.RECEIVE_DATA.ordinal());
 	}
 	
 	public void installTCPDump(View view) {
 		Intent intent = new Intent(this, AndroidExplorer.class);
-		startActivityForResult(intent, ResultType.LOAD_FILE.index());
+		startActivityForResult(intent, ResultType.LOAD_FILE.ordinal());
 	}
 	
 	public void uninstallTCPDump(View view) {
@@ -63,7 +62,7 @@ public class Main extends AbstractActivity {
 		
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
-    	if(requestCode == ResultType.LOAD_FILE.index())
+    	if(requestCode == ResultType.LOAD_FILE.ordinal())
     	{
     		if(resultCode == RESULT_OK)
     		{
@@ -74,7 +73,7 @@ public class Main extends AbstractActivity {
     			
     		}
     	}
-    	if(requestCode == ResultType.SEND_DATA.index())
+    	if(requestCode == ResultType.SEND_DATA.ordinal())
     	{
     		if(resultCode == RESULT_OK)
     		{
@@ -87,8 +86,7 @@ public class Main extends AbstractActivity {
                 TextView txt = (TextView) dialog.findViewById(R.id.txt);
  
                 //xxx change this to something useful
-                txt.setText("Packets : 10/10 \n" +
-                			"Time : 10 sec");
+                txt.setText("Sending done!");
                 	
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
  
@@ -106,7 +104,7 @@ public class Main extends AbstractActivity {
     		}
     	}
     	
-    	if(requestCode == ResultType.RECEIVE_DATA.index())
+    	if(requestCode == ResultType.RECEIVE_DATA.ordinal())
     	{
     		if(resultCode == RESULT_OK)
     		{
@@ -119,8 +117,7 @@ public class Main extends AbstractActivity {
                 TextView txt = (TextView) dialog.findViewById(R.id.txt);
  
                 //xxx change this to something useful
-                txt.setText("Packets : 10/10 \n" +
-                			"Time : 10 sec");
+                txt.setText("Receiving done!");
                 	
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButton);
  

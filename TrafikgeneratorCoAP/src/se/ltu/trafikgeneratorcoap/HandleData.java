@@ -11,7 +11,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 
-public class SendData extends AbstractActivity {  
+public class HandleData extends AbstractActivity {  
 	  
     private String[] ip;
 	private String[] port;
@@ -30,14 +30,17 @@ public class SendData extends AbstractActivity {
 	private int totalConfigs;
     private int indexer = 0;
     private int progressbarUpdate = 0;
+    
+    private int thisResultType;
  
     @Override  
     public void onCreate(Bundle savedInstanceState)  
     {  
-		Log.d("SendData", "Task Started!");
+		Log.d("HandleData", "Task Started!");
         super.onCreate(savedInstanceState);  
         
         intent = getIntent();
+        thisResultType =	intent.getIntExtra("ResultType", -1);
         timeout = 			intent.getStringArrayExtra("timeout");
         retransmit = 		intent.getStringArrayExtra("retransmit");
         nStart = 			intent.getStringArrayExtra("nStart");
@@ -50,7 +53,7 @@ public class SendData extends AbstractActivity {
 	    sleep = 			intent.getStringArrayExtra("sleep");
 	    totalConfigs =		intent.getIntExtra("totalConfigs", 0);
 	    
-	    Log.d("SendData", "Configs: " + totalConfigs);
+	    Log.d("HandleData", "Configs: " + totalConfigs);
 	    
 	    config = new TrafficConfig[totalConfigs];
 
@@ -59,7 +62,7 @@ public class SendData extends AbstractActivity {
     
     private void nextTask(int taskIndex)
     {	    
-    	Log.d("SendData", "Creating config from: " + filePath[taskIndex]);
+    	Log.d("HandleData", "Creating config from: " + filePath[taskIndex]);
     	config[taskIndex] = new TrafficConfig(TrafficConfig.fileToString(filePath[taskIndex]));
     	
 	    if(timeout[taskIndex] != null)
@@ -117,17 +120,52 @@ public class SendData extends AbstractActivity {
     private class LoadViewTask extends AsyncTask<Void, Integer, Void>  
     {  
     	private int processNumber;
+    	
+        private String getMessage(){
+        	ResultType type = ResultType.values()[thisResultType];
+        	switch(type) {
+    	    	case SEND_DATA:
+    	    		return "Sending data... Please wait.";
+    	    	case RECEIVE_DATA:
+    	    		return "Receiving data... Please wait.";
+    	    	default:
+    	    		return "Error";
+        	}
+        }
+        
+        private void pickType() {
+        	ResultType type = ResultType.values()[thisResultType];
+        	switch(type) {
+		    	case SEND_DATA:
+		        	try {
+						Sending.sendData(config[this.processNumber], getApplicationContext());
+					} catch (Exception e1) {
+						Log.e("HandleData", "Something went terribly wrong in sendData!");
+					}
+		        	break;
+		    	case RECEIVE_DATA:
+		        	try {
+						//Sending.sendData(config[this.processNumber], getApplicationContext());
+					} catch (Exception e1) {
+						Log.e("HandleData", "Something went terribly wrong in receiveData!");
+					}
+		        	break;
+		    	default:
+		    		break;
+        	}
+        }
+    	
         @Override  
         protected void onPreExecute()  
         {  
         	this.processNumber = indexer++;
-        	Log.d("SendData", "Creating process nr: " + this.processNumber);
+        	Log.d("HandleData", "Creating process nr: " + this.processNumber);
         	if(this.processNumber == 0)
         	{
-	            progressDialog = new ProgressDialog(SendData.this);  
+	            progressDialog = new ProgressDialog(HandleData.this);  
 	            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);  
-	            progressDialog.setTitle("Loading...");  
-	            progressDialog.setMessage("Sending data... Please wait.");  
+	            progressDialog.setTitle("Loading..."); 
+	            progressDialog.setMessage(getMessage());  
 	            progressDialog.setCancelable(true);
 	            progressDialog.setOnCancelListener(new OnCancelListener() {
 	                @Override
@@ -146,14 +184,10 @@ public class SendData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-    	    Log.d("SendData", "IP: " + config[this.processNumber].getStringSetting(Settings.TEST_SERVER));
-        	try {
-				Sending.sendData(config[this.processNumber], getApplicationContext());
-			} catch (Exception e1) {
-				Log.e("SendData", "Something went terribly wrong in sendData!");
-			}
+    	    Log.d("HandleData", "IP: " + config[this.processNumber].getStringSetting(Settings.TEST_SERVER));
+    	    pickType();
         	publishProgress(++progressbarUpdate);
-        	Log.d("SendData", "End of process nr : " + this.processNumber);
+        	Log.d("HandleData", "End of process nr : " + this.processNumber);
         	if(this.processNumber != (totalConfigs-1))
         	{
         		try { Thread.sleep(parseLong(sleep[this.processNumber])); } catch (InterruptedException e) {}
@@ -171,7 +205,7 @@ public class SendData extends AbstractActivity {
         
         @Override
         protected void onCancelled() {
-        	Log.d("SendData", "Task Canceled!");
+        	Log.d("HandleData", "Task Canceled!");
             progressDialog.dismiss();
 			setResult(RESULT_CANCELED);
 			finish();
@@ -182,7 +216,7 @@ public class SendData extends AbstractActivity {
         {  
 			if(progressbarUpdate == (totalConfigs))
 			{
-	        	Log.d("SendData", "Task Done!");
+	        	Log.d("HandleData", "Task Done!");
 	            progressDialog.dismiss();
 				setResult(RESULT_OK);
 				finish();

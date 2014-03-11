@@ -5,36 +5,36 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 import java.net.Inet4Address;
 import se.ltu.trafikgeneratorcoap.R;
 
-public class SendDataInput extends AbstractActivity{
+public class InputData extends AbstractActivity {
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState){
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.send_data_input);
+		setContentView(R.layout.data_input);
+		Intent type = getIntent();
+		thisResultType = type.getIntExtra("ResultType", -1);		
 		Intent intent = new Intent(this, AndroidExplorer.class);
-		startActivityForResult(intent, ResultType.LOAD_FILE.index());
+		startActivityForResult(intent, ResultType.LOAD_FILE.ordinal());
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu){
+	public boolean onCreateOptionsMenu(Menu menu) {
 		ActionBar act = getActionBar();
 		act.setDisplayShowHomeEnabled(false);
 		act.setDisplayShowTitleEnabled(false);
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.send_input, menu);
+		getMenuInflater().inflate(R.menu.input, menu);
 	    return super.onCreateOptionsMenu(menu);
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d("SendDataInput", "Options!");
+		Log.d("InputData", "Options!");
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	        case R.id.AddFile:
@@ -51,8 +51,10 @@ public class SendDataInput extends AbstractActivity{
 	    }
 	}
 	
-	public final static int maxConfigs = 10;
+	private final int maxConfigs = 10;
 	private int totalConfigs = 0;
+	
+	private int thisResultType;
 	
 	private String[] fileName = 	new String[maxConfigs];
 	private String[] filePath = 	new String[maxConfigs];
@@ -69,13 +71,13 @@ public class SendDataInput extends AbstractActivity{
 	private String[] random = 		new String[maxConfigs];	
 	
 	private void next(){
-		Log.d("SendDataInput", "Next");
+		Log.d("InputData", "Next");
 		if(addFieldsToLists() && filePath[totalConfigs] != null){
 			//Add one more, since we began counting at 0
 			totalConfigs++;
 			totalConfigs = Math.max(totalConfigs, 0);
 			totalConfigs = Math.min(totalConfigs, maxConfigs-1);
-		    Intent intent = new Intent(this, SendData.class);
+		    Intent intent = new Intent(this, HandleData.class);
 		    intent.putExtra("timeout", timeout);
 		    intent.putExtra("random", random);
 		    intent.putExtra("retransmit", retransmit);
@@ -87,7 +89,8 @@ public class SendDataInput extends AbstractActivity{
 		    intent.putExtra("ip", ip);
 		    intent.putExtra("sleep", sleep);
 		    intent.putExtra("totalConfigs", totalConfigs);
-		    startActivityForResult(intent, ResultType.SEND_DATA.index());
+		    intent.putExtra("ResultType", thisResultType);
+		    startActivityForResult(intent, thisResultType);
 		}
 		else if(filePath[totalConfigs] == null){
 			TextView infoField = (TextView) findViewById(R.id.Error);
@@ -96,7 +99,7 @@ public class SendDataInput extends AbstractActivity{
 	}
 	
 	private void removeFile(){
-		Log.d("SendDataInput", "RemoveFile");
+		Log.d("InputData", "RemoveFile");
 		if(filePath[totalConfigs] != null){
 			TextView infoField = (TextView) findViewById(R.id.Error);
 			infoField.setText("Removed #" + (totalConfigs + 1) + ": "  + fileName[totalConfigs]);
@@ -118,12 +121,12 @@ public class SendDataInput extends AbstractActivity{
 	}
 	
 	private void addFile(){
-		Log.d("SendDataInput", "AddFile");
+		Log.d("InputData", "AddFile");
 		
 		if(filePath[totalConfigs] == null)
 		{
 			Intent intent = new Intent(this, AndroidExplorer.class);
-			startActivityForResult(intent, ResultType.LOAD_FILE.index());
+			startActivityForResult(intent, ResultType.LOAD_FILE.ordinal());
 		}
 		else if (addFieldsToLists()) 
 		{
@@ -131,12 +134,12 @@ public class SendDataInput extends AbstractActivity{
 			totalConfigs = Math.max(totalConfigs, 0);
 			totalConfigs = Math.min(totalConfigs, maxConfigs-1);
 			Intent intent = new Intent(this, AndroidExplorer.class);
-			startActivityForResult(intent, ResultType.LOAD_FILE.index());
+			startActivityForResult(intent, ResultType.LOAD_FILE.ordinal());
 		}
 	}
 	
 	private boolean addFieldsToLists(){
-		Log.d("SendDataInput", "AddFields");
+		Log.d("InputData", "AddFields");
 		EditText portField = (EditText) findViewById(R.id.Port);
 		String portString = portField.getText().toString();
 		if (!portString.equals(""))
@@ -192,7 +195,7 @@ public class SendDataInput extends AbstractActivity{
 	}
 	
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	if(requestCode == ResultType.LOAD_FILE.index())
+    	if(requestCode == ResultType.LOAD_FILE.ordinal())
     	{
     		if(resultCode == RESULT_OK)
     		{
@@ -206,7 +209,7 @@ public class SendDataInput extends AbstractActivity{
     			
     		}
     	}
-    	if(requestCode == ResultType.SEND_DATA.index())
+    	if(requestCode == thisResultType)
     	{
     		if(resultCode == RESULT_OK)
     		{
