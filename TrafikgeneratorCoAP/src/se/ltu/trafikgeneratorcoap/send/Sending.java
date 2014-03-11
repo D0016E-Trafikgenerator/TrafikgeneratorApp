@@ -24,7 +24,7 @@ public class Sending {
 	private static Random random = new Random();
 	private static int sentMessages = 0;
 	private static long lastSentMessage = 0L;
-	public static void sendDataFromApp(TrafficConfig config, Context context) {
+	public static void sendData(TrafficConfig config, Context context) {
 		Sending.context = context;
 		sendData(config);
 	}
