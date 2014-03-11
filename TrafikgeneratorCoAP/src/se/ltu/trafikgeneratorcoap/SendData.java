@@ -21,7 +21,6 @@ public class SendData extends AbstractActivity {
 	private String[] random;
 	private String[] retransmit;
 	private String[] nStart;
-	private String[] probingRate;
 	private String[] payloadSize;
 	private String[] sleep;
     private TrafficConfig[] config;
@@ -46,7 +45,6 @@ public class SendData extends AbstractActivity {
 	    port = 				intent.getStringArrayExtra("port");
 	    seconds = 			intent.getStringArrayExtra("seconds");
         random = 			intent.getStringArrayExtra("random");
-	    probingRate = 		intent.getStringArrayExtra("probingRate");
 	    filePath = 			intent.getStringArrayExtra("filePath");
 	    ip = 				intent.getStringArrayExtra("ip");
 	    sleep = 			intent.getStringArrayExtra("sleep");
@@ -79,8 +77,6 @@ public class SendData extends AbstractActivity {
 	    
 	    if(random[taskIndex] != null)
 	    	config[taskIndex].setDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR, parseFloat(random[taskIndex]));
-	    if(probingRate[taskIndex] != null)
-	    	config[taskIndex].setDecimalSetting(Settings.COAP_PROBING_RATE, parseFloat(probingRate[taskIndex]));
     	
 	    if(ip[taskIndex] != null)
 	    	config[taskIndex].setStringSetting(Settings.TEST_SERVER, ip[taskIndex]);

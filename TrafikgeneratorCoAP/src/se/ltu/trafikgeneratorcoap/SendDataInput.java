@@ -51,7 +51,7 @@ public class SendDataInput extends AbstractActivity{
 	    }
 	}
 	
-	private int maxConfigs = 10;
+	public final static int maxConfigs = 10;
 	private int totalConfigs = 0;
 	
 	private String[] fileName = 	new String[maxConfigs];
@@ -67,7 +67,6 @@ public class SendDataInput extends AbstractActivity{
 	private String[] sleep = 		new String[maxConfigs];
 	
 	private String[] random = 		new String[maxConfigs];	
-	private String[] probingRate = 	new String[maxConfigs];
 	
 	private void next(){
 		Log.d("SendDataInput", "Next");
@@ -81,7 +80,6 @@ public class SendDataInput extends AbstractActivity{
 		    intent.putExtra("random", random);
 		    intent.putExtra("retransmit", retransmit);
 		    intent.putExtra("nStart", nStart);
-		    intent.putExtra("probingRate", probingRate);
 		    intent.putExtra("payloadSize", payloadSize);
 		    intent.putExtra("filePath", filePath);
 		    intent.putExtra("port", port);
@@ -113,7 +111,6 @@ public class SendDataInput extends AbstractActivity{
 			seconds[totalConfigs] = null;
 			sleep[totalConfigs] = null;
 			random[totalConfigs] = null;
-			probingRate[totalConfigs] = null;
 			totalConfigs--;
 			totalConfigs = Math.max(totalConfigs, 0);
 			totalConfigs = Math.min(totalConfigs, maxConfigs-1);
@@ -169,11 +166,6 @@ public class SendDataInput extends AbstractActivity{
 		String nstartString = nstartField.getText().toString();
 		if(!nstartString.equals(""))
 			nStart[totalConfigs] = nstartString;
-		
-		EditText probingrateField = (EditText) findViewById(R.id.probingRate);
-		String probingrateString = probingrateField.getText().toString();
-		if(!probingrateString.equals(""))
-			probingRate[totalConfigs] = probingrateString;
 		
 		EditText payloadsizeField = (EditText) findViewById(R.id.payloadSize);
 		String payloadsizeString = payloadsizeField.getText().toString();

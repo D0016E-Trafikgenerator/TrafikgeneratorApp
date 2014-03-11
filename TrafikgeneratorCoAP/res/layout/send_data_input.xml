@@ -77,14 +77,6 @@
                 android:inputType="number" />
 
             <EditText
-                android:id="@+id/probingRate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/Probingrate"
-                android:inputType="numberDecimal" />
-
-            <EditText
                 android:id="@+id/payloadSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

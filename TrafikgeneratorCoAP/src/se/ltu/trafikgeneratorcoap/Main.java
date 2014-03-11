@@ -37,6 +37,14 @@ public class Main extends AbstractActivity {
 		startActivityForResult(intent, ResultType.RECEIVE_DATA.index());*/
 	}
 	
+	public void installTCPDump(View view) {
+		
+	}
+	
+	public void uninstallTCPDump(View view) {
+		
+	}
+	
 	public void exit(View view){
         finish();
         System.exit(0);
