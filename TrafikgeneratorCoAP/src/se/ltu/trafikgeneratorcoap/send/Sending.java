@@ -1,7 +1,6 @@
 package se.ltu.trafikgeneratorcoap.send;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -20,13 +19,15 @@ import ch.ethz.inf.vs.californium.network.CoAPEndpoint;
 public class Sending {
 	private static int maxpacketsize = 1024;
 	private static int headersize = 59;
-	private static Context context;
+	        static Context context;
 	private static Random random = new Random();
 	private static int sentMessages = 0;
-	private static long lastSentMessage = 0L;
 	public static void sendData(TrafficConfig config, Context context) {
 		Sending.context = context;
 		sendData(config);
+	}
+	public static void abort(TrafficConfig config) {
+		;
 	}
 	public static void sendDataFromPC(TrafficConfig config) {
 		sendData(config);
@@ -61,12 +62,7 @@ public class Sending {
 		String controlPayload = TrafficConfig.networkConfigToStringList(config.toNetworkConfig());
 		String controlURI = "coap://" + uri + "/control?time=" + date;
 		control.setURI(controlURI);
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		//try {Thread.sleep(100);} catch (InterruptedException e2) {;}
 		control.setPayload(controlPayload);
 		control.send(controlEndpoint);
 		Response response;
@@ -81,30 +77,20 @@ public class Sending {
 						- internetTimeClient.getNtpTimeReference() - System.currentTimeMillis();
 				Meta.beforeTest(config, token, date, ntp_uri, ntpError);
 				boolean testDone = false;
-				int packetsize = headersize + payloadSize;
-				float packetsPerSecond = (float)sendrate / (float)packetsize;
-				int timeBetweenPackets = (int) Math.round(1000.0/packetsPerSecond);
-				Log.d("dummycoap", "payloadSize: " + payloadSize +
-						"\npacketsize: " + packetsize +
-						"\nsendrate: " + sendrate + 
-						"\npacketsPerSecond: " + packetsPerSecond +
-						"\ntimeBetweenPackets: " + timeBetweenPackets + 
-						"ms\npackets to send: at most " + Math.round((numberOfTests*seconds*1000)/((float)timeBetweenPackets)) +
-						"(or " + maxMessages + ")");
 				Thread.sleep(5000);
 				CoAPEndpoint dataEndpoint = new CoAPEndpoint(config.toNetworkConfig());
 				dataEndpoint.start();
 				if (config.getStringSetting(Settings.TRAFFIC_TYPE).equals("CONSTANT_SOURCE")) {
 					if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("TIME")) {
-						Sending.runTimeTest(dataEndpoint, uri, testport, seconds, type, payloadSize, timeBetweenPackets, timeBetweenTests, numberOfTests);
+						Sending.runTimeTest(dataEndpoint, uri, testport, seconds, type, payloadSize, sendrate, timeBetweenTests, numberOfTests);
 						testDone = true;
 					}
 					else if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("MESSAGES")) {
-						Sending.runMessageTest(dataEndpoint, uri, testport, maxMessages, type, payloadSize, timeBetweenPackets, timeBetweenTests, numberOfTests);
+						Sending.runMessageTest(dataEndpoint, uri, testport, maxMessages, type, payloadSize, sendrate, timeBetweenTests, numberOfTests);
 						testDone = true;
 					}
 					else if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("FILETRANSFER")) {
-						Sending.runMessageTest(dataEndpoint, uri, testport, maxMessages, type, payloadSize, timeBetweenPackets, timeBetweenTests, numberOfTests);
+						Sending.runMessageTest(dataEndpoint, uri, testport, maxMessages, type, payloadSize, sendrate, timeBetweenTests, numberOfTests);
 						testDone = true;
 					}
 				}
@@ -136,23 +122,30 @@ public class Sending {
 		} catch (InterruptedException e1) {;} catch (IOException e) {;}
 	}
 	private static void runTimeTest(CoAPEndpoint endpoint, String uri, Integer testport, Integer seconds, CoAP.Type type, Integer payloadSize,
-			Integer timeBetweenPackets, Integer timeBetweenTests, Integer numberOfTests) {
+			Integer rate, Integer timeBetweenTests, Integer numberOfTests) {
+		int bucketFillDelayInMs = 1000/(rate/(payloadSize+headersize));
+		boolean tokens = true;
 		try {
 			for (int i = 1; i <= numberOfTests; i++) {
-				long endtime = ((long) Math.round(1000 * seconds)) + SystemClock.elapsedRealtime();
-				while (SystemClock.elapsedRealtime() < endtime) {
-					long timeToNextSend = lastSentMessage + timeBetweenPackets - SystemClock.elapsedRealtime();
-					if (timeToNextSend > 0) {
-						Thread.sleep(timeToNextSend);
+				long timeToStopTest = ((long) Math.round(1000 * seconds)) + SystemClock.elapsedRealtime();
+
+				long nextTimeToFillBucket = SystemClock.elapsedRealtime() + bucketFillDelayInMs;
+				
+				while (SystemClock.elapsedRealtime() < timeToStopTest) {
+					if (tokens) {
+						Request test;
+						test = Request.newPost();
+						String testURI = "coap://" + uri + ":" + testport + "/test";
+						test.setURI(testURI);
+						test.setType(type);
+						test.setPayload(DummyGenerator.makeDummydata(random.nextLong(), payloadSize));
+						test.send(endpoint);
+						tokens = false;
 					}
-					Request test;
-					test = Request.newPost();
-					String testURI = "coap://" + uri + ":" + testport + "/test";
-					test.setURI(testURI);
-					test.setType(type);
-					test.setPayload(DummyGenerator.makeDummydata(random.nextLong(), payloadSize));
-					test.send(endpoint);
-					lastSentMessage = SystemClock.elapsedRealtime();
+					if (SystemClock.elapsedRealtime() >= nextTimeToFillBucket) {
+						nextTimeToFillBucket += bucketFillDelayInMs;
+						tokens = true;
+					}
 					/*if (test.isConfirmable())
 						while (!test.isAcknowledged() && !test.isTimeouted() && !test.isCanceled() && !test.isRejected())
 							Thread.sleep(1);*/
@@ -163,29 +156,31 @@ public class Sending {
 		} catch (InterruptedException e) {;}
 	}
 	private static void runMessageTest(CoAPEndpoint endpoint, String uri, Integer testport, Integer maxMessages, CoAP.Type type, Integer payloadSize,
-			Integer timeBetweenPackets, Integer timeBetweenTests, Integer numberOfTests) {
+			Integer rate, Integer timeBetweenTests, Integer numberOfTests) {
+		int bucketFillDelayInMs = 1000/(rate/(payloadSize+headersize));
+		boolean tokens = true;
 		try {
 			for (int i = 1; i <= numberOfTests; i++) {
+				long nextTimeToFillBucket = SystemClock.elapsedRealtime() + bucketFillDelayInMs;
 				while (sentMessages < maxMessages) {
-					//Log.d("dummycoap", "sentMessages, maxMessages " + sentMessages +" "+ maxMessages);
-					long timeToNextSend = lastSentMessage + timeBetweenPackets - SystemClock.elapsedRealtime();
-					if (timeToNextSend > 0) {
-						Thread.sleep(timeToNextSend);
+					if (tokens) {
+						Request test;
+						test = Request.newPost();
+						String testURI = "coap://" + uri + ":" + testport + "/test";
+						test.setURI(testURI);
+						test.setType(type);
+						test.setPayload(DummyGenerator.makeDummydata(random.nextLong(), payloadSize));
+						test.send(endpoint);
+						tokens = false;
+						sentMessages += 1;
+						if (test.isConfirmable())
+							while (!test.isAcknowledged() && !test.isTimeouted() && !test.isCanceled() && !test.isRejected())
+								Thread.sleep(1);
 					}
-					Request test;
-					test = Request.newPost();
-					String testURI = "coap://" + uri + ":" + testport + "/test";
-					test.setURI(testURI);
-					test.setType(type);
-					test.setPayload(DummyGenerator.makeDummydata(random.nextLong(), payloadSize));
-//					if ((sentMessages+1) < 10 || (maxMessages-sentMessages) < 10)
-//						Log.d("dummycoap", "payloadstring" + test.getPayloadString().substring(0, 50).replaceAll("[\u0000-\u001f]", ""));
-					test.send(endpoint);
-					sentMessages += 1;
-					lastSentMessage = SystemClock.elapsedRealtime();
-					if (test.isConfirmable())
-						while (!test.isAcknowledged() && !test.isTimeouted() && !test.isCanceled() && !test.isRejected())
-							Thread.sleep(1);
+					if (SystemClock.elapsedRealtime() >= nextTimeToFillBucket) {
+						nextTimeToFillBucket += bucketFillDelayInMs;
+						tokens = true;
+					}
 				}
 	    		if (i < numberOfTests)
 					Thread.sleep(timeBetweenTests);
