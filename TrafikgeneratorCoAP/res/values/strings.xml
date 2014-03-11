@@ -55,5 +55,8 @@
     
     <item name="RemoveFile" type="id"/>
     <item name="AddFile" type="id"/>
+    <string name="tcpdumpinstall">Install TCPDump</string>
+    <string name="tcpdumpuninstall">Uninstall TCPDump</string>
+    <string name="SUCheck">Check SU</string>
 
 </resources>

@@ -19,6 +19,16 @@
         android:text="@string/Exit" />
 
     <Button
+        android:id="@+id/SendData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:onClick="sendData"
+        android:text="@string/Send" />
+
+    <Button
         android:id="@+id/RecieveData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,13 +38,30 @@
         android:text="@string/Receive" />
 
     <Button
-        android:id="@+id/SendData"
+        android:id="@+id/TCPDumpInstall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/RecieveData"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="142dp"
-        android:onClick="sendData"
-        android:text="@string/Send" />
+        android:onClick="uninstallTCPDump"
+        android:text="@string/tcpdumpinstall" />
+
+    <Button
+        android:id="@+id/SUCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TCPDumpUninstall"
+        android:layout_centerHorizontal="true"
+        android:onClick="checkSU"
+        android:text="@string/SUCheck" />
+
+    <Button
+        android:id="@+id/TCPDumpUninstall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/RecieveData"
+        android:layout_below="@+id/TCPDumpInstall"
+        android:onClick="installTCPDump"
+        android:text="@string/tcpdumpuninstall" />
 
 </RelativeLayout>

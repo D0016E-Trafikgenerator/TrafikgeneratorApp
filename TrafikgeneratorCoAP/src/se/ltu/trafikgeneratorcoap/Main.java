@@ -45,6 +45,10 @@ public class Main extends AbstractActivity {
 		
 	}
 	
+	public void checkSU(View view) {
+		
+	}
+	
 	public void exit(View view){
         finish();
         System.exit(0);
