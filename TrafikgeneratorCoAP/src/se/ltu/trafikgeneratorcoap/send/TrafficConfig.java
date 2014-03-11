@@ -6,8 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Locale;
 
-import android.util.Log;
-
 import ch.ethz.inf.vs.californium.network.config.NetworkConfig;
 
 public class TrafficConfig {
@@ -26,7 +24,6 @@ public class TrafficConfig {
 	private Float   coap_ack_random_factor          = (float) 1.5;
 	private Integer coap_max_retransmit             = 4;
 	private Integer coap_nstart                     = 1;
-	private Integer coap_probing_rate               = 1;
 
 	private String  traffic_type                    = "CONSTANT_SOURCE";
 	private String  traffic_mode                    = "TIME";
@@ -35,8 +32,8 @@ public class TrafficConfig {
 	private Float   traffic_onoff_maxsendtime       = (float) 60.0;
 	private Integer traffic_rate                    = 25000;
 	private Integer traffic_messagesize             = 100;
-	private Float   traffic_intermission            = (float) 0.0;
-	private Float   traffic_randomfactor            = (float) 1.0;
+	private Integer traffic_filesize                = 524288;
+	private Integer traffic_blocksize               = 512;
 	private Float   traffic_burst_time              = (float) 500.0;
 	private Float   traffic_idle_time               = (float) 500.0;
 	
@@ -64,8 +61,6 @@ public class TrafficConfig {
 					                                   { traffic_onoff_maxsendtime    = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue; }
 					                               else
 					                                   { traffic_constant_maxsendtime = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue; }
-				case TRAFFIC_INTERMISSION:         traffic_intermission         = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
-				case TRAFFIC_RANDOMFACTOR:         traffic_randomfactor         = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TRAFFIC_BURST_TIME:           traffic_burst_time           = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TRAFFIC_IDLE_TIME:            traffic_idle_time            = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TEST_TESTPORT:                test_testport                = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
@@ -75,10 +70,11 @@ public class TrafficConfig {
 				case COAP_ACK_TIMEOUT:             coap_ack_timeout             = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case COAP_MAX_RETRANSMIT:          coap_max_retransmit          = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case COAP_NSTART:                  coap_nstart                  = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
-				case COAP_PROBING_RATE:            coap_probing_rate            = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TRAFFIC_MAXMESSAGES:          traffic_maxmessages          = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TRAFFIC_RATE:                 traffic_rate                 = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TRAFFIC_MESSAGESIZE:          traffic_messagesize          = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_FILESIZE:             traffic_filesize             = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TRAFFIC_BLOCKSIZE:            traffic_blocksize            = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case META_AUTHOR:                  meta_author                  = data; trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case META_TITLE:                   meta_title                   = data; trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TEST_SERVER:                  test_server                  = data.replaceAll("\\s+", ""); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
@@ -98,8 +94,6 @@ public class TrafficConfig {
 				                                   return traffic_onoff_maxsendtime;
 				                               else
 				                            	   return traffic_constant_maxsendtime;
-			case TRAFFIC_INTERMISSION:         return traffic_intermission;
-			case TRAFFIC_RANDOMFACTOR:         return traffic_randomfactor;
 			case TRAFFIC_BURST_TIME:           return traffic_burst_time;
 			case TRAFFIC_IDLE_TIME:            return traffic_idle_time;
 			default:                           return null;
@@ -113,8 +107,6 @@ public class TrafficConfig {
 				                                   traffic_onoff_maxsendtime = value;
 				                               else
 				                            	   traffic_constant_maxsendtime = value;
-			case TRAFFIC_INTERMISSION:         traffic_intermission = value;
-			case TRAFFIC_RANDOMFACTOR:         traffic_randomfactor = value;
 			case TRAFFIC_BURST_TIME:           traffic_burst_time = value;
 			case TRAFFIC_IDLE_TIME:            traffic_idle_time = value;
 			default:                           return;
@@ -129,10 +121,11 @@ public class TrafficConfig {
 			case COAP_ACK_TIMEOUT:             return coap_ack_timeout;
 			case COAP_MAX_RETRANSMIT:          return coap_max_retransmit;
 			case COAP_NSTART:                  return coap_nstart;
-			case COAP_PROBING_RATE:            return coap_probing_rate;
 			case TRAFFIC_MAXMESSAGES:          return traffic_maxmessages;
 			case TRAFFIC_RATE:                 return traffic_rate;
 			case TRAFFIC_MESSAGESIZE:          return traffic_messagesize;
+			case TRAFFIC_FILESIZE:             return traffic_filesize;
+			case TRAFFIC_BLOCKSIZE:            return traffic_blocksize;
 			default:                           return null;
 		}
 	}
@@ -146,10 +139,11 @@ public class TrafficConfig {
 			case COAP_ACK_TIMEOUT:             coap_ack_timeout = value;
 			case COAP_MAX_RETRANSMIT:          coap_max_retransmit = value;
 			case COAP_NSTART:                  coap_nstart = value;
-			case COAP_PROBING_RATE:            coap_probing_rate = value;
 			case TRAFFIC_MAXMESSAGES:          traffic_maxmessages = value;
 			case TRAFFIC_RATE:                 traffic_rate = value;
 			case TRAFFIC_MESSAGESIZE:          traffic_messagesize = value;
+			case TRAFFIC_FILESIZE:             traffic_filesize = value;
+			case TRAFFIC_BLOCKSIZE:            traffic_blocksize = value;
 			default:                           return;
 		}
 	}
@@ -264,15 +258,14 @@ public class TrafficConfig {
 		stringBuilder.append(Settings.COAP_ACK_RANDOM_FACTOR.toString() + "=" + config.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR) + newline);
 		stringBuilder.append(Settings.COAP_MAX_RETRANSMIT.toString() + "=" + config.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT) + newline);
 		stringBuilder.append(Settings.COAP_NSTART.toString() + "=" + config.getIntegerSetting(Settings.COAP_NSTART) + newline);
-		stringBuilder.append(Settings.COAP_PROBING_RATE.toString() + "=" + config.getIntegerSetting(Settings.COAP_PROBING_RATE) + newline);
 		stringBuilder.append(Settings.TRAFFIC_TYPE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_TYPE) + newline);
 		stringBuilder.append(Settings.TRAFFIC_MODE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_MODE) + newline);
 		stringBuilder.append(Settings.TRAFFIC_MAXSENDTIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME) + newline);
 		stringBuilder.append(Settings.TRAFFIC_MAXMESSAGES.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES) + newline);
 		stringBuilder.append(Settings.TRAFFIC_RATE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_RATE) + newline);
 		stringBuilder.append(Settings.TRAFFIC_MESSAGESIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE) + newline);
-		stringBuilder.append(Settings.TRAFFIC_INTERMISSION.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_INTERMISSION) + newline);
-		stringBuilder.append(Settings.TRAFFIC_RANDOMFACTOR.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_RANDOMFACTOR) + newline);
+		stringBuilder.append(Settings.TRAFFIC_FILESIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_FILESIZE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_BLOCKSIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_BLOCKSIZE) + newline);
 		stringBuilder.append(Settings.TRAFFIC_BURST_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_BURST_TIME) + newline);
 		stringBuilder.append(Settings.TRAFFIC_IDLE_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_IDLE_TIME) + newline);
 		return stringBuilder.toString();

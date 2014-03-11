@@ -15,6 +15,7 @@ import ch.ethz.inf.vs.californium.coap.Request;
 import ch.ethz.inf.vs.californium.coap.Response;
 import ch.ethz.inf.vs.californium.coap.CoAP.ResponseCode;
 import ch.ethz.inf.vs.californium.network.CoAPEndpoint;
+import ch.ethz.inf.vs.californium.network.Exchange;
 
 public class Sending {
 	private static int maxpacketsize = 1024;
@@ -50,6 +51,8 @@ public class Sending {
 		int ntpPort = config.getIntegerSetting(Settings.TEST_NTPPORT);
 		int maxMessages = config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES);
 		int sendrate = config.getIntegerSetting(Settings.TRAFFIC_RATE);
+		int filesize = config.getIntegerSetting(Settings.TRAFFIC_FILESIZE);
+		int blocksize = config.getIntegerSetting(Settings.TRAFFIC_BLOCKSIZE);
 		String date = (new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())).format(new Date());
 		CoAP.Type type = config.getStringSetting(Settings.COAP_MESSAGETYPE).equals("CON")?CoAP.Type.CON:CoAP.Type.NON;
 		//Test protocol 1.3a.2
@@ -90,7 +93,7 @@ public class Sending {
 						testDone = true;
 					}
 					else if (config.getStringSetting(Settings.TRAFFIC_MODE).equals("FILETRANSFER")) {
-						Sending.runMessageTest(dataEndpoint, uri, testport, maxMessages, type, payloadSize, sendrate, timeBetweenTests, numberOfTests);
+						Sending.runFileTest(dataEndpoint, uri, testport, filesize, blocksize, sendrate, timeBetweenTests, numberOfTests);
 						testDone = true;
 					}
 				}
@@ -182,6 +185,27 @@ public class Sending {
 						tokens = true;
 					}
 				}
+	    		if (i < numberOfTests)
+					Thread.sleep(timeBetweenTests);
+			}
+		} catch (InterruptedException e) {;}
+	}
+	private static void runFileTest(CoAPEndpoint endpoint, String uri, Integer testport, Integer filesize, Integer blocksize,
+			Integer rate, Integer timeBetweenTests, Integer numberOfTests) {
+		byte[] dummyfile = DummyGenerator.makeDummydata(random.nextLong(), filesize);
+		Log.d("dummycoap", "längd " + dummyfile.length);
+		try {
+			for (int i = 1; i <= numberOfTests; i++) {
+				//TODO: Implement rate limiting -- by taking test.send(endpoint) in a pausable thread? 
+				Request test;
+				test = Request.newPost();
+				String testURI = "coap://" + uri + ":" + testport + "/test";
+				test.setURI(testURI);
+				test.setPayload(dummyfile);
+				test.send(endpoint);
+				//Exchange x = new Exchange(test, null);
+				//x.s
+				test.waitForResponse();
 	    		if (i < numberOfTests)
 					Thread.sleep(timeBetweenTests);
 			}
