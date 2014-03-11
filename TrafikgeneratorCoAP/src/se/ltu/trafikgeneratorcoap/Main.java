@@ -1,5 +1,7 @@
 package se.ltu.trafikgeneratorcoap;
 
+import java.io.File;
+
 import se.ltu.trafikgeneratorcoap.R;
 
 import android.os.Bundle;
@@ -38,7 +40,8 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void installTCPDump(View view) {
-		
+		Intent intent = new Intent(this, AndroidExplorer.class);
+		startActivityForResult(intent, ResultType.LOAD_FILE.index());
 	}
 	
 	public void uninstallTCPDump(View view) {
@@ -53,9 +56,24 @@ public class Main extends AbstractActivity {
         finish();
         System.exit(0);
 	}
+	
+	private void install(String string) {
+		Log.d("Main", string);
+	}
 		
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
+    	if(requestCode == ResultType.LOAD_FILE.index())
+    	{
+    		if(resultCode == RESULT_OK)
+    		{
+    			install(data.getStringExtra("path"));
+    		}
+    		if(resultCode == RESULT_CANCELED)
+    		{
+    			
+    		}
+    	}
     	if(requestCode == ResultType.SEND_DATA.index())
     	{
     		if(resultCode == RESULT_OK)
