@@ -141,10 +141,12 @@ public class HandleData extends AbstractActivity {
 						Sending.sendData(config[this.processNumber], getApplicationContext());
 					} catch (Exception e1) {
 						Log.e("HandleData", "Something went terribly wrong in sendData!");
+						//Sending.abort(config[this.processNumber]);
 					}
 		        	break;
 		    	case RECEIVE_DATA:
 		        	try {
+		        		//Receiving!
 						//Sending.sendData(config[this.processNumber], getApplicationContext());
 					} catch (Exception e1) {
 						Log.e("HandleData", "Something went terribly wrong in receiveData!");
@@ -206,6 +208,7 @@ public class HandleData extends AbstractActivity {
         @Override
         protected void onCancelled() {
         	Log.d("HandleData", "Task Canceled!");
+        	//Sending.abort(config[this.processNumber]);
             progressDialog.dismiss();
 			setResult(RESULT_CANCELED);
 			finish();

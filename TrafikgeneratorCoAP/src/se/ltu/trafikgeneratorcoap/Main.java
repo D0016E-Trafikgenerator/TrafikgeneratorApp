@@ -1,5 +1,7 @@
 package se.ltu.trafikgeneratorcoap;
 
+import java.io.IOException;
+
 import se.ltu.trafikgeneratorcoap.R;
 import android.os.Bundle;
 import android.app.Dialog;
@@ -18,6 +20,11 @@ public class Main extends AbstractActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		try {
+			Runtime.getRuntime().exec("su ; echo \"hej\"");
+		} catch (IOException e) {
+			Log.e("Main", "Could not grant SU.");
+		}
 	}
 
 	@Override
@@ -67,10 +74,6 @@ public class Main extends AbstractActivity {
     		if(resultCode == RESULT_OK)
     		{
     			install(data.getStringExtra("path"));
-    		}
-    		if(resultCode == RESULT_CANCELED)
-    		{
-    			
     		}
     	}
     	if(requestCode == ResultType.SEND_DATA.ordinal())
@@ -128,6 +131,10 @@ public class Main extends AbstractActivity {
                     }
                 });
                 dialog.show();
+    		}
+    		if(resultCode == RESULT_CANCELED)
+    		{
+    			Log.d("Main", "Task Canceled!");
     		}
     	}
     }
