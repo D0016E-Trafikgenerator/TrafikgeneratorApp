@@ -8,14 +8,12 @@ import java.util.Random;
 
 import android.content.Context;
 import android.os.SystemClock;
-import android.util.Log;
 
 import ch.ethz.inf.vs.californium.coap.CoAP;
 import ch.ethz.inf.vs.californium.coap.Request;
 import ch.ethz.inf.vs.californium.coap.Response;
 import ch.ethz.inf.vs.californium.coap.CoAP.ResponseCode;
 import ch.ethz.inf.vs.californium.network.CoAPEndpoint;
-import ch.ethz.inf.vs.californium.network.Exchange;
 
 public class Sending {
 	private static int maxpacketsize = 1024;
@@ -39,11 +37,6 @@ public class Sending {
 		int numberOfTests = config.getIntegerSetting(Settings.TEST_REPEATS);
 		int timeBetweenTests = Math.round(config.getDecimalSetting(Settings.TEST_INTERMISSION));
 		String uri = config.getStringSetting(Settings.TEST_SERVER);
-		/*int controlPort = 5683;
-		if (uri.split(":").length == 2) {
-			controlPort = Integer.valueOf(uri.split(":")[1]);
-			uri = uri.split(":")[0];
-		}*/
 		int testport = config.getIntegerSetting(Settings.TEST_TESTPORT);
 		int payloadSize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE);
 		if (payloadSize + headersize > maxpacketsize) payloadSize = maxpacketsize-headersize;
@@ -65,7 +58,6 @@ public class Sending {
 		String controlPayload = TrafficConfig.networkConfigToStringList(config.toNetworkConfig());
 		String controlURI = "coap://" + uri + "/control?time=" + date;
 		control.setURI(controlURI);
-		//try {Thread.sleep(100);} catch (InterruptedException e2) {;}
 		control.setPayload(controlPayload);
 		control.send(controlEndpoint);
 		Response response;
@@ -126,7 +118,11 @@ public class Sending {
 	}
 	private static void runTimeTest(CoAPEndpoint endpoint, String uri, Integer testport, Integer seconds, CoAP.Type type, Integer payloadSize,
 			Integer rate, Integer timeBetweenTests, Integer numberOfTests) {
-		int bucketFillDelayInMs = 1000/(rate/(payloadSize+headersize));
+		int bucketFillDelayInMs;
+		if (rate > 0 && payloadSize > 0 && headersize > 0)
+			bucketFillDelayInMs = 1000/(rate/(payloadSize+headersize));
+		else
+			bucketFillDelayInMs = 0;
 		boolean tokens = true;
 		try {
 			for (int i = 1; i <= numberOfTests; i++) {
@@ -134,9 +130,10 @@ public class Sending {
 
 				long nextTimeToFillBucket = SystemClock.elapsedRealtime() + bucketFillDelayInMs;
 				
+				Request test = null;
+				
 				while (SystemClock.elapsedRealtime() < timeToStopTest) {
-					if (tokens) {
-						Request test;
+					if (tokens && test == null) {
 						test = Request.newPost();
 						String testURI = "coap://" + uri + ":" + testport + "/test";
 						test.setURI(testURI);
@@ -144,14 +141,17 @@ public class Sending {
 						test.setPayload(DummyGenerator.makeDummydata(random.nextLong(), payloadSize));
 						test.send(endpoint);
 						tokens = false;
+						if (!test.isConfirmable())
+							test = null;
 					}
-					if (SystemClock.elapsedRealtime() >= nextTimeToFillBucket) {
+					if (bucketFillDelayInMs > 0 && SystemClock.elapsedRealtime() >= nextTimeToFillBucket) {
 						nextTimeToFillBucket += bucketFillDelayInMs;
 						tokens = true;
 					}
-					/*if (test.isConfirmable())
-						while (!test.isAcknowledged() && !test.isTimeouted() && !test.isCanceled() && !test.isRejected())
-							Thread.sleep(1);*/
+					else if (bucketFillDelayInMs <= 1)
+						tokens = true;
+					if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimeouted() || test.isCanceled() || test.isRejected()))
+						test = null;
 				}
 	    		if (i < numberOfTests)
 					Thread.sleep(timeBetweenTests);
@@ -165,9 +165,9 @@ public class Sending {
 		try {
 			for (int i = 1; i <= numberOfTests; i++) {
 				long nextTimeToFillBucket = SystemClock.elapsedRealtime() + bucketFillDelayInMs;
+				Request test = null;
 				while (sentMessages < maxMessages) {
-					if (tokens) {
-						Request test;
+					if (tokens && test == null) {
 						test = Request.newPost();
 						String testURI = "coap://" + uri + ":" + testport + "/test";
 						test.setURI(testURI);
@@ -176,14 +176,14 @@ public class Sending {
 						test.send(endpoint);
 						tokens = false;
 						sentMessages += 1;
-						if (test.isConfirmable())
-							while (!test.isAcknowledged() && !test.isTimeouted() && !test.isCanceled() && !test.isRejected())
-								Thread.sleep(1);
 					}
 					if (SystemClock.elapsedRealtime() >= nextTimeToFillBucket) {
 						nextTimeToFillBucket += bucketFillDelayInMs;
 						tokens = true;
 					}
+					if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimeouted() || test.isCanceled() || test.isRejected()))
+							test = null;
+					
 				}
 	    		if (i < numberOfTests)
 					Thread.sleep(timeBetweenTests);
@@ -193,18 +193,15 @@ public class Sending {
 	private static void runFileTest(CoAPEndpoint endpoint, String uri, Integer testport, Integer filesize, Integer blocksize,
 			Integer rate, Integer timeBetweenTests, Integer numberOfTests) {
 		byte[] dummyfile = DummyGenerator.makeDummydata(random.nextLong(), filesize);
-		Log.d("dummycoap", "längd " + dummyfile.length);
 		try {
 			for (int i = 1; i <= numberOfTests; i++) {
-				//TODO: Implement rate limiting -- by taking test.send(endpoint) in a pausable thread? 
+				//TODO: Implement rate limiting -- by taking test.send(endpoint) in a pausable thread?
 				Request test;
 				test = Request.newPost();
 				String testURI = "coap://" + uri + ":" + testport + "/test";
 				test.setURI(testURI);
 				test.setPayload(dummyfile);
 				test.send(endpoint);
-				//Exchange x = new Exchange(test, null);
-				//x.s
 				test.waitForResponse();
 	    		if (i < numberOfTests)
 					Thread.sleep(timeBetweenTests);

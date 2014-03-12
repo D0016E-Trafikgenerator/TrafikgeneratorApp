@@ -137,8 +137,8 @@ public class HandleData extends AbstractActivity {
         	ResultType type = ResultType.values()[thisResultType];
         	switch(type) {
 		    	case SEND_DATA:
-		        	try {
 						Sending.sendData(config[this.processNumber], getApplicationContext());
+		        	try { ;
 					} catch (Exception e1) {
 						Log.e("HandleData", "Something went terribly wrong in sendData!");
 						//Sending.abort(config[this.processNumber]);

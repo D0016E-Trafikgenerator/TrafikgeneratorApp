@@ -177,6 +177,9 @@ public class TrafficConfig {
 		config.setInt("MAX_RETRANSMIT", this.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT));
 		config.setInt("MAX_MESSAGE_SIZE", this.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE));
 		config.setFloat("ACK_RANDOM_FACTOR", this.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR));
+		config.setInt("MAX_RETRANSMIT", this.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT));
+		//config.setInt("EXCHANGE_LIFECYCLE", this.getIntegerSetting(Settings.COAP_LIFECYCLE));
+		config.setInt("DEFAULT_BLOCK_SIZE", this.getIntegerSetting(Settings.TRAFFIC_BLOCKSIZE));
 		return config;
 	}
 	static public String fileToString(String filename) {
