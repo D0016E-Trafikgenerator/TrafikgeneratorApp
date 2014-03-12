@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 import java.net.Inet4Address;
+import java.util.ArrayList;
+
 import se.ltu.trafikgeneratorcoap.R;
 
 public class InputData extends AbstractActivity {
@@ -51,48 +53,41 @@ public class InputData extends AbstractActivity {
 	    }
 	}
 	
-	private final int maxConfigs = 10;
 	private int totalConfigs = 0;
 	
 	private int thisResultType;
 	
-	private String[] fileName = 	new String[maxConfigs];
-	private String[] filePath = 	new String[maxConfigs];
-	private String[] ip = 			new String[maxConfigs];
-	
-	private String[] timeout = 		new String[maxConfigs];
-	private String[] retransmit = 	new String[maxConfigs];		
-	private String[] nStart = 		new String[maxConfigs];	
-	private String[] payloadSize = 	new String[maxConfigs];	
-	private String[] port = 		new String[maxConfigs];	
-	private String[] seconds = 		new String[maxConfigs];
-	private String[] sleep = 		new String[maxConfigs];
-	
-	private String[] random = 		new String[maxConfigs];	
+	private ArrayList<String> fileName = 	new ArrayList<String>();
+	private ArrayList<String> filePath = 	new ArrayList<String>();
+	private ArrayList<String> ip = 			new ArrayList<String>();
+	private ArrayList<String> timeout = 	new ArrayList<String>();
+	private ArrayList<String> retransmit = 	new ArrayList<String>();		
+	private ArrayList<String> nStart = 		new ArrayList<String>();
+	private ArrayList<String> payloadSize = new ArrayList<String>();
+	private ArrayList<String> port = 		new ArrayList<String>();
+	private ArrayList<String> seconds = 	new ArrayList<String>();
+	private ArrayList<String> sleep = 		new ArrayList<String>();
+	private ArrayList<String> random = 		new ArrayList<String>();
 	
 	private void next(){
 		Log.d("InputData", "Next");
-		if(addFieldsToLists() && filePath[totalConfigs] != null){
-			//Add one more, since we began counting at 0
-			totalConfigs++;
-			totalConfigs = Math.max(totalConfigs, 0);
-			totalConfigs = Math.min(totalConfigs, maxConfigs-1);
+		if(addFieldsToLists()){
 		    Intent intent = new Intent(this, HandleData.class);
-		    intent.putExtra("timeout", timeout);
-		    intent.putExtra("random", random);
-		    intent.putExtra("retransmit", retransmit);
-		    intent.putExtra("nStart", nStart);
-		    intent.putExtra("payloadSize", payloadSize);
-		    intent.putExtra("filePath", filePath);
-		    intent.putExtra("port", port);
-			intent.putExtra("seconds", seconds);
-		    intent.putExtra("ip", ip);
-		    intent.putExtra("sleep", sleep);
+		    intent.putStringArrayListExtra("timeout", timeout);
+		    intent.putStringArrayListExtra("random", random);
+		    intent.putStringArrayListExtra("retransmit", retransmit);
+		    intent.putStringArrayListExtra("nStart", nStart);
+		    intent.putStringArrayListExtra("payloadSize", payloadSize);
+		    intent.putStringArrayListExtra("filePath", filePath);
+		    intent.putStringArrayListExtra("port", port);
+			intent.putStringArrayListExtra("seconds", seconds);
+		    intent.putStringArrayListExtra("ip", ip);
+		    intent.putStringArrayListExtra("sleep", sleep);
 		    intent.putExtra("totalConfigs", totalConfigs);
 		    intent.putExtra("ResultType", thisResultType);
 		    startActivityForResult(intent, thisResultType);
 		}
-		else if(filePath[totalConfigs] == null){
+		else if(filePath.isEmpty()){
 			TextView infoField = (TextView) findViewById(R.id.Error);
 			infoField.setText("Add a file please!");
 		}
@@ -100,39 +95,37 @@ public class InputData extends AbstractActivity {
 	
 	private void removeFile(){
 		Log.d("InputData", "RemoveFile");
-		if(filePath[totalConfigs] != null){
+		if(filePath.size() > 1){
+			Log.d("InputData", fileName.get(fileName.size()-1) + " " + ip.size());
 			TextView infoField = (TextView) findViewById(R.id.Error);
-			infoField.setText("Removed #" + (totalConfigs + 1) + ": "  + fileName[totalConfigs]);
-			fileName[totalConfigs] = null;
-			filePath[totalConfigs] = null;
-			ip[totalConfigs] = null;
-			timeout[totalConfigs] = null;
-			retransmit[totalConfigs] = null;		
-			nStart[totalConfigs] = null;
-			payloadSize[totalConfigs] = null;
-			port[totalConfigs] = null;
-			seconds[totalConfigs] = null;
-			sleep[totalConfigs] = null;
-			random[totalConfigs] = null;
+			infoField.setText("Removed #" + (totalConfigs) + ": "  + fileName.get(fileName.size()-1));
+			fileName.remove((fileName.size()-1));
+			filePath.remove((filePath.size()-1));
+			ip.remove((ip.size()-1));
+			timeout.remove((timeout.size()-1));
+			retransmit.remove((retransmit.size()-1));		
+			nStart.remove((nStart.size()-1));
+			payloadSize.remove((payloadSize.size()-1));
+			port.remove((port.size()-1));
+			seconds.remove((seconds.size()-1));
+			sleep.remove((sleep.size()-1));
+			random.remove((random.size()-1));
 			totalConfigs--;
-			totalConfigs = Math.max(totalConfigs, 0);
-			totalConfigs = Math.min(totalConfigs, maxConfigs-1);
+		}
+		else if(filePath.size() == 1){
+			fileName.remove((fileName.size()-1));
+			filePath.remove((filePath.size()-1));
+			totalConfigs--;
+			TextView infoField = (TextView) findViewById(R.id.Error);
+			infoField.setText("Add a file please!");
 		}
 	}
 	
-	private void addFile(){
+	private void addFile() {
 		Log.d("InputData", "AddFile");
 		
-		if(filePath[totalConfigs] == null)
+		if (addFieldsToLists()) 
 		{
-			Intent intent = new Intent(this, AndroidExplorer.class);
-			startActivityForResult(intent, ResultType.LOAD_FILE.ordinal());
-		}
-		else if (addFieldsToLists()) 
-		{
-			totalConfigs++;
-			totalConfigs = Math.max(totalConfigs, 0);
-			totalConfigs = Math.min(totalConfigs, maxConfigs-1);
 			Intent intent = new Intent(this, AndroidExplorer.class);
 			startActivityForResult(intent, ResultType.LOAD_FILE.ordinal());
 		}
@@ -142,50 +135,41 @@ public class InputData extends AbstractActivity {
 		Log.d("InputData", "AddFields");
 		EditText portField = (EditText) findViewById(R.id.Port);
 		String portString = portField.getText().toString();
-		if (!portString.equals(""))
-			port[totalConfigs] = portString;
+		port.add(portString);
 	    
 		EditText timeField = (EditText) findViewById(R.id.Time);
 		String timeString = timeField.getText().toString();
-		if (!timeString.equals(""))
-			seconds[totalConfigs] = timeString;
+		seconds.add(timeString);
 		
 		EditText timeoutField = (EditText) findViewById(R.id.timeout);
 		String timeoutString = timeoutField.getText().toString();
-		if(!timeoutString.equals(""))
-			timeout[totalConfigs] = timeoutString;
+		timeout.add(timeoutString);
 		
 		EditText randomField = (EditText) findViewById(R.id.random);
 		String randomString = randomField.getText().toString();
-		if(!randomString.equals(""))
-			random[totalConfigs] = randomString;
+		random.add(randomString);
 		
 		EditText retransmittField = (EditText) findViewById(R.id.retransmitt);
 		String retransmittString = retransmittField.getText().toString();
-		if(!retransmittString.equals(""))
-			retransmit[totalConfigs] = retransmittString;
+		retransmit.add(retransmittString);
 		
 		EditText nstartField = (EditText) findViewById(R.id.nStart);
 		String nstartString = nstartField.getText().toString();
-		if(!nstartString.equals(""))
-			nStart[totalConfigs] = nstartString;
+		nStart.add(nstartString);
 		
 		EditText payloadsizeField = (EditText) findViewById(R.id.payloadSize);
 		String payloadsizeString = payloadsizeField.getText().toString();
-		if(!payloadsizeString.equals(""))
-			payloadSize[totalConfigs] = payloadsizeString;
+		payloadSize.add(payloadsizeString);
 		
 		EditText sleepField = (EditText) findViewById(R.id.sleep);
 		String sleepString = sleepField.getText().toString();
-		if(!sleepString.equals(""))
-			sleep[totalConfigs] = sleepString;
+		sleep.add(sleepString);
 	
 		EditText ipField = (EditText) findViewById(R.id.IPAddress);
 		String ipString = ipField.getText().toString();
 		try {
 			Inet4Address.getByName(ipString);
-			if(!ipString.equals(""))
-				ip[totalConfigs] = ipString;
+			ip.add(ipString);
 			return true;
 		} catch (Exception e) {
 			TextView infoField = (TextView) findViewById(R.id.Error);
@@ -199,10 +183,11 @@ public class InputData extends AbstractActivity {
     	{
     		if(resultCode == RESULT_OK)
     		{
-    			filePath[totalConfigs] = data.getStringExtra("path");
-    			fileName[totalConfigs] = data.getStringExtra("name");
+    			filePath.add(data.getStringExtra("path"));
+    			fileName.add(data.getStringExtra("name"));
+    			totalConfigs++;
     			TextView infoField = (TextView) findViewById(R.id.Error);
-    			infoField.setText("Config file #" + (totalConfigs + 1) + ": "  + fileName[totalConfigs]);
+    			infoField.setText("Config file #" + (totalConfigs) + ": "  + fileName.get(fileName.size()-1));
     		}
     		if(resultCode == RESULT_CANCELED)
     		{

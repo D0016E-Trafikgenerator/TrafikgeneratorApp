@@ -1,5 +1,7 @@
 package se.ltu.trafikgeneratorcoap;
 
+import java.util.ArrayList;
+
 import se.ltu.trafikgeneratorcoap.send.Sending;
 import se.ltu.trafikgeneratorcoap.send.TrafficConfig;
 import se.ltu.trafikgeneratorcoap.send.Settings;
@@ -13,17 +15,18 @@ import android.content.Intent;
 
 public class HandleData extends AbstractActivity {  
 	  
-    private String[] ip;
-	private String[] port;
-	private String[] seconds;
-	private String[] filePath;
-	private String[] timeout;
-	private String[] random;
-	private String[] retransmit;
-	private String[] nStart;
-	private String[] payloadSize;
-	private String[] sleep;
-    private TrafficConfig[] config;
+	private ArrayList<String> filePath = 		new ArrayList<String>();
+	private ArrayList<String> ip = 				new ArrayList<String>();
+	private ArrayList<String> timeout = 		new ArrayList<String>();
+	private ArrayList<String> retransmit = 		new ArrayList<String>();		
+	private ArrayList<String> nStart = 			new ArrayList<String>();
+	private ArrayList<String> payloadSize =	 	new ArrayList<String>();
+	private ArrayList<String> port = 			new ArrayList<String>();
+	private ArrayList<String> seconds = 		new ArrayList<String>();
+	private ArrayList<String> sleep = 			new ArrayList<String>();
+	private ArrayList<String> random = 			new ArrayList<String>();
+	
+    private ArrayList<TrafficConfig> config = 	new ArrayList<TrafficConfig>();;
     
     private ProgressDialog progressDialog;  
 	private Intent intent;
@@ -41,48 +44,46 @@ public class HandleData extends AbstractActivity {
         
         intent = getIntent();
         thisResultType =	intent.getIntExtra("ResultType", -1);
-        timeout = 			intent.getStringArrayExtra("timeout");
-        retransmit = 		intent.getStringArrayExtra("retransmit");
-        nStart = 			intent.getStringArrayExtra("nStart");
-	    payloadSize = 		intent.getStringArrayExtra("payloadSize");
-	    port = 				intent.getStringArrayExtra("port");
-	    seconds = 			intent.getStringArrayExtra("seconds");
-        random = 			intent.getStringArrayExtra("random");
-	    filePath = 			intent.getStringArrayExtra("filePath");
-	    ip = 				intent.getStringArrayExtra("ip");
-	    sleep = 			intent.getStringArrayExtra("sleep");
+        timeout = 			intent.getStringArrayListExtra("timeout");
+        retransmit = 		intent.getStringArrayListExtra("retransmit");
+        nStart = 			intent.getStringArrayListExtra("nStart");
+	    payloadSize = 		intent.getStringArrayListExtra("payloadSize");
+	    port = 				intent.getStringArrayListExtra("port");
+	    seconds = 			intent.getStringArrayListExtra("seconds");
+        random = 			intent.getStringArrayListExtra("random");
+	    filePath = 			intent.getStringArrayListExtra("filePath");
+	    ip = 				intent.getStringArrayListExtra("ip");
+	    sleep = 			intent.getStringArrayListExtra("sleep");
 	    totalConfigs =		intent.getIntExtra("totalConfigs", 0);
 	    
 	    Log.d("HandleData", "Configs: " + totalConfigs);
-	    
-	    config = new TrafficConfig[totalConfigs];
 
 	    nextTask(indexer);
     }
     
     private void nextTask(int taskIndex)
     {	    
-    	Log.d("HandleData", "Creating config from: " + filePath[taskIndex]);
-    	config[taskIndex] = new TrafficConfig(TrafficConfig.fileToString(filePath[taskIndex]));
+    	Log.d("HandleData", "Creating config from: " + filePath.get(taskIndex));
+    	config.add(new TrafficConfig(TrafficConfig.fileToString(filePath.get(taskIndex))));
     	
-	    if(timeout[taskIndex] != null)
-	    	config[taskIndex].setIntegerSetting(Settings.COAP_ACK_TIMEOUT, parseInt(timeout[taskIndex]));
-	    if(retransmit[taskIndex] != null)
-	    	config[taskIndex].setIntegerSetting(Settings.COAP_MAX_RETRANSMIT, parseInt(retransmit[taskIndex]));
-	    if(nStart[taskIndex] != null)
-	    	config[taskIndex].setIntegerSetting(Settings.COAP_NSTART, parseInt(nStart[taskIndex]));
-	    if(payloadSize[taskIndex] != null)
-	    	config[taskIndex].setIntegerSetting(Settings.TRAFFIC_MESSAGESIZE, parseInt(payloadSize[taskIndex]));
-	    if(port[taskIndex] != null)
-	    	config[taskIndex].setIntegerSetting(Settings.TEST_TESTPORT, parseInt(port[taskIndex]));
-	    if(seconds[taskIndex] != null)
-	    	config[taskIndex].setIntegerSetting(Settings.TRAFFIC_MAXSENDTIME, parseInt(seconds[taskIndex]));	 
+	    if(!timeout.get(taskIndex).equals(""))
+	    	config.get(taskIndex).setIntegerSetting(Settings.COAP_ACK_TIMEOUT, parseInt(timeout.get(taskIndex)));
+	    if(!retransmit.get(taskIndex).equals(""))
+	    	config.get(taskIndex).setIntegerSetting(Settings.COAP_MAX_RETRANSMIT, parseInt(retransmit.get(taskIndex)));
+	    if(!nStart.get(taskIndex).equals(""))
+	    	config.get(taskIndex).setIntegerSetting(Settings.COAP_NSTART, parseInt(nStart.get(taskIndex)));
+	    if(!payloadSize.get(taskIndex).equals(""))
+	    	config.get(taskIndex).setIntegerSetting(Settings.TRAFFIC_MESSAGESIZE, parseInt(payloadSize.get(taskIndex)));
+	    if(!port.get(taskIndex).equals(""))
+	    	config.get(taskIndex).setIntegerSetting(Settings.TEST_TESTPORT, parseInt(port.get(taskIndex)));
+	    if(!seconds.get(taskIndex).equals(""))
+	    	config.get(taskIndex).setIntegerSetting(Settings.TRAFFIC_MAXSENDTIME, parseInt(seconds.get(taskIndex)));	 
 	    
-	    if(random[taskIndex] != null)
-	    	config[taskIndex].setDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR, parseFloat(random[taskIndex]));
+	    if(!random.get(taskIndex).equals(""))
+	    	config.get(taskIndex).setDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR, parseFloat(random.get(taskIndex)));
     	
-	    if(ip[taskIndex] != null)
-	    	config[taskIndex].setStringSetting(Settings.TEST_SERVER, ip[taskIndex]);
+	    if(!ip.get(taskIndex).equals(""))
+	    	config.get(taskIndex).setStringSetting(Settings.TEST_SERVER, ip.get(taskIndex));
 	    
     	new LoadViewTask().execute();
     }
@@ -138,7 +139,7 @@ public class HandleData extends AbstractActivity {
         	switch(type) {
 		    	case SEND_DATA:
 		        	try {
-						Sending.sendData(config[this.processNumber], getApplicationContext());
+						Sending.sendData(config.get(this.processNumber), getApplicationContext());
 					} catch (Exception e1) {
 						Log.e("HandleData", "Something went terribly wrong in sendData!");
 						//Sending.abort(config[this.processNumber]);
@@ -186,13 +187,13 @@ public class HandleData extends AbstractActivity {
         @Override  
         protected Void doInBackground(Void... params)  
         {   
-    	    Log.d("HandleData", "IP: " + config[this.processNumber].getStringSetting(Settings.TEST_SERVER));
+    	    Log.d("HandleData", "IP: " + config.get(this.processNumber).getStringSetting(Settings.TEST_SERVER));
     	    pickType();
         	publishProgress(++progressbarUpdate);
         	Log.d("HandleData", "End of process nr : " + this.processNumber);
         	if(this.processNumber != (totalConfigs-1))
         	{
-        		try { Thread.sleep(parseLong(sleep[this.processNumber])); } catch (InterruptedException e) {}
+        		try { Thread.sleep(parseLong(sleep.get(this.processNumber))); } catch (InterruptedException e) {}
         		nextTask(this.processNumber + 1);
         	}
         	return null;
