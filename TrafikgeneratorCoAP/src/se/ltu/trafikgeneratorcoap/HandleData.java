@@ -122,42 +122,6 @@ public class HandleData extends AbstractActivity {
     {  
     	private int processNumber;
     	
-        private String getMessage(){
-        	ResultType type = ResultType.values()[thisResultType];
-        	switch(type) {
-    	    	case SEND_DATA:
-    	    		return "Sending data... Please wait.";
-    	    	case RECEIVE_DATA:
-    	    		return "Receiving data... Please wait.";
-    	    	default:
-    	    		return "Error";
-        	}
-        }
-        
-        private void pickType() {
-        	ResultType type = ResultType.values()[thisResultType];
-        	switch(type) {
-		    	case SEND_DATA:
-		        	try {
-						Sending.sendData(config.get(this.processNumber), getApplicationContext());
-					} catch (Exception e1) {
-						Log.e("HandleData", "Something went terribly wrong in sendData!");
-						//Sending.abort(config[this.processNumber]);
-					}
-		        	break;
-		    	case RECEIVE_DATA:
-		        	try {
-		        		//Receiving!
-						//Sending.sendData(config[this.processNumber], getApplicationContext());
-					} catch (Exception e1) {
-						Log.e("HandleData", "Something went terribly wrong in receiveData!");
-					}
-		        	break;
-		    	default:
-		    		break;
-        	}
-        }
-    	
         @Override  
         protected void onPreExecute()  
         {  
@@ -167,7 +131,7 @@ public class HandleData extends AbstractActivity {
         	{
 	            progressDialog = new ProgressDialog(HandleData.this);  
 	            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);  
-	            progressDialog.setTitle("Loading..."); 
+	            progressDialog.setTitle("Working..."); 
 	            progressDialog.setMessage(getMessage());  
 	            progressDialog.setCancelable(true);
 	            progressDialog.setOnCancelListener(new OnCancelListener() {
@@ -225,6 +189,43 @@ public class HandleData extends AbstractActivity {
 				setResult(RESULT_OK);
 				finish();
 			}
-        }  
+        } 
+        
+        private String getMessage(){
+        	ResultType type = ResultType.values()[thisResultType];
+        	switch(type) {
+    	    	case SEND_DATA:
+    	    		return "Sending data... Please wait.";
+    	    	case RECEIVE_DATA:
+    	    		return "Receiving data... Please wait.";
+    	    	default:
+    	    		return "Error";
+        	}
+        }
+        
+        private void pickType() {
+        	ResultType type = ResultType.values()[thisResultType];
+        	switch(type) {
+		    	case SEND_DATA:
+		        	try {
+						Sending.sendData(config.get(this.processNumber), getApplicationContext());
+					} catch (Exception e1) {
+						Log.e("HandleData", "Something went terribly wrong in sendData!");
+						//Sending.abort(config.get(this.processNumber));
+					}
+		        	break;
+		    	case RECEIVE_DATA:
+		        	try {
+		        		//Receiving!
+						//Sending.sendData(config[this.processNumber], getApplicationContext());
+					} catch (Exception e1) {
+						Log.e("HandleData", "Something went terribly wrong in receiveData!");
+						//Sending.abort(config.get(this.processNumber));
+					}
+		        	break;
+		    	default:
+		    		break;
+        	}
+        }
     }  
 }  

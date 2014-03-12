@@ -21,7 +21,7 @@ public class Main extends AbstractActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		try {
-			Runtime.getRuntime().exec("su ; echo \"hej\"");
+			Runtime.getRuntime().exec("su");
 		} catch (IOException e) {
 			Log.e("Main", "Could not grant SU.");
 		}
