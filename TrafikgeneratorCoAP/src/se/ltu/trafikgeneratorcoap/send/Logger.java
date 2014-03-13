@@ -17,7 +17,8 @@ public class Logger {
 		File file = new File(subDir, (new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())).format(new Date()) + "-" + token + "-sndr.pcap");
 		file.getParentFile().mkdirs();
 		if (!file.exists()) {
-			String command = "su ; tcpdump-coap -s 65535 -w " + file.toString() + " 'port " + port + "'";
+			//String command = "su ; tcpdump-coap -s 65535 -w " + file.toString() + " 'port " + port + "'";
+			String command = "su ; tcpdump-coap -s 84 -w " + file.toString() + " 'port " + port + "'";
 			try {
 				process = Runtime.getRuntime().exec("su ; echo \"hej\"");
 				process.waitFor();
@@ -32,7 +33,7 @@ public class Logger {
 	}
 	static public boolean stop() {
 		try {
-			process = Runtime.getRuntime().exec("su ; killall tcpdump-coap");
+			process = Runtime.getRuntime().exec("su ; killall -s SIGINT tcpdump-coap");
 		} catch (IOException e) {
 			return false;
 		}

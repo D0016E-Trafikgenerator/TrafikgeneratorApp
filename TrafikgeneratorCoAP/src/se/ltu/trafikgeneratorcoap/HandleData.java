@@ -122,6 +122,45 @@ public class HandleData extends AbstractActivity {
     {  
     	private int processNumber;
     	
+<<<<<<< HEAD
+=======
+        private String getMessage(){
+        	ResultType type = ResultType.values()[thisResultType];
+        	switch(type) {
+    	    	case SEND_DATA:
+    	    		return "Sending data... Please wait.";
+    	    	case RECEIVE_DATA:
+    	    		return "Receiving data... Please wait.";
+    	    	default:
+    	    		return "Error";
+        	}
+        }
+        
+        private void pickType() {
+        	ResultType type = ResultType.values()[thisResultType];
+        	switch(type) {
+		    	case SEND_DATA:
+						Sending.sendData(config[this.processNumber], getApplicationContext());
+		        	try { ;
+					} catch (Exception e1) {
+						Log.e("HandleData", "Something went terribly wrong in sendData!");
+						//Sending.abort(config[this.processNumber]);
+					}
+		        	break;
+		    	case RECEIVE_DATA:
+		        	try {
+		        		//Receiving!
+						//Sending.sendData(config[this.processNumber], getApplicationContext());
+					} catch (Exception e1) {
+						Log.e("HandleData", "Something went terribly wrong in receiveData!");
+					}
+		        	break;
+		    	default:
+		    		break;
+        	}
+        }
+    	
+>>>>>>> refs/remotes/origin/IHATEMYSELFANDIWANTTODIE
         @Override  
         protected void onPreExecute()  
         {  
