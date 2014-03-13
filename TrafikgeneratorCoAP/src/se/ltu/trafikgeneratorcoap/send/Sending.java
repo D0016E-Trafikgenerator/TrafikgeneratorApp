@@ -150,7 +150,7 @@ public class Sending {
 					}
 					else if (bucketFillDelayInMs <= 1)
 						tokens = true;
-					if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimeouted() || test.isCanceled() || test.isRejected()))
+					if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
 						test = null;
 				}
 	    		if (i < numberOfTests)
@@ -181,7 +181,7 @@ public class Sending {
 						nextTimeToFillBucket += bucketFillDelayInMs;
 						tokens = true;
 					}
-					if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimeouted() || test.isCanceled() || test.isRejected()))
+					if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
 							test = null;
 					
 				}
