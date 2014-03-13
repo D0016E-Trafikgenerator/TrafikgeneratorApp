@@ -65,14 +65,46 @@ public class Tester {
 		else
 			return false;
 	}
-	public void receive() {
-		;
+	public void receive() throws InterruptedException, IOException {
+		timestamp = (new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())).format(new Date());
+		if (negotiateReceive()) {
+			Logfile logfile = new Logfile(config, timestamp, token);
+			if (logfile.startLogging()) {
+				Metafile metafile = new Metafile(config, timestamp, token);
+				if (metafile.synchronize()) {
+					ReceiveTest.run(config);
+					if (metafile.synchronize()) {
+						metafile.write();
+						logfile.stopAllLogging();
+						if (abort())
+							sendLogs();
+					}
+				}
+			}
+			abort();
+		}
+	}
+	private boolean negotiateReceive() throws InterruptedException {
+		control = new CoAPEndpoint();
+		control.start();
+		Request controlRequest = Request.newGet();
+		controlRequest.setURI(String.format("coap://%1$s/control?time=%2$s", config.getStringSetting(Settings.TEST_SERVER), timestamp));
+		controlRequest.setPayload(config.getOriginal());
+		controlRequest.send(control);
+		Response response = controlRequest.waitForResponse();
+		if (response != null && response.getCode().equals(ResponseCode.CONTINUE)) {
+			openChannel = true;
+			return true;
+		}
+		else
+			return false;
 	}
 	private boolean sendLogs() throws IOException, InterruptedException {
 		return FileSender.sendMetafile(config.getStringSetting(Settings.TEST_SERVER), token, timestamp) &&
 				FileSender.sendLogfile(config.getStringSetting(Settings.TEST_SERVER), token, timestamp);
 	}
 	public boolean abort() throws InterruptedException {
+		//TODO: Clean up when acting as server.
 		if (openChannel && control != null) {
 			Request controlRequest = Request.newDelete();
 			controlRequest.setURI(String.format("coap://%1$s/control?token=%2$s", config.getStringSetting(Settings.TEST_SERVER), token));
