@@ -1,5 +1,6 @@
 package se.ltu.trafikgeneratorcoap.testing;
 
+import java.io.IOException;
 import java.util.Random;
 
 import android.os.SystemClock;
@@ -10,7 +11,7 @@ import ch.ethz.inf.vs.californium.network.CoAPEndpoint;
 public class SendTest {
 	private static int headersize = 59, maxpacketsize = 1024;
 	private static Random random = new Random();
-	static void run(TrafficConfig config) throws InterruptedException {
+	static void run(TrafficConfig config) throws InterruptedException, IOException {
 		CoAPEndpoint dataEndpoint = new CoAPEndpoint(config.toNetworkConfig());
 		dataEndpoint.start();
 		for (int i = 1; i <= config.getIntegerSetting(Settings.TEST_REPEATS); i++) {
@@ -29,7 +30,7 @@ public class SendTest {
 				;
 			}
     		if (i < config.getIntegerSetting(Settings.TEST_REPEATS))
-				Thread.sleep(config.getIntegerSetting(Settings.TEST_INTERMISSION));
+				Thread.sleep(Math.round(config.getDecimalSetting(Settings.TEST_INTERMISSION)));
 		}
 	}
 	private static void runTimeTest(TrafficConfig config, CoAPEndpoint endpoint) {
@@ -49,18 +50,18 @@ public class SendTest {
 
 		long nextTimeToFillBucket = SystemClock.elapsedRealtime() + bucketFillDelayInMs;
 
-		Request test = null;
+		//Request test = null;
 		
 		while (SystemClock.elapsedRealtime() < timeToStopTest) {
-			if (tokens && test == null) {
-				test = Request.newPost();
+			if (tokens) {// && test == null) {
+				Request test = Request.newPost();
 				test.setURI(testURI);
 				test.setType(type);
 				test.setPayload(PayloadGenerator.generateRandomData(random.nextLong(), payloadsize));
 				test.send(endpoint);
 				tokens = false;
-				if (!test.isConfirmable())
-					test = null;
+				//if (!test.isConfirmable())
+				//	test = null;
 			}
 			if (bucketFillDelayInMs > 0 && SystemClock.elapsedRealtime() >= nextTimeToFillBucket) {
 				nextTimeToFillBucket += bucketFillDelayInMs;
@@ -68,8 +69,8 @@ public class SendTest {
 			}
 			else if (bucketFillDelayInMs <= 1)
 				tokens = true;
-			if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimeouted() || test.isCanceled() || test.isRejected()))
-				test = null;
+			//if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
+			//	test = null;
 		}
 	}
 	private static void runMessageTest(TrafficConfig config, CoAPEndpoint endpoint) {
@@ -80,10 +81,10 @@ public class SendTest {
 		boolean tokens = true;
 		CoAP.Type type = config.getStringSetting(Settings.COAP_MESSAGETYPE).equals("CON")?CoAP.Type.CON:CoAP.Type.NON;
 		long nextTimeToFillBucket = SystemClock.elapsedRealtime() + bucketFillDelayInMs;
-		Request test = null;
+		//Request test = null;
 		while (sentMessages < maxMessages) {
-			if (tokens && test == null) {
-				test = Request.newPost();
+			if (tokens) {// && test == null) {
+				Request test = Request.newPost();
 				test.setURI(testURI);
 				test.setType(type);
 				test.setPayload(PayloadGenerator.generateRandomData(random.nextLong(), payloadsize));
@@ -95,8 +96,8 @@ public class SendTest {
 				nextTimeToFillBucket += bucketFillDelayInMs;
 				tokens = true;
 			}
-			if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimeouted() || test.isCanceled() || test.isRejected()))
-					test = null;
+			//if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
+			//		test = null;
 		}
 	}
 	private static void runFileTest(TrafficConfig config, CoAPEndpoint endpoint) throws InterruptedException {

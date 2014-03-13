@@ -12,6 +12,7 @@ import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;*/
 import android.os.SystemClock;
+import android.util.Log;
 
 public class Metafile {
 	private static int gsmSignalStrength = 99;
@@ -19,20 +20,25 @@ public class Metafile {
 	private TrafficConfig config;
 	private String timestamp, token;
 	private File metafile;
-	SntpClient timeBeforeTest = new SntpClient();
-	SntpClient timeAfterTest = new SntpClient();
+	SntpClient timeBeforeTest = null;
+	SntpClient timeAfterTest = null;
 	Metafile(TrafficConfig config, String timestamp, String token) {
 		this.config = config;
 		this.timestamp = timestamp;
 		this.token = token;
 	}
 	boolean synchronize() {
-		if (timeBeforeTest == null)
+		if (timeBeforeTest == null) {
+			timeBeforeTest = new SntpClient();
 			return timeBeforeTest.requestTime(config.getStringSetting(Settings.TEST_SERVER).split(":")[0], config.getIntegerSetting(Settings.TEST_NTPPORT), 1000) || timeBeforeTest.requestTime("pool.ntp.org", 123, 1000);
-		else if (timeAfterTest == null)
+		}
+		else if (timeAfterTest == null) {
+			timeAfterTest = new SntpClient();
 			return timeAfterTest.requestTime(config.getStringSetting(Settings.TEST_SERVER).split(":")[0], config.getIntegerSetting(Settings.TEST_NTPPORT), 1000) || timeBeforeTest.requestTime("pool.ntp.org", 123, 1000);
-		else
+		}
+		else {
 			return false;
+		}
 	}
 	void write() throws IOException {
 		metafile = new File(logDirectory, timestamp + "-" + token + "-meta.txt");

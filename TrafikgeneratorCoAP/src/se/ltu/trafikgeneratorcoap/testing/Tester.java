@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.content.Context;
+import android.util.Log;
 
 import ch.ethz.inf.vs.californium.coap.Request;
 import ch.ethz.inf.vs.californium.coap.Response;
@@ -50,7 +51,7 @@ public class Tester {
 			abort();
 		}
 	}
-	private boolean negotiateSend() throws InterruptedException {
+	private boolean negotiateSend() throws InterruptedException, IOException {
 		control = new CoAPEndpoint();
 		control.start();
 		Request controlRequest = Request.newPost();
@@ -84,7 +85,7 @@ public class Tester {
 			abort();
 		}
 	}
-	private boolean negotiateReceive() throws InterruptedException {
+	private boolean negotiateReceive() throws InterruptedException, IOException {
 		control = new CoAPEndpoint();
 		control.start();
 		Request controlRequest = Request.newGet();
