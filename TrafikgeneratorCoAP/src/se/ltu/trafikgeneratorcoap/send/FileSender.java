@@ -27,6 +27,10 @@ public class FileSender {
 		controlMessage.send();
 		try {
 			Response response = controlMessage.waitForResponse();
+<<<<<<< Upstream, based on origin/GUI
+=======
+			Log.d("dummycoap", response.toString());
+>>>>>>> e8c3075 1.3 works, probably
 			return response.getCode().equals(ResponseCode.VALID);
 		} catch (InterruptedException e) {
 			return false;

@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Locale;
 
+import android.util.Log;
+
 import ch.ethz.inf.vs.californium.network.config.NetworkConfig;
 
 public class TrafficConfig {
@@ -38,10 +40,16 @@ public class TrafficConfig {
 	private Float   traffic_idle_time               = (float) 500.0;
 	
 	static private String newline = "\n";//System.getProperty("line.separator");
+<<<<<<< Upstream, based on origin/GUI
 	private String originalConfig;
+=======
+>>>>>>> e8c3075 1.3 works, probably
 
 	public TrafficConfig(String configuration) {
+<<<<<<< Upstream, based on origin/GUI
 		StringBuilder trimmedOriginal = new StringBuilder();
+=======
+>>>>>>> e8c3075 1.3 works, probably
 		String[] all_rows = configuration.split(newline);
 		// Set... settings.
 		for (int i = 0; i < all_rows.length; i++) {
@@ -190,6 +198,10 @@ public class TrafficConfig {
 			BufferedReader reader = new BufferedReader(fil);
 			String line = null;
 			stringBuilder = new StringBuilder();
+<<<<<<< Upstream, based on origin/GUI
+=======
+			String endofline = newline;
+>>>>>>> e8c3075 1.3 works, probably
 			while ((line = reader.readLine()) != null) {
 				stringBuilder.append(line);
 				stringBuilder.append(newline);
@@ -231,6 +243,11 @@ public class TrafficConfig {
 	}
 	static public String configToTrimmedString(String filename) {
 		String config = fileToString(filename);
+<<<<<<< Upstream, based on origin/GUI
+=======
+		Log.d("dummycoap", String.valueOf(config.length()));
+		Log.d("dummycoap", newline);
+>>>>>>> e8c3075 1.3 works, probably
 		String[] all_rows = config.split(newline);
 		StringBuilder trimmedString = new StringBuilder(config.length());
 		// Remove comments.
@@ -261,6 +278,7 @@ public class TrafficConfig {
 		stringBuilder.append(Settings.COAP_ACK_RANDOM_FACTOR.toString() + "=" + config.getDecimalSetting(Settings.COAP_ACK_RANDOM_FACTOR) + newline);
 		stringBuilder.append(Settings.COAP_MAX_RETRANSMIT.toString() + "=" + config.getIntegerSetting(Settings.COAP_MAX_RETRANSMIT) + newline);
 		stringBuilder.append(Settings.COAP_NSTART.toString() + "=" + config.getIntegerSetting(Settings.COAP_NSTART) + newline);
+<<<<<<< Upstream, based on origin/GUI
 		stringBuilder.append(Settings.TRAFFIC_TYPE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_TYPE) + newline);
 		stringBuilder.append(Settings.TRAFFIC_MODE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_MODE) + newline);
 		stringBuilder.append(Settings.TRAFFIC_MAXSENDTIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME) + newline);
@@ -269,6 +287,17 @@ public class TrafficConfig {
 		stringBuilder.append(Settings.TRAFFIC_MESSAGESIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE) + newline);
 		stringBuilder.append(Settings.TRAFFIC_FILESIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_FILESIZE) + newline);
 		stringBuilder.append(Settings.TRAFFIC_BLOCKSIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_BLOCKSIZE) + newline);
+=======
+		stringBuilder.append(Settings.COAP_PROBING_RATE.toString() + "=" + config.getIntegerSetting(Settings.COAP_PROBING_RATE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_TYPE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_TYPE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_MODE.toString() + "=" + config.getStringSetting(Settings.TRAFFIC_MODE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_MAXSENDTIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME) + newline);
+		stringBuilder.append(Settings.TRAFFIC_MAXMESSAGES.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES) + newline);
+		stringBuilder.append(Settings.TRAFFIC_RATE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_RATE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_MESSAGESIZE.toString() + "=" + config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE) + newline);
+		stringBuilder.append(Settings.TRAFFIC_INTERMISSION.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_INTERMISSION) + newline);
+		stringBuilder.append(Settings.TRAFFIC_RANDOMFACTOR.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_RANDOMFACTOR) + newline);
+>>>>>>> e8c3075 1.3 works, probably
 		stringBuilder.append(Settings.TRAFFIC_BURST_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_BURST_TIME) + newline);
 		stringBuilder.append(Settings.TRAFFIC_IDLE_TIME.toString() + "=" + config.getDecimalSetting(Settings.TRAFFIC_IDLE_TIME) + newline);
 		return stringBuilder.toString();

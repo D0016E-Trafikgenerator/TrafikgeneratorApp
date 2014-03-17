@@ -8,6 +8,7 @@ import java.util.Random;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.util.Log;
 
 import ch.ethz.inf.vs.californium.coap.CoAP;
 import ch.ethz.inf.vs.californium.coap.Request;
@@ -22,6 +23,7 @@ public class Sending {
 	private static Random random = new Random();
 	private static int sentMessages = 0;
 	public static void sendData(TrafficConfig config, Context context) {
+		Log.d("dummycoap", config.getStringSetting(Settings.TEST_SERVER));
 		Sending.context = context;
 		sendData(config);
 	}
@@ -103,12 +105,23 @@ public class Sending {
 					ntpError = internetTimeClient2.getNtpTime() + SystemClock.elapsedRealtime()
 							- internetTimeClient2.getNtpTimeReference() - System.currentTimeMillis();
 					Meta.afterTest(token, date, ntp_uri, ntpError);
+					//Log.d("dummycoap", "");
+					Log.d("dummycoap", "lesse if he closes the server...");
 					response = control.waitForResponse();
 					if (!response.equals(null) && response.getCode().equals(ResponseCode.DELETED)) {
 						//Test protocol 1.3a.9
+<<<<<<< Upstream, based on origin/GUI
 						if (Logger.stop() && FileSender.sendMeta(uri, token, date)) {
 							Thread.sleep(5000);
+=======
+						Log.d("dummycoap", "lesse if he wants the meta...");
+						if (Logger.stop() && FileSender.sendMeta(uri, token, date)) {
+>>>>>>> e8c3075 1.3 works, probably
 							//Test protocol 1.3a.10
+<<<<<<< Upstream, based on origin/GUI
+=======
+							Log.d("dummycoap", "lesse if he wants the log...");
+>>>>>>> e8c3075 1.3 works, probably
 							FileSender.sendLog(uri, token, date);
 						}
 					}
