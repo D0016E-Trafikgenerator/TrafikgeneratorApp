@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.content.Context;
-import android.util.Log;
 
 import ch.ethz.inf.vs.californium.coap.Request;
 import ch.ethz.inf.vs.californium.coap.Response;
@@ -18,7 +17,7 @@ public class Tester {
 	private boolean openChannel = false;
 	private String timestamp, token;
 	private TrafficConfig config;
-	private Context context = null;
+	        Context context = null;
 	public Tester(TrafficConfig config) {
 		this.config = config;
 	}

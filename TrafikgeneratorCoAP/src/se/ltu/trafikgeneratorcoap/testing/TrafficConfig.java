@@ -30,7 +30,7 @@ public class TrafficConfig {
 	private Float   traffic_constant_maxsendtime    = (float) 10.0;
 	private Integer traffic_maxmessages             = 2500;
 	private Float   traffic_onoff_maxsendtime       = (float) 60.0;
-	private Integer traffic_rate                    = 25000;
+	private Integer traffic_rate                    = -1;
 	private Integer traffic_messagesize             = 100;
 	private Integer traffic_filesize                = 524288;
 	private Integer traffic_blocksize               = 512;

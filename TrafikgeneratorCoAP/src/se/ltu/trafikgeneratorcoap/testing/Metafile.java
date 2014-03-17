@@ -12,10 +12,9 @@ import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;*/
 import android.os.SystemClock;
-import android.util.Log;
 
 public class Metafile {
-	private static int gsmSignalStrength = 99;
+	//private static int gsmSignalStrength = 99;
 	private static File logDirectory = new File(new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap"), "logs");
 	private TrafficConfig config;
 	private String timestamp, token;

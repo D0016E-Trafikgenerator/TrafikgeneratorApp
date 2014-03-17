@@ -1,6 +1,5 @@
 package se.ltu.trafikgeneratorcoap;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import se.ltu.trafikgeneratorcoap.testing.Tester;
@@ -208,30 +207,32 @@ public class HandleData extends AbstractActivity {
         	ResultType type = ResultType.values()[thisResultType];
         	switch(type) {
 		    	case SEND_DATA:
-				try {
-					(new Tester(config.get(this.processNumber), getApplicationContext())).send();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		    		/*
-		        	try {
-		        		(new Tester(config.get(this.processNumber), getApplicationContext())).send();
+		    		Tester sndData = null;
+					try {
+						sndData = new Tester(config.get(this.processNumber), getApplicationContext());
+						sndData.send();
 					} catch (Exception e1) {
 						Log.e("HandleData", "Something went terribly wrong in sendData!");
-						//Sending.abort(config.get(this.processNumber));
-					}*/
+						e1.printStackTrace();
+						try {
+							sndData.abort();
+						} catch (InterruptedException e) {
+							e1.printStackTrace();
+						}
+					}
 		        	break;
 		    	case RECEIVE_DATA:
+		    		Tester rcvData = null;
 		        	try {
-		        		(new Tester(config.get(this.processNumber), getApplicationContext())).receive();
-						//Sending.sendData(config[this.processNumber], getApplicationContext());
+		        		rcvData = new Tester(config.get(this.processNumber), getApplicationContext());
+		        		rcvData.receive();
 					} catch (Exception e1) {
 						Log.e("HandleData", "Something went terribly wrong in receiveData!");
-						//Sending.abort(config.get(this.processNumber));
+						try {
+							rcvData.abort();
+						} catch (InterruptedException e) {
+							e1.printStackTrace();
+						}
 					}
 		        	break;
 		    	default:
