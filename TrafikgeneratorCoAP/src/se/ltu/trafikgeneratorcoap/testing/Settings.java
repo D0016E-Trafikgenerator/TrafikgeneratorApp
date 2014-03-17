@@ -1,4 +1,4 @@
-package se.ltu.trafikgeneratorcoap.send;
+package se.ltu.trafikgeneratorcoap.testing;
 
 public enum Settings {
 	COAP_ACK_RANDOM_FACTOR,

@@ -2,9 +2,9 @@ package se.ltu.trafikgeneratorcoap;
 
 import java.util.ArrayList;
 
-import se.ltu.trafikgeneratorcoap.send.Sending;
-import se.ltu.trafikgeneratorcoap.send.TrafficConfig;
-import se.ltu.trafikgeneratorcoap.send.Settings;
+import se.ltu.trafikgeneratorcoap.testing.Tester;
+import se.ltu.trafikgeneratorcoap.testing.Settings;
+import se.ltu.trafikgeneratorcoap.testing.TrafficConfig;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -208,7 +208,7 @@ public class HandleData extends AbstractActivity {
         	switch(type) {
 		    	case SEND_DATA:
 		        	try {
-						Sending.sendData(config.get(this.processNumber), getApplicationContext());
+		        		(new Tester(config.get(this.processNumber), getApplicationContext())).send();
 					} catch (Exception e1) {
 						Log.e("HandleData", "Something went terribly wrong in sendData!");
 						//Sending.abort(config.get(this.processNumber));
@@ -216,7 +216,7 @@ public class HandleData extends AbstractActivity {
 		        	break;
 		    	case RECEIVE_DATA:
 		        	try {
-		        		//Receiving!
+		        		(new Tester(config.get(this.processNumber), getApplicationContext())).receive();
 						//Sending.sendData(config[this.processNumber], getApplicationContext());
 					} catch (Exception e1) {
 						Log.e("HandleData", "Something went terribly wrong in receiveData!");

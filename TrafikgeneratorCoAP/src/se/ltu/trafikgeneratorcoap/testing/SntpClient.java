@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.ltu.trafikgeneratorcoap.send;
+package se.ltu.trafikgeneratorcoap.testing;
 
 import android.os.SystemClock;
 //import android.util.Log;

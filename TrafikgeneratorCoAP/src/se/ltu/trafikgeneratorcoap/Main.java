@@ -1,5 +1,6 @@
 package se.ltu.trafikgeneratorcoap;
 
+import java.io.File;
 import java.io.IOException;
 
 import se.ltu.trafikgeneratorcoap.R;
@@ -51,7 +52,16 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void uninstallTCPDump(View view) {
-		
+		if ((new File("/data/local/tcpdump-coap")).exists()) {
+			try {
+				Runtime.getRuntime().exec("su ; rm /data/local/tcpdump-coap");
+				Log.d("Main", "tcpdump was uninstalled.");
+			} catch (IOException e) {
+				Log.d("Main", "An error occurred, and tcpdump was not uninstalled.");
+			}
+		}
+		else
+			Log.d("Main", "Uninstallation unnecessary; tcpdump was not installed.");
 	}
 	
 	public void checkSU(View view) {
@@ -64,7 +74,16 @@ public class Main extends AbstractActivity {
 	}
 	
 	private void install(String string) {
-		Log.d("Main", string);
+		if ((new File("/data/local/tcpdump")).exists() || (new File("/data/local/tcpdump-coap")).exists())
+			Log.d("Main", "tcpdump already installed.");
+		else {
+			try {
+				Runtime.getRuntime().exec("su ; cp " + string + " /data/local/tcpdump-coap ; chmod 555 /data/local/tcpdump-coap");
+				Log.d("Main", "tcpdump installed.");
+			} catch (IOException e) {
+				Log.d("Main", "An error occurred, and tcpdump was not installed.");
+			}
+		}
 	}
 		
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
