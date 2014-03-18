@@ -11,6 +11,7 @@ import ch.ethz.inf.vs.californium.coap.Request;
 import ch.ethz.inf.vs.californium.coap.Response;
 import ch.ethz.inf.vs.californium.coap.CoAP.ResponseCode;
 import ch.ethz.inf.vs.californium.network.CoAPEndpoint;
+import ch.ethz.inf.vs.californium.network.config.NetworkConfig;
 
 public class Tester {
 	private CoAPEndpoint control = null;
@@ -18,6 +19,7 @@ public class Tester {
 	private String timestamp, token;
 	private TrafficConfig config;
 	        Context context = null;
+	        enum Xfer {SEND, RECEIVE};
 	public Tester(TrafficConfig config) {
 		this.config = config;
 	}
@@ -31,10 +33,33 @@ public class Tester {
 	public void setConfig(TrafficConfig config) {
 		this.config = config;
 	}
+
+	private boolean negotiate(Xfer type) throws InterruptedException, IOException {
+		control = new CoAPEndpoint(NetworkConfig.createStandardWithoutFile());
+		control.start();
+		Request controlRequest = type.equals(Xfer.SEND)?
+									Request.newPost():
+									Request.newGet();
+		controlRequest.setURI(String.format("coap://%1$s/control?time=%2$s", config.getStringSetting(Settings.TEST_SERVER), timestamp));
+		controlRequest.setPayload(type.equals(Xfer.SEND)?
+									TrafficConfig.networkConfigToStringList(config.toNetworkConfig()):
+									config.getOriginal());
+		controlRequest.send(control);
+		Response response = controlRequest.waitForResponse();
+		if (response != null && response.getCode().equals(type.equals(Xfer.SEND)?
+															ResponseCode.CREATED:
+															ResponseCode.CONTINUE)) {
+			token = response.getTokenString();
+			openChannel = true;
+			return true;
+		}
+		else
+			return false;
+	}
 	public void send() throws InterruptedException, IOException {
 		timestamp = (new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())).format(new Date());
-		if (negotiateSend()) {
-			Logfile logfile = new Logfile(config, timestamp, token);
+		if (negotiate(Xfer.SEND)) {
+			Logfile logfile = new Logfile(Xfer.SEND, config, timestamp, token);
 			if (logfile.startLogging()) {
 				Metafile metafile = new Metafile(config, timestamp, token);
 				if (metafile.synchronize()) {
@@ -43,32 +68,17 @@ public class Tester {
 						metafile.write();
 						logfile.stopAllLogging();
 						if (abort())
-							sendLogs();
+							sendLogs(Xfer.SEND);
 					}
 				}
 			}
 			abort();
 		}
 	}
-	private boolean negotiateSend() throws InterruptedException, IOException {
-		control = new CoAPEndpoint();
-		control.start();
-		Request controlRequest = Request.newPost();
-		controlRequest.setURI(String.format("coap://%1$s/control?time=%2$s", config.getStringSetting(Settings.TEST_SERVER), timestamp));
-		controlRequest.setPayload(TrafficConfig.networkConfigToStringList(config.toNetworkConfig()));
-		controlRequest.send(control);
-		Response response = controlRequest.waitForResponse();
-		if (response != null && response.getCode().equals(ResponseCode.CREATED)) {
-			openChannel = true;
-			return true;
-		}
-		else
-			return false;
-	}
 	public void receive() throws InterruptedException, IOException {
 		timestamp = (new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())).format(new Date());
-		if (negotiateReceive()) {
-			Logfile logfile = new Logfile(config, timestamp, token);
+		if (negotiate(Xfer.RECEIVE)) {
+			Logfile logfile = new Logfile(Xfer.RECEIVE, config, timestamp, token);
 			if (logfile.startLogging()) {
 				Metafile metafile = new Metafile(config, timestamp, token);
 				if (metafile.synchronize()) {
@@ -77,31 +87,16 @@ public class Tester {
 						metafile.write();
 						logfile.stopAllLogging();
 						if (abort())
-							sendLogs();
+							sendLogs(Xfer.RECEIVE);
 					}
 				}
 			}
 			abort();
 		}
 	}
-	private boolean negotiateReceive() throws InterruptedException, IOException {
-		control = new CoAPEndpoint();
-		control.start();
-		Request controlRequest = Request.newGet();
-		controlRequest.setURI(String.format("coap://%1$s/control?time=%2$s", config.getStringSetting(Settings.TEST_SERVER), timestamp));
-		controlRequest.setPayload(config.getOriginal());
-		controlRequest.send(control);
-		Response response = controlRequest.waitForResponse();
-		if (response != null && response.getCode().equals(ResponseCode.CONTINUE)) {
-			openChannel = true;
-			return true;
-		}
-		else
-			return false;
-	}
-	private boolean sendLogs() throws IOException, InterruptedException {
+	private boolean sendLogs(Xfer type) throws IOException, InterruptedException {
 		return FileSender.sendMetafile(config.getStringSetting(Settings.TEST_SERVER), token, timestamp) &&
-				FileSender.sendLogfile(config.getStringSetting(Settings.TEST_SERVER), token, timestamp);
+				FileSender.sendLogfile(type, config.getStringSetting(Settings.TEST_SERVER), token, timestamp);
 	}
 	public boolean abort() throws InterruptedException {
 		//TODO: Clean up when acting as server.

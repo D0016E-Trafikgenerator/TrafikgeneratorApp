@@ -18,8 +18,9 @@ public class FileSender {
 		else
 			return sendFile(host, metafile, "?type=meta&token=" + token + "&time=" + timestamp);
 	}
-	static public boolean sendLogfile(String host, String token, String timestamp) throws IOException, InterruptedException {
-		File logfile = new File(logDirectory, timestamp + "-" + token + "-sndr.pcap");
+	static public boolean sendLogfile(Tester.Xfer type, String host, String token, String timestamp) throws IOException, InterruptedException {
+		String logtype = type.equals(Tester.Xfer.SEND)?"sndr":"rcvr";
+		File logfile = new File(logDirectory, timestamp + "-" + token + "-" + logtype + ".pcap");
 		if (!logfile.exists())
 			return false;
 		else
