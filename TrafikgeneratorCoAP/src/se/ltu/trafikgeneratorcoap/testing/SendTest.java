@@ -1,6 +1,7 @@
 package se.ltu.trafikgeneratorcoap.testing;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Random;
 
 import android.os.SystemClock;
@@ -42,7 +43,7 @@ public class SendTest {
 			bucketFillDelayInMs = 1000/(config.getIntegerSetting(Settings.TRAFFIC_RATE)/(payloadsize+headersize));
 		else
 			bucketFillDelayInMs = 0;
-		String testURI = String.format("coap://%1$s:%2$d/test", config.getStringSetting(Settings.TEST_SERVER), config.getIntegerSetting(Settings.TEST_TESTPORT));
+		String testURI = String.format(Locale.ROOT, "coap://%1$s:%2$d/test", config.getStringSetting(Settings.TEST_SERVER), config.getIntegerSetting(Settings.TEST_TESTPORT));
 		boolean tokens = true;
 		CoAP.Type type = config.getStringSetting(Settings.COAP_MESSAGETYPE).equals("CON")?CoAP.Type.CON:CoAP.Type.NON;
 		
@@ -77,7 +78,7 @@ public class SendTest {
 		int payloadsize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE);
 		int bucketFillDelayInMs = 1000/(config.getIntegerSetting(Settings.TRAFFIC_RATE)/(payloadsize+headersize));
 		long sentMessages = 0, maxMessages = config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES);
-		String testURI = String.format("coap://%1$s:%2$d/test", config.getStringSetting(Settings.TEST_SERVER), config.getIntegerSetting(Settings.TEST_TESTPORT));
+		String testURI = String.format(Locale.ROOT, "coap://%1$s:%2$d/test", config.getStringSetting(Settings.TEST_SERVER), config.getIntegerSetting(Settings.TEST_TESTPORT));
 		boolean tokens = true;
 		CoAP.Type type = config.getStringSetting(Settings.COAP_MESSAGETYPE).equals("CON")?CoAP.Type.CON:CoAP.Type.NON;
 		long nextTimeToFillBucket = SystemClock.elapsedRealtime() + bucketFillDelayInMs;
@@ -105,7 +106,7 @@ public class SendTest {
 		//TODO: Implement rate limiting -- by taking test.send(endpoint) in a pausable thread? 
 		Request test;
 		test = Request.newPost();
-		String testURI = String.format("coap://%1$s:%2$d/test", config.getStringSetting(Settings.TEST_SERVER), config.getIntegerSetting(Settings.TEST_TESTPORT));
+		String testURI = String.format(Locale.ROOT, "coap://%1$s:%2$d/test", config.getStringSetting(Settings.TEST_SERVER), config.getIntegerSetting(Settings.TEST_TESTPORT));
 		test.setURI(testURI);
 		test.setPayload(dummyfile);
 		test.send(endpoint);

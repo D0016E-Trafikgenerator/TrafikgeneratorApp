@@ -2,6 +2,7 @@ package se.ltu.trafikgeneratorcoap.testing;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import android.os.Environment;
 
@@ -23,7 +24,7 @@ public class Logfile {
 		logfile = new File(logDirectory, timestamp + "-" + token + "-sndr.pcap");
 		logfile.getParentFile().mkdirs();
 		if (!logfile.exists()) {
-			String command = String.format("su ; %1$s -s %2$d -w %3$s 'port %4$d'", (tcpdumpPath+tcpdump), packetCutoff, logfile.toString(), port);
+			String command = String.format(Locale.ROOT, "su ; %1$s -s %2$d -w %3$s 'port %4$d'", (tcpdumpPath+tcpdump), packetCutoff, logfile.toString(), port);
 			Runtime.getRuntime().exec(command);
 			Thread.sleep(tcpdumpPrepareTime);
 			return true;
