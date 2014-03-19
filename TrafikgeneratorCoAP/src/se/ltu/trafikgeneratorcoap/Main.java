@@ -1,10 +1,13 @@
 package se.ltu.trafikgeneratorcoap;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import se.ltu.trafikgeneratorcoap.R;
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -65,7 +68,20 @@ public class Main extends AbstractActivity {
 	}
 	
 	public void checkSU(View view) {
-		
+		//TODO: rename stuff. Not "Check SU", but rather "setup script"?
+		File scriptDirectory = new File(new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap"), "scripting");
+		scriptDirectory.mkdirs();
+		File scriptFile = new File(scriptDirectory, "SaveMyPID.sh");
+		if (scriptFile.exists())
+			scriptFile.delete();
+		String script = "eval \"$2 &\"\necho $! > " + (new File(scriptDirectory, "$1")).toString() + ".pid\n";
+		try {
+			PrintWriter out = new PrintWriter(scriptFile);
+			out.print(script);
+			out.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void exit(View view){

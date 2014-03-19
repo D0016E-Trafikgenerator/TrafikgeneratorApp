@@ -7,12 +7,14 @@ import java.util.Locale;
 import android.os.Environment;
 
 public class Logfile {
-	private static String tcpdump = "tcpdump-coap", tcpdumpPath = "/data/local/", tcpdumpInterface = "any";
+	private static String tcpdump = "tcpdump-coap", tcpdumpPath = "/data/local/", tcpdumpInterface = "-i wlan0";
 	private static int packetCutoff = 84, tcpdumpPrepareTime = 5000;
 	private static File logDirectory = new File(new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap"), "logs");
+	private static File script = new File(new File(new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap"), "scripting"), "SaveMyPID.sh");
 	private int port;
 	private String timestamp, token, type;
 	private File logfile;
+	private Process logProcess;
 	Logfile(Tester.Xfer type, TrafficConfig config, String timestamp, String token) {
 		this.type = type.equals(Tester.Xfer.SEND)?"sndr":"rcvr";
 		this.port = config.getIntegerSetting(Settings.TEST_TESTPORT);
@@ -25,8 +27,12 @@ public class Logfile {
 		logfile = new File(logDirectory, timestamp + "-" + token + "-" + type + ".pcap");
 		logfile.getParentFile().mkdirs();
 		if (!logfile.exists()) {
-			String command = String.format(Locale.ROOT, "su ; %1$s -i %2$s -s %3$d -w %4$s 'port %5$d'", (tcpdumpPath+tcpdump), tcpdumpInterface, packetCutoff, logfile.toString(), port);
-			Runtime.getRuntime().exec(command);
+			String command = String.format(Locale.ROOT, "%1$s", (tcpdumpPath+tcpdump));
+			String arguments = String.format(Locale.ROOT, " %1$s -s %2$d -w %3$s 'port %4$d'", tcpdumpInterface, packetCutoff, logfile.toString(), port);
+			String commandAsArgument = (command + arguments);
+			String shellCommand = String.format(Locale.ROOT, "sh %1$s %2$s \"%3$s\"", script, token, commandAsArgument);
+			android.util.Log.e("dummy", shellCommand);
+			logProcess = (new ProcessBuilder()).command(new String[] {"su", "-c", shellCommand}).start();
 			Thread.sleep(tcpdumpPrepareTime);
 			return true;
 		}
@@ -34,7 +40,14 @@ public class Logfile {
 			return false;
 	}
 	void stopAllLogging() throws InterruptedException, IOException {
-		Runtime.getRuntime().exec("su ; killall -s SIGINT " + tcpdump).waitFor();
-		Thread.sleep(tcpdumpPrepareTime);
+		File pidFile = new File(new File(new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap"), "scripting"), token + ".pid");
+		if (pidFile.exists()) {
+			String command = "su ; kill -s SIGINT `cat " + pidFile.toString() + "`";
+			android.util.Log.e("dummy", command);
+			Thread.sleep(tcpdumpPrepareTime);
+			Runtime.getRuntime().exec(command).waitFor();
+			logProcess.destroy();
+			pidFile.delete();
+		}
 	}
 }
