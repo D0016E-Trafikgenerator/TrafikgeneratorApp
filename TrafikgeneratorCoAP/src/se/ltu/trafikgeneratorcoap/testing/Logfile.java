@@ -31,7 +31,6 @@ public class Logfile {
 			String arguments = String.format(Locale.ROOT, " %1$s -s %2$d -w %3$s 'port %4$d'", tcpdumpInterface, packetCutoff, logfile.toString(), port);
 			String commandAsArgument = (command + arguments);
 			String shellCommand = String.format(Locale.ROOT, "sh %1$s %2$s \"%3$s\"", script, token, commandAsArgument);
-			android.util.Log.e("dummy", shellCommand);
 			logProcess = (new ProcessBuilder()).command(new String[] {"su", "-c", shellCommand}).start();
 			Thread.sleep(tcpdumpPrepareTime);
 			return true;
@@ -43,7 +42,6 @@ public class Logfile {
 		File pidFile = new File(new File(new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap"), "scripting"), token + ".pid");
 		if (pidFile.exists()) {
 			String command = "su ; kill -s SIGINT `cat " + pidFile.toString() + "`";
-			android.util.Log.e("dummy", command);
 			Thread.sleep(tcpdumpPrepareTime);
 			Runtime.getRuntime().exec(command).waitFor();
 			logProcess.destroy();

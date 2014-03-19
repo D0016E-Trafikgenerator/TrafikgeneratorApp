@@ -13,29 +13,30 @@ public class TrafficConfig {
 	private String  meta_title                      = "";
 
 	private String  test_server;
-	private Integer test_testport                   = 56830;
-	private Integer test_ntpport                    = 123;
-	private Integer test_repeats                    = 1;
-	private Float   test_intermission               = (float) 10000.0;
-	private Integer test_paralleltransfers          = 1;
+	private int     test_serverport                 = 5683;
+	private int     test_testport                   = 56830;
+	private int     test_ntpport                    = 123;
+	private int     test_repeats                    = 1;
+	private float   test_intermission               = 10000.0f;
+	private int     test_paralleltransfers          = 1;
 
 	private String  coap_messagetype                = "CON";
-	private Integer coap_ack_timeout                = 2000;
-	private Float   coap_ack_random_factor          = (float) 1.5;
-	private Integer coap_max_retransmit             = 4;
-	private Integer coap_nstart                     = 1;
+	private int     coap_ack_timeout                = 2000;
+	private float   coap_ack_random_factor          = 1.5f;
+	private int     coap_max_retransmit             = 4;
+	private int     coap_nstart                     = 1;
 
 	private String  traffic_type                    = "CONSTANT_SOURCE";
 	private String  traffic_mode                    = "TIME";
-	private Float   traffic_constant_maxsendtime    = (float) 10.0;
-	private Integer traffic_maxmessages             = 2500;
-	private Float   traffic_onoff_maxsendtime       = (float) 60.0;
-	private Integer traffic_rate                    = -1;
-	private Integer traffic_messagesize             = 100;
-	private Integer traffic_filesize                = 524288;
-	private Integer traffic_blocksize               = 512;
-	private Float   traffic_burst_time              = (float) 500.0;
-	private Float   traffic_idle_time               = (float) 500.0;
+	private float   traffic_constant_maxsendtime    = 10.0f;
+	private int     traffic_maxmessages             = 2500;
+	private float   traffic_onoff_maxsendtime       = 60.0f;
+	private int     traffic_rate                    = -1;
+	private int     traffic_messagesize             = 100;
+	private int     traffic_filesize                = 524288;
+	private int     traffic_blocksize               = 512;
+	private float   traffic_burst_time              = 500.0f;
+	private float   traffic_idle_time               = 500.0f;
 	
 	static private String newline = "\n";//System.getProperty("line.separator");
 	private String originalConfig;
@@ -63,6 +64,7 @@ public class TrafficConfig {
 					                                   { traffic_constant_maxsendtime = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue; }
 				case TRAFFIC_BURST_TIME:           traffic_burst_time           = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TRAFFIC_IDLE_TIME:            traffic_idle_time            = Float.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
+				case TEST_SERVERPORT:              test_serverport              = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TEST_TESTPORT:                test_testport                = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TEST_REPEATS:                 test_repeats                 = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
 				case TEST_PARALLELTRANSFERS:       test_paralleltransfers       = Integer.valueOf(data); trimmedOriginal.append(all_rows[i].replaceFirst("\\s+", " ") + newline); continue;
@@ -114,6 +116,7 @@ public class TrafficConfig {
 	}
 	public Integer getIntegerSetting(Settings setting) {
 		switch (setting) {
+			case TEST_SERVERPORT:              return test_serverport;
 			case TEST_TESTPORT:                return test_testport;
 			case TEST_REPEATS:                 return test_repeats;
 			case TEST_PARALLELTRANSFERS:       return test_paralleltransfers;
@@ -131,6 +134,7 @@ public class TrafficConfig {
 	}
 	public void setIntegerSetting(Settings setting, Integer value) {
 		switch (setting) {
+			case TEST_SERVERPORT:              test_serverport = value;
 			case TEST_TESTPORT:                test_testport = value;
 			case TEST_REPEATS:                 test_repeats = value;
 			case TEST_PARALLELTRANSFERS:       test_paralleltransfers = value;
@@ -249,6 +253,7 @@ public class TrafficConfig {
 		stringBuilder.append(Settings.META_AUTHOR.toString() + "=" + config.getStringSetting(Settings.META_AUTHOR) + newline);
 		stringBuilder.append(Settings.META_TITLE.toString() + "=" + config.getStringSetting(Settings.META_TITLE) + newline);
 		stringBuilder.append(Settings.TEST_SERVER.toString() + "=" + config.getStringSetting(Settings.TEST_SERVER) + newline);
+		stringBuilder.append(Settings.TEST_SERVERPORT.toString() + "=" + config.getIntegerSetting(Settings.TEST_SERVERPORT) + newline);
 		stringBuilder.append(Settings.TEST_TESTPORT.toString() + "=" + config.getIntegerSetting(Settings.TEST_TESTPORT) + newline);
 		stringBuilder.append(Settings.TEST_NTPPORT.toString() + "=" + config.getIntegerSetting(Settings.TEST_NTPPORT) + newline);
 		stringBuilder.append(Settings.TEST_REPEATS.toString() + "=" + config.getIntegerSetting(Settings.TEST_REPEATS) + newline);

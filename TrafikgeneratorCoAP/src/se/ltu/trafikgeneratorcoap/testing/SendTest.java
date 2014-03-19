@@ -4,15 +4,14 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Random;
 
-import android.os.SystemClock;
 import ch.ethz.inf.vs.californium.coap.CoAP;
 import ch.ethz.inf.vs.californium.coap.Request;
 import ch.ethz.inf.vs.californium.network.CoAPEndpoint;
 
 public class SendTest {
-	private static int headersize = 59, maxpacketsize = 1024;
+	private static int headersize = 59, maxpacketsize = 1500;//1024
 	private static Random random = new Random();
-	static void run(TrafficConfig config) throws InterruptedException, IOException {
+	public static void run(TrafficConfig config) throws InterruptedException, IOException {
 		CoAPEndpoint dataEndpoint = new CoAPEndpoint(config.toNetworkConfig());
 		dataEndpoint.start();
 		for (int i = 1; i <= config.getIntegerSetting(Settings.TEST_REPEATS); i++) {
@@ -27,83 +26,100 @@ public class SendTest {
 					runFileTest(config, dataEndpoint);
 				}
 			}
-			else if (config.getStringSetting(Settings.TRAFFIC_TYPE).equals("ONOFF_SOURCE")) {
-				;
-			}
     		if (i < config.getIntegerSetting(Settings.TEST_REPEATS))
 				Thread.sleep(Math.round(config.getDecimalSetting(Settings.TEST_INTERMISSION)));
 		}
 	}
 	private static void runTimeTest(TrafficConfig config, CoAPEndpoint endpoint) {
-		int payloadsize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE);
-		if (payloadsize+headersize > maxpacketsize)
-			payloadsize = maxpacketsize-headersize;
-		int bucketFillDelayInMs;
-		if (config.getIntegerSetting(Settings.TRAFFIC_RATE) > 0 && payloadsize > 0 && headersize > 0)
-			bucketFillDelayInMs = 1000/(config.getIntegerSetting(Settings.TRAFFIC_RATE)/(payloadsize+headersize));
-		else
-			bucketFillDelayInMs = 0;
+		//TODO: Solve the problem of unlimited rate leading to a time shift.
+		//I.e. when sending as many packages as possible without intermission,
+		//system time seems to pass slower than real time; a 10 second send
+		//can become a 15 second send.
+		boolean unlimitedRate = true, bucketFull = true;
+		int payloadsize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE),
+				rate = config.getIntegerSetting(Settings.TRAFFIC_RATE),
+				packetsize = payloadsize+headersize;
+		double sendtime = config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME);
+		long bucketFillDelay = 0;
 		String testURI = String.format(Locale.ROOT, "coap://%1$s:%2$d/test", config.getStringSetting(Settings.TEST_SERVER), config.getIntegerSetting(Settings.TEST_TESTPORT));
-		boolean tokens = true;
 		CoAP.Type type = config.getStringSetting(Settings.COAP_MESSAGETYPE).equals("CON")?CoAP.Type.CON:CoAP.Type.NON;
 		
-		long timeToStopTest = ((long) Math.round(1000 * config.getDecimalSetting(Settings.TRAFFIC_MAXSENDTIME))) + SystemClock.elapsedRealtime();
-
-		long nextTimeToFillBucket = SystemClock.elapsedRealtime() + bucketFillDelayInMs;
-
-		//Request test = null;
+		if (packetsize > maxpacketsize)
+			payloadsize = maxpacketsize-headersize;
+		if (rate > 0 && payloadsize > 0 && headersize > 0) {
+			unlimitedRate = false;
+			bucketFillDelay = Math.round(1000d/(((double) rate)/((double) packetsize))) * 1000000;
+		}
 		
-		while (SystemClock.elapsedRealtime() < timeToStopTest) {
-			if (tokens) {// && test == null) {
+		long timeToStopTest = Math.round(sendtime * 1000000000) + System.nanoTime();
+		long nextTimeToFillBucket = bucketFillDelay + System.nanoTime();
+		
+		while (System.nanoTime() < timeToStopTest) {
+			if (unlimitedRate || bucketFull) {
 				Request test = Request.newPost();
 				test.setURI(testURI);
 				test.setType(type);
 				test.setPayload(PayloadGenerator.generateRandomData(random.nextLong(), payloadsize));
 				test.send(endpoint);
-				tokens = false;
-				//if (!test.isConfirmable())
-				//	test = null;
+				bucketFull = false;
+				while (test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 			}
-			if (bucketFillDelayInMs > 0 && SystemClock.elapsedRealtime() >= nextTimeToFillBucket) {
-				nextTimeToFillBucket += bucketFillDelayInMs;
-				tokens = true;
+			if (!unlimitedRate && System.nanoTime() > nextTimeToFillBucket) {
+				bucketFull = true;
+				nextTimeToFillBucket += bucketFillDelay;
 			}
-			else if (bucketFillDelayInMs <= 1)
-				tokens = true;
-			//if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
-			//	test = null;
 		}
 	}
 	private static void runMessageTest(TrafficConfig config, CoAPEndpoint endpoint) {
-		int payloadsize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE);
-		int bucketFillDelayInMs = 1000/(config.getIntegerSetting(Settings.TRAFFIC_RATE)/(payloadsize+headersize));
-		long sentMessages = 0, maxMessages = config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES);
+		boolean unlimitedRate = true, bucketFull = true;
+		int payloadsize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE),
+				rate = config.getIntegerSetting(Settings.TRAFFIC_RATE),
+				packetsize = payloadsize+headersize,
+				sentMessages = 0,
+				maxMessages = config.getIntegerSetting(Settings.TRAFFIC_MAXMESSAGES);
+		long bucketFillDelay = 0;
 		String testURI = String.format(Locale.ROOT, "coap://%1$s:%2$d/test", config.getStringSetting(Settings.TEST_SERVER), config.getIntegerSetting(Settings.TEST_TESTPORT));
-		boolean tokens = true;
 		CoAP.Type type = config.getStringSetting(Settings.COAP_MESSAGETYPE).equals("CON")?CoAP.Type.CON:CoAP.Type.NON;
-		long nextTimeToFillBucket = SystemClock.elapsedRealtime() + bucketFillDelayInMs;
-		//Request test = null;
+
+		if (packetsize > maxpacketsize)
+			payloadsize = maxpacketsize-headersize;
+		if (rate > 0 && payloadsize > 0 && headersize > 0) {
+			unlimitedRate = false;
+			bucketFillDelay = Math.round(1000d/(((double) rate)/((double) packetsize))) * 1000000;
+		}
+
+		long nextTimeToFillBucket = bucketFillDelay + System.nanoTime();
+		
 		while (sentMessages < maxMessages) {
-			if (tokens) {// && test == null) {
+			if (unlimitedRate || bucketFull) {
 				Request test = Request.newPost();
 				test.setURI(testURI);
 				test.setType(type);
 				test.setPayload(PayloadGenerator.generateRandomData(random.nextLong(), payloadsize));
 				test.send(endpoint);
-				tokens = false;
+				bucketFull = false;
 				sentMessages += 1;
+				while (test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 			}
-			if (SystemClock.elapsedRealtime() >= nextTimeToFillBucket) {
-				nextTimeToFillBucket += bucketFillDelayInMs;
-				tokens = true;
+			if (!unlimitedRate && System.nanoTime() > nextTimeToFillBucket) {
+				bucketFull = true;
+				nextTimeToFillBucket += bucketFillDelay;
 			}
-			//if (test != null && test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
-			//		test = null;
 		}
 	}
 	private static void runFileTest(TrafficConfig config, CoAPEndpoint endpoint) throws InterruptedException {
+		//TODO: Implement rate limiting -- by taking test.send(endpoint) in a pausable thread?
 		byte[] dummyfile = PayloadGenerator.generateRandomData(random.nextLong(), config.getIntegerSetting(Settings.TRAFFIC_FILESIZE));
-		//TODO: Implement rate limiting -- by taking test.send(endpoint) in a pausable thread? 
 		Request test;
 		test = Request.newPost();
 		String testURI = String.format(Locale.ROOT, "coap://%1$s:%2$d/test", config.getStringSetting(Settings.TEST_SERVER), config.getIntegerSetting(Settings.TEST_TESTPORT));
