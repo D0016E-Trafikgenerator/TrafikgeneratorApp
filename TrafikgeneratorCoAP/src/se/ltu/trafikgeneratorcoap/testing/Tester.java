@@ -47,8 +47,8 @@ public class Tester {
 									TrafficConfig.networkConfigToStringList(config.toNetworkConfig()):
 									config.getOriginal());
 		controlRequest.send(control);
-		token = controlRequest.getTokenString();
 		Response response = controlRequest.waitForResponse();
+		token = controlRequest.getTokenString();
 		if (response != null && response.getCode().equals(type.equals(Xfer.SEND)?
 															ResponseCode.CREATED:
 															ResponseCode.CONTINUE)) {
@@ -79,7 +79,8 @@ public class Tester {
 		}
 	}
 	public void receive() throws InterruptedException, IOException {
-		timestamp = (new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())).format(new Date());	
+		//TODO: Make it work...
+		timestamp = (new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())).format(new Date());
 		if (negotiate(Xfer.RECEIVE)) {
 			Logfile logfile = new Logfile(Xfer.RECEIVE, config, timestamp, token);
 			if (logfile.startLogging()) {

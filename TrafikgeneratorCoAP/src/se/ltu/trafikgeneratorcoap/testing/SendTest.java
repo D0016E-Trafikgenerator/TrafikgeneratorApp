@@ -9,6 +9,9 @@ import ch.ethz.inf.vs.californium.coap.Request;
 import ch.ethz.inf.vs.californium.network.CoAPEndpoint;
 
 public class SendTest {
+	/*
+	 * The send methods have rate limiting functionality through a kind of token bucket.
+	 */
 	private static int headersize = 59, maxpacketsize = 1500;//1024
 	private static Random random = new Random();
 	public static void run(TrafficConfig config) throws InterruptedException, IOException {
@@ -31,10 +34,12 @@ public class SendTest {
 		}
 	}
 	private static void runTimeTest(TrafficConfig config, CoAPEndpoint endpoint) {
-		//TODO: Solve the problem of unlimited rate leading to a time shift.
-		//I.e. when sending as many packages as possible without intermission,
-		//system time seems to pass slower than real time; a 10 second send
-		//can become a 15 second send.
+		/*
+		 * TODO: Solve the problem of unlimited rate leading to a time shift.
+		 * I.e. when sending as many packages as possible without intermission,
+		 * system time seems to pass slower than real time; a 10 second send
+		 * can become a 15 second send.
+		 */
 		boolean unlimitedRate = true, bucketFull = true;
 		int payloadsize = config.getIntegerSetting(Settings.TRAFFIC_MESSAGESIZE),
 				rate = config.getIntegerSetting(Settings.TRAFFIC_RATE),
@@ -62,12 +67,13 @@ public class SendTest {
 				test.setPayload(PayloadGenerator.generateRandomData(random.nextLong(), payloadsize));
 				test.send(endpoint);
 				bucketFull = false;
-				while (test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
-					try {
+				try {
+					Thread.sleep(1); //TODO: figure out why absence of interpacket sleep time leads to infinite loop... 
+					while (test.isConfirmable() && (test.isAcknowledged() || test.isTimedOut() || test.isCanceled() || test.isRejected()))
 						Thread.sleep(1);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			if (!unlimitedRate && System.nanoTime() > nextTimeToFillBucket) {
 				bucketFull = true;

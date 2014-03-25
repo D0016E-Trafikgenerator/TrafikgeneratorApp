@@ -27,6 +27,9 @@ public class Metafile {
 		this.token = token;
 	}
 	boolean synchronize() {
+		/*
+		 * Synchronizing with the test server's NTP server.
+		 */
 		if (timeBeforeTest == null) {
 			timeBeforeTest = new SntpClient();
 			return timeBeforeTest.requestTime(config.getStringSetting(Settings.TEST_SERVER).split(":")[0], config.getIntegerSetting(Settings.TEST_NTPPORT), 1000) || timeBeforeTest.requestTime("pool.ntp.org", 123, 1000);

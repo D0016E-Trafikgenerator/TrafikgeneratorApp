@@ -7,7 +7,8 @@ import java.util.Locale;
 import android.os.Environment;
 
 public class Logfile {
-	private static String tcpdump = "tcpdump-coap", tcpdumpPath = "/data/local/", tcpdumpInterface = "-i wlan0";
+	//TODO: Move out tweakable settings like these below? Perhaps into a settings file?
+	private static String tcpdump = "tcpdump-coap", tcpdumpPath = "/data/local/", tcpdumpInterface = "";//"-i wlan0";
 	private static int packetCutoff = 84, tcpdumpPrepareTime = 5000;
 	private static File logDirectory = new File(new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap"), "logs");
 	private static File script = new File(new File(new File(Environment.getExternalStorageDirectory(), "trafikgeneratorcoap"), "scripting"), "SaveMyPID.sh");
@@ -22,6 +23,12 @@ public class Logfile {
 		this.token = token;
 	}
 	boolean startLogging() throws IOException, InterruptedException {
+		/*
+		 * Logging is done through a tcpdump binary, and it is started through a shell script
+		 * in order to save its process ID so it can be used to kill it later on. Something
+		 * like "killall tcpdump" can be used, of course, but not all Android machines even
+		 * have killall...
+		 */
 		if (logfile != null)
 			return false;
 		logfile = new File(logDirectory, timestamp + "-" + token + "-" + type + ".pcap");

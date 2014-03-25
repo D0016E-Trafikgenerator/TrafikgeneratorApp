@@ -41,6 +41,9 @@ public class TrafficConfig {
 	static private String newline = "\n";//System.getProperty("line.separator");
 	private String originalConfig;
 
+	/**
+	 * @param configuration A string representation of a TrafficConfig type configuration.
+	 */
 	public TrafficConfig(String configuration) {
 		StringBuilder trimmedOriginal = new StringBuilder();
 		String[] all_rows = configuration.split(newline);
@@ -172,6 +175,10 @@ public class TrafficConfig {
 			default:                           return;
 		}
 	}
+	/**
+	 * Create a Californium NetworkConfig object with settings detailed in the TrafficConfig object, i.e. port and congestion control parameters.
+	 * @return The NetworkConfig object.
+	 */
 	public NetworkConfig toNetworkConfig() {
 		NetworkConfig config = new NetworkConfig();
 		config.setInt("DEFAULT_COAP_PORT", this.getIntegerSetting(Settings.TEST_TESTPORT));

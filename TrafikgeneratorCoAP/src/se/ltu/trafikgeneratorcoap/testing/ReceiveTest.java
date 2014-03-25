@@ -11,6 +11,11 @@ import ch.ethz.inf.vs.californium.server.resources.CoapExchange;
 import ch.ethz.inf.vs.californium.server.resources.ResourceBase;
 
 public class ReceiveTest {
+	/*
+	 * To receive data, we need to start a server. Ideally, we would reuse
+	 * or at least build upon the classes from TrafikgeneratorServer, but
+	 * I don't know how to do that without having cyclic dependencies.
+	 */
 	private static Server testserver;
 	static boolean running = false;
 	static void run(TrafficConfig config) {
